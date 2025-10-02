@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador - CELERIS</title>
+  <link rel="stylesheet" href="styles/pan_admin_emp.css">
+</head>
+<body>
+  <header>
+    <h1>Panel de Administración - CELERIS</h1>
+  </header>
+
+  <section class="summary">
+    <div class="card">Total Turnos: <span>2</span></div>
+    <div class="card">En Espera: <span>0</span></div>
+    <div class="card">En Atención: <span>1</span></div>
+    <div class="card">Completados: <span>2</span></div>
+    <div class="card">Empleados Activos: <span>2</span></div>
+    <div class="card">Total Empleados: <span>3</span></div>
+  </section>
+
+  <section class="actions">
+    <button><a href="pan_admin_turnos.html" style="text-decoration: none;">Gestión de turnos</a></button>
+    <button>Gestión de empleados</button>
+    <button>Gestión de horarios de empleados</button>
+  </section>
+
+  <section class="table-section">
+    <h2>Detalle de Turnos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Departamento</th>
+          <th>Ventanilla</th>
+          <th>Estado</th>
+          <th>Tiempo Promedio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cesar Medrano</td>
+          <td>Asesoramiento Financiero</td>
+          <td>Ventanilla 2</td>
+          <td>Pausado</td>
+          <td>6 min</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Ruby Almeida</td>
+          <td>Cajas</td>
+          <td>Ventanilla 1</td>
+          <td>Activo</td>
+          <td>7 min</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Edmundo Huerta</td>
+          <td>Asociados</td>
+          <td>Ventanilla 3</td>
+          <td>Desconectado</td>
+          <td>10 min</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>
