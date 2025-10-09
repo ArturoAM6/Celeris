@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador - CELERIS</title>
+  <link rel="stylesheet" href="styles/pan_admin_emp.css">
+</head>
+<body>
+  <header>
+    <a href="landing-page.html" class="btn" style="background-color: #f4f3f2; color: black;">Inicio</a>
+    <h1>Panel de Administración - CELERIS</h1>
+  </header>
+
+  <section class="summary">
+    <div class="card">Total Turnos: <span>2</span></div>
+    <div class="card">En Espera: <span>0</span></div>
+    <div class="card">En Atención: <span>1</span></div>
+    <div class="card">Completados: <span>2</span></div>
+    <div class="card">Empleados Activos: <span>2</span></div>
+    <div class="card">Total Empleados: <span>3</span></div>
+  </section>
+
+  <section class="actions">
+    <a href="pan_admin_turnos.html">Gestión de turnos</a>
+    <a href="pan_admin_emp.html" style="background-color: #005fa3;">Gestión de empleados</a>
+    <a href="pan_admin_horario.html">Gestión de horarios de empleados</a>
+  </section>
+
+  <section class="table-section">
+    <h2>Detalle de Empleados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Departamento</th>
+          <th>Ventanilla</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cesar Medrano</td>
+          <td>Asesoramiento Financiero</td>
+          <td>Ventanilla 2</td>
+          <td class="estado estado-pausado">Pausado</td>
+          <td>
+            <button class="btn activar">Activar</button>
+            <button class="btn desactivar">Desactivar</button>
+            <button class="btn pausar">Pausar</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Ruby Almeida</td>
+          <td>Cajas</td>
+          <td>Ventanilla 1</td>
+          <td class="estado estado-activo">Activo</td>
+          <td>
+            <button class="btn activar">Activar</button>
+            <button class="btn desactivar">Desactivar</button>
+            <button class="btn pausar">Pausar</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Edmundo Huerta</td>
+          <td>Asociados</td>
+          <td>Ventanilla 3</td>
+          <td class="estado estado-desconectado">Desconectado</td>
+          <td>
+            <button class="btn activar">Activar</button>
+            <button class="btn desactivar">Desactivar</button>
+            <button class="btn pausar">Pausar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+    // Detecta clicks en cualquier botón de acciones
+    document.querySelectorAll("table tbody tr").forEach(row => {
+      const estadoCell = row.querySelector(".estado");
+
+      row.querySelector(".activar").addEventListener("click", () => {
+        estadoCell.textContent = "Activo";
+        estadoCell.className = "estado estado-activo";
+      });
+
+      row.querySelector(".desactivar").addEventListener("click", () => {
+        estadoCell.textContent = "Desconectado";
+        estadoCell.className = "estado estado-desconectado";
+      });
+
+      row.querySelector(".pausar").addEventListener("click", () => {
+        estadoCell.textContent = "Pausado";
+        estadoCell.className = "estado estado-pausado";
+      });
+    });
+  </script>
+</body>
+</html>
