@@ -1,0 +1,158 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f3f4;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: #007bff;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+header .btn {
+  position: absolute;
+  left: 20px;
+  top: 45px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+ul {
+  list-style: none;
+}
+
+.btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.btn:hover {
+  background-color: #005fa3;
+}
+
+.estado-activo {
+  color: green;
+}
+.estado-pausado {
+  color: orange;
+}
+.estado-desconectado {
+  color: red;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.container-header {
+  padding: 5px 0;
+  width: 100%;
+  border-bottom: solid 2px #bbbcb3;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-header h2 {
+  font-size: 30px;
+}
+
+.container-header .container-acciones {
+  position: absolute;
+  right: 50px;
+  display: flex;
+}
+
+.container-acciones .btn {
+  font-size: 15px;
+  padding: 10px;
+}
+
+.container-content {
+  width: 100%;
+  padding: 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-pair {
+  width: 100%;
+  min-height: 60vh;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hero {
+  height: inherit;
+  background-color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.hero-header {
+  margin: 10px auto 20px auto;
+  border-bottom: 2px solid #949292;
+  width: 90%;
+  height: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.hero-header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.hero-content {
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin: 10px auto;
+  width: 90%;
+}
+
+.izq {
+  flex-grow: 3;
+}
+
+.der {
+  flex-grow: 1;
+}
+
+.der ul li {
+  width: 100%;
+  height: 40px;
+  margin: 20px auto;
+  text-align: left;
+  border-bottom: 2px solid #949292;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

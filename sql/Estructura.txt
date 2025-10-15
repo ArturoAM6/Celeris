@@ -1,0 +1,52 @@
+Celeris/
+|---- config/
+|---- |---- config.php
+|---- public/
+|---- |---- css/
+|---- |---- img/
+|---- |---- js/
+|---- |---- index.php
+|---- sql/
+|---- |---- schema.sql
+|---- src/
+|---- |---- database/
+|---- |---- |---- Database.class.php
+|---- |---- services/
+|---- |---- |---- ServicioAutenticacion.class.php
+|---- |---- controllers/
+|---- |---- models/
+|---- |---- |---- Persona.class.php
+|---- |---- |---- Cliente.class.php
+|---- |---- |---- Empleado.class.php
+|---- |---- |---- Operador.class.php
+|---- |---- |---- Administrador.class.php
+|---- |---- |---- Recepcionista.class.php
+|---- |---- |---- Turno.class.php
+|---- |---- |---- Caja.class.php
+|---- |---- views/
+|---- |---- |---- admin/
+|---- |---- |---- |---- dashboard.php
+|---- |---- |---- operador/
+|---- |---- |---- |---- dashboard.php
+|---- |---- |---- publicas/
+|---- |---- |---- |---- consultar-turno.php
+|---- |---- |---- |---- generar-turno.php
+|---- |---- |---- |---- pantalla-turnos.php
+|---- |---- |---- |---- inicio.php
+|---- |---- |---- recepcionista/
+|---- |---- |---- |---- generar-turno.php
+|---- |---- |---- |---- inicio.php
+|---- |---- |---- error.php
+|---- |---- repositories/
+|---- |---- |---- ClienteRepository.class.php
+|---- |---- |---- EmpleadoRepository.class.php
+|---- |---- |---- TurnoRepository.class.php
+|---- |---- |---- CajaRepository.class.php
+
+
+
+config/
+include/
+models/
+services/
+views/

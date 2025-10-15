@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Monomakh&display=swap');
+
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'DM Serif Text', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  font-family: 'DM Serif Text', sans-serif;
+  background: linear-gradient(to right, #e3f2fd, #2b99f3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+    width: 100%;
+    height: 80px;
+    background: #f2f3f4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px #0f5bb5;
+}
+
+.navbar-logo {
+    height: 48px;
+    width: auto;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre logo y texto */
+}
+
+.navbar-title {
+  font-size: 48px;
+  font-family: 'Monomakh';
+  color: #1a73e8;
+  margin-bottom: 8px;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f2f3f4;
+  color: #1a73e8;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 14px;
+  box-shadow: 0 -2px 8px #0000001a;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo h2 {
+  color: #1a73e8;
+}
+
+.rayo {
+  width: 50px;
+  height: 50px;
+}
+
+.navbar nav a {
+  margin-left: 15px;
+  margin-right: 15px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+.btn-login {
+  color: #007bff;
+}
+.btn-login:hover {
+  background: #eaf1fb;
+}
+.btn-register {
+  background: #007bff;
+  color: #fff;
+}
+.btn-register:hover {
+  background: #0056cc;
+}
+
+/* ===== Hero ===== */
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+  background-color: #f2f3f4;
+  border-radius: 12px;
+}
+.hero h1 {
+  font-size: 32px;
+  color: #222;
+  margin-bottom: 15px;
+}
+.hero p {
+  font-size: 16px;
+  color: #555;
+  max-width: 500px;
+  margin: 0 auto 25px;
+}
+.btn-cta {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #007bff;
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+  margin-bottom: 20px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-cta:hover {
+  background: #0056cc;
+}
+
+.hero-pair {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 40px;
+  margin-top: 120px; /* espacio debajo del navbar */
+  margin-bottom: 80px;
+}
+
+.hero-box {
+  width: 748px;
+  padding: 180px;
+  background-color: #f2f3f4;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-box h1, .hero-box h2 {
+  color: #1a73e8;
+  margin-bottom: 15px;
+}
+
+.hero-box p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.hero-icon {
+  width: 80px;
+  height: auto;
+  margin: 0 auto 12px;
+}
+
+.right img {
+  width: 500px;
+  margin-right: 50px;
+}
+
+.cuenta-input {
+  margin-top: 15px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cuenta-input input {
+  padding: 10px;
+}
+
+.btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
