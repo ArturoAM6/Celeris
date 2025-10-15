@@ -31,7 +31,7 @@ class CajaRepository {
         return $cajas;
     }
 
-    public function obtenerCajaDisponible(): ?array {
+    public function obtenerCajaDisponible(): ?Caja {
         $stmt = $this->conexion->prepare('SELECT * FROM cajas WHERE id_estado = 1 LIMIT 1');
         $stmt->execute();
         $caja = $stmt->fetch();
@@ -40,7 +40,7 @@ class CajaRepository {
             throw new Exception("No hay cajas disponibles");
         }
 
-        $this->crearCajaDesdeArray($caja);
+        $caja = $this->crearCajaDesdeArray($caja);
 
         return $caja;
     }

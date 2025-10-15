@@ -17,10 +17,10 @@
         <h1>Bienvenido, ¿a qué departamento deseas acceder?</h1>
         <div>
             <form action="<?= BASE_URL ?>/turno/generar" method="post" class="button-grid">
-                <button type="submit" class="btn">Caja</button>
-                <button type="submit" class="btn">Asociados</button>
-                <button type="submit" class="btn">Caja Fuerte</button>
-                <button type="submit" class="btn">Asesoramiento Financiero</button>
+                <button type="submit" class="btn" name="departamento" value="Cajas">Caja</button>
+                <button type="submit" class="btn" name="departamento" value="Asociados">Asociados</button>
+                <button type="submit" class="btn" name="departamento" value="Caja Fuerte">Caja Fuerte</button>
+                <button type="submit" class="btn" name="departamento" value="Asesoramiento Financiero">Asesoramiento Financiero</button>
             </form>
         </div>
     </div>

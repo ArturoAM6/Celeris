@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../src/database/Database.class.php';
+require_once __DIR__ . '/../includes/fpdf186/fpdf.php';
 
 spl_autoload_register(function ($class) {
     $paths = [
@@ -47,8 +48,8 @@ if ($ruta === '/turno/consultar') {
     exit;
 }
 if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
-    $turnoRepository = new TurnoRepository;
-    $turno = $turnoRepository->buscarPorId($_GET['id']);
+    $controller = new TurnoController;
+    $turno = $controller->obtenerTurnoPorId($_GET['id']);
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
     exit;
 }
