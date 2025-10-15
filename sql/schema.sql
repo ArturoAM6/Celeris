@@ -97,6 +97,7 @@ CREATE TABLE empleados (
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(64) NOT NULL,
     activo BOOLEAN NOT NULL DEFAULT 1,
+    status BOOLEAN NOT NULL DEFAULT 0,
     id_departamento INT(1) NOT NULL,
     id_rol INT(1) NOT NULL,
     id_tipo_turno INT(1) NOT NULL,
