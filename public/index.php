@@ -62,7 +62,8 @@ if ($ruta === '/login') {
 }
 
 if ($ruta === '/logout') {
-    ServicioAutenticacion::cerrarSesion();
+    $controller = new AuthController();
+    $controller->logout();
     header('Location: '. BASE_URL . '/');
     exit;
 }
@@ -86,6 +87,7 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadoController = new EmpleadoController();
         $empleados = $empleadoController->listarEmpleados();
         $empleadosAsignados = $empleadoController->listarEmpleadosAsignados();
+        $empleadosActivos = $empleadoController->listarEmpleadosActivos();
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';

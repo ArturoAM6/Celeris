@@ -8,7 +8,9 @@
 </head>
 <body>
   <header>
-    <a href="<?= BASE_URL ?>/logout" class="btn" style="background-color: #f4f3f2; color: black;">Salir</a>
+    <form action="<?= BASE_URL ?>/logout" method="post">
+        <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
+    </form>
     <h1>Panel de Administración - CELERIS</h1>
   </header>
   

@@ -15,7 +15,7 @@ header {
   text-align: center;
 }
 
-header .btn {
+header form .btn {
   position: absolute;
   left: 20px;
   top: 45px;

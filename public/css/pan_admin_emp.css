@@ -15,7 +15,7 @@ header {
   width: 100%;
 }
 
-header .btn {
+header form .btn {
   position: absolute;
   left: 20px;
   top: 45px;
@@ -48,26 +48,6 @@ a {
   margin-top: 5px;
   font-size: 1.2em;
   color: #0077cc;
-}
-
-.actions {
-  text-align: center;
-  margin: 20px;
-}
-
-.actions a {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 0 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-}
-
-.actions a:hover {
-  background-color: #005fa3;
 }
 
 .table-section {
