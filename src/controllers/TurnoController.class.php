@@ -27,7 +27,8 @@ class TurnoController {
     public function generarTurno(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $departamento = $_POST['departamento'];
+                $turno = null;
+                $id_departamento = $_POST['id_departamento'];
                 $numeroCuenta = $_POST['numero_cuenta'] ?? '';
                 $cliente = null;
                 
@@ -38,13 +39,14 @@ class TurnoController {
                         throw new Exception("Cliente no encontrado");
                     }
                 }
-                                
-                // Obtener siguiente número de turno
-                $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero();
-                
+
                 // Asignar caja disponible
-                $caja = $this->cajaRepository->obtenerCajaDisponible();
+                $caja = $this->cajaRepository->obtenerCajaDisponible($id_departamento);
                 
+                // Obtener siguiente número de turno
+                $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero($id_departamento);
+                
+
                 if (!$caja) {
                     throw new Exception("No hay cajas disponibles");
                 }
@@ -62,7 +64,7 @@ class TurnoController {
                 $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
                 
                 // Imprimir ticket
-                $this->imprimirTurno($cliente, $caja, $turno, $departamento);
+                $this->imprimirTurno($cliente, $caja, $turno, $id_departamento);
 
                 // Mostrar ticket
                 $turnoGenerado = $turno;
@@ -71,6 +73,7 @@ class TurnoController {
 
             } catch (Exception $e) {
                 $error = $e->getMessage();
+                $this->manejarError($e->getMessage());
                 require_once __DIR__ . '/../views/publicas/generar-turno.php';
             }
         } else {
@@ -78,12 +81,29 @@ class TurnoController {
         }
     }
 
-    private function imprimirTurno(?Cliente $cliente, Caja $caja, Turno $turno, string $departamento): void {
+    private function imprimirTurno(?Cliente $cliente, Caja $caja, Turno $turno, int $departamento): void {
+        switch ($caja->getDepartamento()) {
+            case 1:
+                $departamento = 'Cajas';
+                break;
+            case 2:
+                $departamento = 'Asociados';
+                break;
+            case 3:
+                $departamento = 'Caja Fuerte';
+                break;
+            case 4:
+                $departamento = 'Asesoramiento Financiero';
+                break;
+            default:
+                throw new Exception("No existe el departamento.");
+                break;
+        }
         $this->servicioTurnos->generarTurnoPdf(
             (!$cliente) ? "N/A" : $cliente->getNombreCompleto(),
             $caja->getId(),
             $departamento,
-            $turno->getId());
+            $turno->getNumero());
     }
 
     public function consultarTurno(): void {

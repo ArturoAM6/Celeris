@@ -31,16 +31,40 @@ class CajaRepository {
         return $cajas;
     }
 
-    public function obtenerCajaDisponible(): ?Caja {
-        $stmt = $this->conexion->prepare('SELECT * FROM cajas WHERE id_estado = 1 LIMIT 1');
-        $stmt->execute();
+    public function obtenerCajaDisponible(int $id_departamento): ?Caja {
+        $stmt = $this->conexion->prepare('SELECT c.id, c.numero, c.id_departamento, c.id_estado, COUNT(t.id) AS ocurrencias
+            FROM cajas c
+            JOIN turnos t ON t.id_caja = c.id
+            WHERE c.id_departamento = :id_departamento
+            AND c.id_estado = 1
+            AND t.id NOT IN (
+                SELECT tl.id_turno
+                FROM turnos_log tl
+                WHERE tl.id_estado IN (4,5)
+                    AND tl.timestamp_actualizacion = (
+                        SELECT MAX(tl2.timestamp_actualizacion)
+                        FROM turnos_log tl2
+                        WHERE tl2.id_turno = tl.id_turno
+                    )
+            )
+            GROUP BY c.id
+            UNION
+            SELECT c.id, c.numero, c.id_departamento, c.id_estado, 0 AS ocurrencias
+            FROM cajas c
+            WHERE c.id_departamento = :id_departamento
+            AND c.id_estado = 1
+            AND c.id NOT IN (SELECT id_caja FROM turnos)
+            ORDER BY ocurrencias ASC, id ASC
+            LIMIT 1'
+        );
+        $stmt->execute([':id_departamento' => $id_departamento]);
         $caja = $stmt->fetch();
 
         if (!$caja) {
-            throw new Exception("No hay cajas disponibles");
+            throw new Exception("Error de base de datos");
         }
 
-        $caja = $this->crearCajaDesdeArray($caja);
+        $caja = $this->crearCajaDesdeArray($caja);  
 
         return $caja;
     }

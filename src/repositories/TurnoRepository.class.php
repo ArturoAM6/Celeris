@@ -190,13 +190,14 @@ class TurnoRepository {
         return $resultado['id'];
     }
 
-    public function obtenerSiguienteNumero(): int {
-        $stmt = $this->conexion->prepare(
-            "SELECT MAX(numero) as max_numero 
-            FROM turnos 
-            WHERE DATE(timestamp_solicitud) = CURDATE()"
-            );
-        $stmt->execute();
+    public function obtenerSiguienteNumero(int $id_departamento): int {
+        $stmt = $this->conexion->prepare("SELECT MAX(t.numero) as max_numero
+            FROM turnos t, cajas c
+            WHERE t.id_caja = c.id
+            AND DATE(t.timestamp_solicitud) = CURDATE()
+            AND c.id_departamento = :id_departamento"
+        );
+        $stmt->execute([':id_departamento' => $id_departamento]);
         $resultado = $stmt->fetch();
         
         return $resultado && $resultado['max_numero'] ? $resultado['max_numero'] + 1 : 1;

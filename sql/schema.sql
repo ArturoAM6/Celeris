@@ -140,35 +140,14 @@ VALUES ("Abierta"), ("Cerrada"), ("Pausada"), ("Fuera de Servico");
 INSERT INTO cajas (numero, id_departamento, id_estado)
 VALUES (1, 1, 1), (2, 1, 1), (1, 2, 1);
 
-INSERT INTO turnos (numero, timestamp_solicitud, id_caja)
-VALUES (1, "2025-10-09 10:30:00", 1), (2, "2025-10-09 10:50:00", 1), (3, "2025-10-09 11:00:00", 1), (1, "2025-10-09 10:30:00", 3);
+INSERT INTO cajas (numero, id_departamento, id_estado)
+VALUES (1, 3, 1), (1, 4, 1);
+
+INSERT INTO asignacion_cajas (id_caja, id_empleado) values (1,2), (2,3), (3,4), (4, 2), (5, 3);
 
 INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
 VALUES ("Arturo", "Avila", "Martinez", "arturoam@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1),
 ("Jose Angel", "Santoyo", "Moreno", "josesan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 1, 1),
 ("Diego Isaac", "Puentes", "Villa", "diegop@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 2, 1),
-("Cesar Eduardo", "Martinez", "Ramos", "cesarmar@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1);
-
-INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
-VALUES ("Hector", "Sanchez", "Tamayo", "hectorsan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1);
-
-INSERT INTO turnos (numero, timestamp_solicitud, id_caja)
-VALUES (1, "2025-10-10 20:20:10", 1), (1, "2025-08-12 12:12:12", 2);
-
-INSERT INTO turnos_log (id_turno, id_estado, timestamp_actualizacion)
-VALUES (1, 3, "2025-10-09 10:40:00"), (1, 5, "2025-10-09 10:50:00"), (2, 3, "2025-10-09 11:20:00"), (2, 5, "2025-10-09 11:40:00");
-
-insert into asignacion_cajas (id_caja, id_empleado) values (1,2), (2,3), (3,4);
-
--- TRAER EL REGISTRO MAS RECIENTE DE TODOS LOS TURNOS DENTRO DE TURNOS_LOG ORDENADOS POR MAS RECIENTE
-SELECT t.id, t.numero, t.id_caja, tl.id_estado, tl.timestamp_actualizacion 
-FROM turnos t, turnos_log tl 
-WHERE t.id = tl.id_turno 
-AND tl.id = (SELECT MAX(id) from turnos_log WHERE id_turno = t.id) 
-ORDER BY tl.timestamp_actualizacion DESC;
-
--- TRAER TODOS LOS REGISTROS DE TURNOS DENTRO DE TURNOS_LOG ORDENADOS POR MAS RECIENTE
-SELECT t.id, t.numero, t.id_caja, tl.id_estado, tl.timestamp_actualizacion 
-FROM turnos t, turnos_log tl 
-WHERE t.id = tl.id_turno 
-ORDER BY tl.timestamp_actualizacion DESC;
+("Cesar Eduardo", "Martinez", "Ramos", "cesarmar@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1),
+("Hector", "Sanchez", "Tamayo", "hectorsan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1);
