@@ -232,12 +232,21 @@
                                     }
                                 ?>
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <?php if ($tipoTurno == 1): ?>
+                                <td class= "texto-centrado">'✓'</td>
+                                <td class= "texto-centrado">'—'</td>
+                                <td class= "texto-centrado">'✓'</td>
+                                <td class= "texto-centrado">'—'</td>
+                                <td class= "texto-centrado">'✓'</td>
+                                <td class= "texto-centrado">'—'</td>
+                            <?php else: ?>
+                                <td class="texto-centrado">'✓'</td>
+                                <td class="texto-centrado">'✓'</td>
+                                <td class="texto-centrado">'✓'</td>
+                                <td class="texto-centrado">'✓'</td>
+                                <td class="texto-centrado">'✓'</td>
+                                <td class="texto-centrado">'✓'</td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

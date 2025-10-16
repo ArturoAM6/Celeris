@@ -111,6 +111,11 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadoController->desactivarEmpleado();
         exit;
     }
+        if ($ruta === '/admin/horario/asignar') {
+        $HorarioController = new HorarioController();
+        $HorarioController->modificarHorario();
+        exit;
+    }
     ///COMO ESTE
     if ($ruta === '/admin/cajas/asignar') {
         $cajaController = new CajaController();
@@ -118,11 +123,6 @@ if ($_SESSION['id_rol'] === 1) {
         exit;
     }
     ///
-    if ($ruta === '/admin/horario/asignar') {
-        $HorarioController = new HorarioController();
-        $HorarioController->modificarHorario();
-        exit;
-    }
     if ($ruta === '/admin/cajas/abrir') {
         $cajaController = new CajaController();
         $cajaController->abrirCaja();
