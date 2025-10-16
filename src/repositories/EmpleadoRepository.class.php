@@ -8,12 +8,7 @@ class EmpleadoRepository {
         $stmt = $this->conexion->prepare("
         SELECT e.* FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
         JOIN cajas c ON ac.id_caja = c.id
-        WHERE c.estado = 3 AND e.activo = 1");
-
-        ///Consulta diferente sin los alias
-        // SELECT * FROM empleados JOIN asignacion_cajas ON empleados.id = asignacion_cajas.id_empleados 
-        // JOIN cajas ON asignacion_cajas.id_caja = cajas.id
-        // WHERE cajas.estado = 3 AND empleados.activo = 1
+        WHERE c.id_estado = 3 AND e.activo = 1");
 
         $stmt->execute();
         $empleados =[];
@@ -152,9 +147,9 @@ class EmpleadoRepository {
         }
         return false;
     }
-
+    //Se cambio la consulta SELECT * FROM empleados WHERE status = 1
     public function buscarEmpleadosActivos(): ?array {
-        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
+        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE activo = 1");
         $stmt->execute();
         $empleados = [];
 

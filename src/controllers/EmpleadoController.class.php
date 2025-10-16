@@ -17,14 +17,17 @@ class EmpleadoController {
     }
 
     //Funcion de Cesar :) 
-    public function MostrarDatosDeEmpleados(): void {
+    public function MostrarDatosDeEmpleados(): ?array {
         try {
             $empleados = $this->listarEmpleados();
             require_once __DIR__ . '/../views/admin/dashboard.php';
+            return $empleados;
         } 
+
         catch (Exception $e) {
-            $this->manejarError($e->getMessagge());
+            $this->manejarError($e->getMessage());
         }
+
     }
 
     public function listarEmpleadosAsignados(): ?array {
