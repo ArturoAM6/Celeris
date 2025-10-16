@@ -3,6 +3,27 @@
 class EmpleadoRepository {
     private PDO $conexion;
 
+    //Funcion de Cesar :)
+    public function buscarEmpleadosConCajaPausada(): array{
+        $stmt = $this->conexion->prepare("
+        SELECT e.* FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+        JOIN cajas c ON ac.id_caja = c.id
+        WHERE c.estado = 3 AND e.activo = 1");
+
+        ///Consulta diferente sin los alias
+        // SELECT * FROM empleados JOIN asignacion_cajas ON empleados.id = asignacion_cajas.id_empleados 
+        // JOIN cajas ON asignacion_cajas.id_caja = cajas.id
+        // WHERE cajas.estado = 3 AND empleados.activo = 1
+
+        $stmt->execute();
+        $empleados =[];
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
+
     public function __construct() {
         $this->conexion = Database::getInstancia()->getConexion();
     }
