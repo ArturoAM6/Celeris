@@ -57,7 +57,9 @@ class TurnoController {
                     $caja->getId()
                 );
                 
+                // Guardar turno
                 $this->turnoRepository->guardar($turno);
+                $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
                 
                 // Imprimir ticket
                 $this->imprimirTurno($cliente, $caja, $turno, $departamento);
@@ -126,8 +128,49 @@ class TurnoController {
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
-    } 
+    }
 
+    // ============ VISTAS INTERNAS ============
+    public function listarTurnos(): ?array {
+        try {
+            $turnos = $this->turnoRepository->todos();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosActivos(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosActivos();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function obtenerDepartamentoTurno(int $id_caja): string {
+        try {
+            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+            $id_departamento = $caja->getDepartamento();
+            switch ($id_departamento) {
+                case 1:
+                    return 'Cajas';
+                case 2:
+                    return 'Asociados';
+                case 3:
+                    return 'Caja Fuerte';
+                case 4:
+                    return 'Ventanillas';
+                default:
+                    throw new Exception('Departamento no existente');
+            }
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    // ============ MANEJAR ERRORES ============
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';

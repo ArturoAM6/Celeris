@@ -185,16 +185,36 @@
         </table>
     </div>
     <div class="tab-content" id="turnos">
-        <table>
+                <table>
             <thead>
                 <tr>
-                    <th>Algo</th>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Departamento</th>
+                    <th>Caja</th>
+                    <th>Estado</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Turno</td>
-                </tr>
+                <?php if (empty($turnos)): ?>
+                    <tr>
+                        <td colspan="6" class="texto-centrado">No hay turnos activos</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($turnos as $turno): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($turno->getNumero()) ?></td>
+                            <td><?= htmlspecialchars($turno->getCliente() ?? "N/A") ?></td>
+                            <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno->getCaja())) ?></td>
+                            <td><?= htmlspecialchars($turno->getCaja()) ?></td>
+                            <td><?= htmlspecialchars($turno->getEstado()) ?></td>
+                            <td><?= htmlspecialchars($turno->getTimestampSolicitud()) ?></td>
+                            <td><?= htmlspecialchars($turno->getTimestampFinAtencion() ?? "N/A") ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

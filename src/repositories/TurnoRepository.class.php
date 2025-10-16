@@ -13,7 +13,25 @@ class TurnoRepository {
             FROM turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno 
             AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
-            ORDER BY tl.timestamp_actualizacion DESC"
+            ORDER BY tl.timestamp_actualizacion"
+        );
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+    }
+
+    public function obtenerTurnosActivos(): array {
+        $stmt = $this->conexion->prepare(
+            "SELECT t.*, tl.id_estado 
+            FROM turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno 
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
+            AND tl.id_estado NOT IN (4,5)
+            ORDER BY tl.timestamp_actualizacion ASC"
         );
         $stmt->execute();
         $turnos = [];
@@ -111,6 +129,18 @@ class TurnoRepository {
         $turno->setId($this->conexion->lastInsertId());
     }
 
+    public function guardarEnLog(int $id_turno, int $id_estado, string $timestamp_actualizacion): void {
+        $stmt = $this->conexion->prepare(
+            "INSERT INTO turnos_log (timestamp_actualizacion, id_turno, id_estado) 
+            VALUES (:timestamp_actualizacion, :id_turno, :id_estado)"
+        );
+        $stmt->execute([
+            ':timestamp_actualizacion' => $timestamp_actualizacion,
+            ':id_turno' => $id_turno,
+            ':id_estado' => $id_estado
+        ]);
+    }
+
     public function actualizar(Turno $turno): bool {
         $stmt = $this->conexion->prepare(
             "UPDATE turnos SET 
@@ -152,32 +182,12 @@ class TurnoRepository {
         return $resultado ? $resultado['id_estado'] : null;
     }
 
-    public function obtenerDepartamento(int $id): int {
-        $stmt = $this->conexion->prepare(
-            "SELECT id
-            FROM departamentos
-            WHERE id = (select id_departamento from cajas where id = :id)"
-            );
+    public function buscarDepartamentoTurno(int $id): int {
+        $stmt = $this->conexion->prepare("SELECT id from departamentos WHERE id = (SELECT id_departamento FROM cajas WHERE id = :id)");
         $stmt->execute([':id' => $id]);
         $resultado = $stmt->fetch();
 
-        switch ($resultado) {
-            case 1:
-                return 'Ventanillas';
-                break;
-            case 2:
-                return 'Asociados';
-                break;
-            case 3:
-                return 'Caja Fuerte';
-                break;
-            case 4:
-                return 'Asesoramiento Financiero';
-                break;
-            default:
-                throw new Exception("No hay departamentos con ese ID");
-                break;
-        }
+        return $resultado['id'];
     }
 
     public function obtenerSiguienteNumero(): int {

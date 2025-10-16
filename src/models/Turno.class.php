@@ -10,6 +10,7 @@ class Turno {
     private ?string $timestamp_fin_atencion = null;
     private int $id_caja;
     private ?int $id_cliente = null;
+    private int $id_estado;
 
     // Constructor
     public function __construct(int $numero, string $timestamp_solicitud, ?int $id_cliente = null, int $id_caja) {
@@ -17,6 +18,7 @@ class Turno {
         $this->timestamp_solicitud = $timestamp_solicitud;
         $this->id_caja = $id_caja;
         $this->id_cliente = $id_cliente;
+        $this->id_estado = 2;
     }
 
     // Getters & Setters
@@ -85,4 +87,26 @@ class Turno {
         $this->id_cliente = $id_cliente;
     }
 
+    // Metodo publico que devuelve el ID del estado del turno. Devuelve un Int.
+    public function getEstadoId(): ?int {
+        return $this->id_estado;
+    }
+
+    // Metodo publico que devuelve el nombre del estado del turno. Devuelve un string.
+    public function getEstado(): string {
+        switch ($this->getEstadoId()) {
+            case 1:
+                return 'Llamado';
+            case 2:
+                return 'En espera';
+            case 3:
+                return 'En atencion';
+            case 4:
+                return 'Cancelado';
+            case 5:
+                return 'Finalizado';
+            default:
+                return 'Desconocido';
+        }
+    }
 }

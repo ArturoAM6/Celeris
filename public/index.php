@@ -90,6 +90,8 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadosActivos = $empleadoController->listarEmpleadosActivos();
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
+        $turnoController = new TurnoController();
+        $turnos = $turnoController->listarTurnos();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
