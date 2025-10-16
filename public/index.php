@@ -139,6 +139,13 @@ if ($_SESSION['id_rol'] === 1) {
         $cajaController->pausarCaja();
         exit;
     }
+
+    //Empleados pausados
+    if ($ruta === '/admin/empleados/pausados') {
+        $empleadoController = new EmpleadoController();
+        $empleadosPausados = $empleadoController->MostrarDatosDeEmpleados();
+        exit;
+    }
 } 
 // =============== Rutas internas - Operador ===============
 if ($_SESSION['id_rol'] === 2) {

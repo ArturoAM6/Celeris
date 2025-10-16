@@ -143,7 +143,6 @@ VALUES (1, 1, 1), (2, 1, 1), (1, 2, 1);
 INSERT INTO cajas (numero, id_departamento, id_estado)
 VALUES (1, 3, 1), (1, 4, 1);
 
-INSERT INTO asignacion_cajas (id_caja, id_empleado) values (1,2), (2,3), (3,4), (4, 2), (5, 3);
 
 INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
 VALUES ("Arturo", "Avila", "Martinez", "arturoam@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1),
@@ -151,3 +150,5 @@ VALUES ("Arturo", "Avila", "Martinez", "arturoam@celeris.com", "$2y$10$zz9T9rzxb
 ("Diego Isaac", "Puentes", "Villa", "diegop@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 2, 1),
 ("Cesar Eduardo", "Martinez", "Ramos", "cesarmar@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1),
 ("Hector", "Sanchez", "Tamayo", "hectorsan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1);
+
+INSERT INTO asignacion_cajas (id_caja, id_empleado) values (1,2), (2,3), (3,4), (4, 2), (5, 3);
