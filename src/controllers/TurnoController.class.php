@@ -169,6 +169,33 @@ class TurnoController {
         }
     }
 
+    public function listarTurnosEnEspera(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosEnEspera();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosEnAtencion(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosEnAtencion();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosCompletados(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosCompletados();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
     public function obtenerDepartamentoTurno(int $id_caja): string {
         try {
             $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
