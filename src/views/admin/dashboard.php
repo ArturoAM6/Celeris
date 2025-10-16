@@ -15,10 +15,10 @@
   </header>
   
   <section class="summary">
-    <div class="card">Total Turnos: <span>2</span></div>
-    <div class="card">En Espera: <span>0</span></div>
-    <div class="card">En Atención: <span>1</span></div>
-    <div class="card">Completados: <span>2</span></div>
+    <div class="card">Total Turnos: <span><?= htmlspecialchars(count($turnosActivos)); ?></span></div>
+    <div class="card">En Espera: <span><?= htmlspecialchars(count($turnosEspera)); ?></span></div>
+    <div class="card">En Atención: <span><?= htmlspecialchars(count($turnosAtencion)); ?></span></div>
+    <div class="card">Completados: <span><?= htmlspecialchars(count($turnosCompletados)); ?></span></div>
     <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
@@ -189,6 +189,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Numero de Turno</th>
                     <th>Cliente</th>
                     <th>Departamento</th>
                     <th>Caja</th>
@@ -205,6 +206,7 @@
                 <?php else: ?>
                     <?php foreach ($turnos as $turno): ?>
                         <tr>
+                            <td><?= htmlspecialchars($turno->getId()) ?></td>
                             <td><?= htmlspecialchars($turno->getNumero()) ?></td>
                             <td><?= htmlspecialchars($turno->getCliente() ?? "N/A") ?></td>
                             <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno->getCaja())) ?></td>

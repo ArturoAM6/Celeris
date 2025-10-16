@@ -92,6 +92,10 @@ if ($_SESSION['id_rol'] === 1) {
         $cajas = $cajaController->listarCajas();
         $turnoController = new TurnoController();
         $turnos = $turnoController->listarTurnos();
+        $turnosActivos = $turnoController->listarTurnosActivos();
+        $turnosEspera = $turnoController->listarTurnosEnEspera();
+        $turnosAtencion = $turnoController->listarTurnosEnAtencion();
+        $turnosCompletados = $turnoController->listarTurnosCompletados();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
