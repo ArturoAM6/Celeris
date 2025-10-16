@@ -87,6 +87,8 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadosAsignados = $empleadoController->listarEmpleadosAsignados();
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
+        $HorarioController = new HorarioController();
+        $horario = $HorarioController->listarEmpleados();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
@@ -109,9 +111,16 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadoController->desactivarEmpleado();
         exit;
     }
+    ///COMO ESTE
     if ($ruta === '/admin/cajas/asignar') {
         $cajaController = new CajaController();
         $cajaController->asignarEmpleadoCaja();
+        exit;
+    }
+    ///
+    if ($ruta === '/admin/horario/asignar') {
+        $HorarioController = new HorarioController();
+        $HorarioController->modificarHorario();
         exit;
     }
     if ($ruta === '/admin/cajas/abrir') {

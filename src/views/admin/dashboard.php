@@ -200,12 +200,23 @@
         <table>
             <thead>
                 <tr>
-                    <th>Algo</th>
+                    <th>Nombre</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Turno</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miercoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sabado</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Horario</td>
+                    <td><?php
+                    echo $horario
+                    ?></td>
                 </tr>
             </tbody>
         </table>
