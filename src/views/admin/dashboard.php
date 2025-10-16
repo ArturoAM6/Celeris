@@ -238,13 +238,21 @@
         <table>
             <thead>
                 <tr>
-                    <th>Algo</th>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($empleados as $empleado): ?>
                 <tr>
-                    <td>Descanso</td>
+                    <td><?= $empleado->getId() ?></td>
+                    <td><?= $empleado->getNombreCompleto() ?></td>
+                    <td><?= $empleado->getEmail() ?></td>
+                    <td><?= $empleado->getRol() ?></td>
                 </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>

@@ -50,6 +50,7 @@ if ($ruta === '/turno/consultar') {
 if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
     $controller = new TurnoController;
     $turno = $controller->obtenerTurnoPorId($_GET['id']);
+    $tiempoEspera = $controller->obtenerTiempoEspera();
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
     exit;
 }
@@ -136,6 +137,13 @@ if ($_SESSION['id_rol'] === 1) {
     if ($ruta === '/admin/cajas/pausar') {
         $cajaController = new CajaController();
         $cajaController->pausarCaja();
+        exit;
+    }
+
+    //Empleados pausados
+    if ($ruta === '/admin/empleados/pausados') {
+        $empleadoController = new EmpleadoController();
+        $empleadosPausados = $empleadoController->MostrarDatosDeEmpleados();
         exit;
     }
 } 
