@@ -149,7 +149,7 @@ class EmpleadoRepository {
     }
     //Se cambio la consulta SELECT * FROM empleados WHERE status = 1
     public function buscarEmpleadosActivos(): ?array {
-        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE activo = 1");
+        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
         $stmt->execute();
         $empleados = [];
 
