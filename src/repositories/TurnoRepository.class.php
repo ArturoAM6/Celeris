@@ -286,6 +286,19 @@ class TurnoRepository {
         return $this->crearTurnoDesdeArray($data);
     }
 
+    public function obtenerTiempoEspera(): array {
+        $stmt = $this->conexion->prepare("SELECT 
+            timestamp_solicitud,
+            timestamp_inicio_atencion
+            FROM turnos");
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $data;
+        }
+        return $turnos;
+    }
+
     private function registrarEstado(int $id_turno, int $id_estado): void {
         $stmt = $this->conexion->prepare(
             "INSERT INTO turnos_log (id_turno, id_estado, timestamp_actualizacion) 

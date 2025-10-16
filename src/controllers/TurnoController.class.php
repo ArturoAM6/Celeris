@@ -81,6 +81,15 @@ class TurnoController {
         }
     }
 
+    public function obtenerTiempoEspera() {
+        try {
+            $turnos = $this->turnoRepository->obtenerTiempoEspera();
+            return $this->servicioTurnos->calcularPromedioEspera($turnos);
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
     private function imprimirTurno(?Cliente $cliente, Caja $caja, Turno $turno, int $departamento): void {
         switch ($caja->getDepartamento()) {
             case 1:

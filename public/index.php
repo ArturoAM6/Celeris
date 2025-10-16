@@ -50,6 +50,7 @@ if ($ruta === '/turno/consultar') {
 if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
     $controller = new TurnoController;
     $turno = $controller->obtenerTurnoPorId($_GET['id']);
+    $tiempoEspera = $controller->obtenerTiempoEspera();
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
     exit;
 }
