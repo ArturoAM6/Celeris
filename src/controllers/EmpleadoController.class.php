@@ -2,9 +2,12 @@
 
 class EmpleadoController {
     private EmpleadoRepository $empleadoRepository;
+    private CajaRepository $cajaRepository;
+
 
     public function __construct() {
         $this->empleadoRepository = new EmpleadoRepository();
+        $this->cajaRepository = new CajaRepository();
     }
 
     public function listarEmpleados(): ?array {
@@ -30,6 +33,21 @@ class EmpleadoController {
 
     }
 
+    // ----IniOperador----
+
+    public function ObtenerEmpleadoCaja(): ?Caja{
+        try {
+            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+            return $caja;
+
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+        
+  
+    // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosAsignados();

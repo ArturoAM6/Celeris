@@ -63,6 +63,11 @@ class TurnoRepository {
         return $turnos;
     }
 
+    // ---IniOperador---
+
+    
+
+    // ----FinOperador---
     public function obtenerTurnosEnAtencion(): array {
         $stmt = $this->conexion->prepare(
             "SELECT t.*, tl.id_estado 
