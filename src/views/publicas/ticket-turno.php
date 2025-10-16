@@ -24,7 +24,7 @@
             </div>
             <div class="hero-box-content">
                 <h3><?php echo $turno->getNumero() ?></h3>
-                <p>Tiempo promedio para ser atendido: <?php echo ($tiempoEspera) ?></p>
+                <p>Tiempo aprox. para ser atendido: <?php echo ($tiempoEspera) ?></p>
             </div>
         </div>
     </section>

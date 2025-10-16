@@ -82,6 +82,6 @@ class ServicioTurnos {
         $m = floor(($promedio % 3600) / 60);
         $s = $promedio % 60;
 
-        return sprintf('%d horas, %d minutos, %d segundos', $h, $m, $s);
+        return sprintf('%d horas, %d minutos', $h, $m);
     }
 }
