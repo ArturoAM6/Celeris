@@ -2,17 +2,21 @@
 
 class HorarioController {
     private HorarioRepository $horarioRepository;
+    private EmpleadoRepository $empleadoRepository;
+
 
     public function __construct() {
         $this->horarioRepository = new HorarioRepository();
+        $this->empleadoRepository = new EmpleadoRepository();
     }
 
     public function listarEmpleados() {
         try {
-            $empleados = $this->horarioRepository->todos();
+            $horarios = $this->horarioRepository->todos();
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
+            return $horarios;
     }
 
         public function editarEmpleado(): void {
@@ -27,7 +31,8 @@ class HorarioController {
                     throw new Exception("Empleado no encontrado");
                 }
 
-                $empleadoActualizado = $this->instanciarEmpleadoSegunRol($_POST);
+                $empleadoController = new EmpleadoController();
+                $empleadoActualizado = $empleadoController->instanciarEmpleadoSegunRol($_POST);
                 $empleadoActualizado->setId($id);
 
                 $this->empleadoRepository->actualizar($empleadoActualizado);

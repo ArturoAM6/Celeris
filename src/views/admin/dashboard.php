@@ -213,11 +213,34 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><?php
-                    echo $horario
-                    ?></td>
-                </tr>
+                <?php if (empty($horarios)): ?>
+                    <tr>
+                        <td colspan="10" class="texto-centrado">No hay horarios registrados</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($horarios as $horario): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($horario->getNombre()) ?></td>
+                            <td><?= htmlspecialchars($horario->getHoraInicio()) ?></td>
+                            <td><?= htmlspecialchars($horario->getHoraFin()) ?></td>
+                            <td>
+                                <?php
+                                    switch ($horario->getTipoTurno()) {
+                                        case 1: echo 'Terciado'; break;
+                                        case 2: echo 'Semanal'; break;
+                                        default: echo htmlspecialchars($horario->getTipoTurno()); break;
+                                    }
+                                ?>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

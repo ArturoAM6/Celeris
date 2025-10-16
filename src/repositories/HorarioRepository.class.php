@@ -11,12 +11,12 @@ class HorarioRepository {
         $stmt = $this->conexion->prepare("SELECT h.hora_entrada, h.hora_salida, t.id
         FROM horarios h, tipo_turno t");
         $stmt->execute();
-        $empleados = [];
+        $horarios = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $empleados[] = $data;
+            $horarios[] = $data;
         }
 
-        return $empleados;
+        return $horarios;
     }
 
     public function modificarHorario(Empleado $empleado): bool{
