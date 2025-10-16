@@ -16,9 +16,18 @@ class EmpleadoController {
         }
     }
 
-    public function listarEmpleadosAsignados(): array {
+    public function listarEmpleadosAsignados(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosAsignados();
+            return $empleados;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarEmpleadosActivos(): ?array {
+        try {
+            $empleados = $this->empleadoRepository->buscarEmpleadosActivos();
             return $empleados;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());

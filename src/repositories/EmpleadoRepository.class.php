@@ -116,6 +116,34 @@ class EmpleadoRepository {
         return $empleados;
     }
 
+    public function iniciarSesionEmpleado(int $id): bool {
+        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 1 WHERE id = :id");
+        if ($stmt->execute([':id' => $id])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function desconectarEmpleado(int $id): bool {
+        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 0 WHERE id = :id");
+        if ($stmt->execute([':id' => $id])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function buscarEmpleadosActivos(): ?array {
+        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
+        $stmt->execute();
+        $empleados = [];
+
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
+
     private function crearEmpleadoSegunRol(array $data): Empleado {
         switch ($data['id_rol']) {
             case 1:

@@ -8,7 +8,9 @@
 </head>
 <body>
   <header>
-    <a href="<?= BASE_URL ?>/logout" class="btn" style="background-color: #f4f3f2; color: black;">Salir</a>
+    <form action="<?= BASE_URL ?>/logout" method="post">
+        <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
+    </form>
     <h1>Panel de Administración - CELERIS</h1>
   </header>
   
@@ -17,7 +19,7 @@
     <div class="card">En Espera: <span>0</span></div>
     <div class="card">En Atención: <span>1</span></div>
     <div class="card">Completados: <span>2</span></div>
-    <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
+    <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
   
@@ -183,16 +185,36 @@
         </table>
     </div>
     <div class="tab-content" id="turnos">
-        <table>
+                <table>
             <thead>
                 <tr>
-                    <th>Algo</th>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Departamento</th>
+                    <th>Caja</th>
+                    <th>Estado</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Turno</td>
-                </tr>
+                <?php if (empty($turnos)): ?>
+                    <tr>
+                        <td colspan="6" class="texto-centrado">No hay turnos activos</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($turnos as $turno): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($turno->getNumero()) ?></td>
+                            <td><?= htmlspecialchars($turno->getCliente() ?? "N/A") ?></td>
+                            <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno->getCaja())) ?></td>
+                            <td><?= htmlspecialchars($turno->getCaja()) ?></td>
+                            <td><?= htmlspecialchars($turno->getEstado()) ?></td>
+                            <td><?= htmlspecialchars($turno->getTimestampSolicitud()) ?></td>
+                            <td><?= htmlspecialchars($turno->getTimestampFinAtencion() ?? "N/A") ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

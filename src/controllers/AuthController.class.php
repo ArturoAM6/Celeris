@@ -27,6 +27,11 @@ class AuthController {
                     throw new Exception("Credenciales incorrectas");
                 }
 
+                // Establecer status de empleado a activo
+                if (!$this->empleadoRepository->iniciarSesionEmpleado($empleado->getId())) {
+                    throw new Exception("Ocurrio un error");
+                }
+
                 // Redirigir según rol
                 switch ($empleado->getRol()) {
                     case 1:
@@ -47,6 +52,14 @@ class AuthController {
             }
         } else {
             require_once __DIR__ . '/../views/publicas/login.php';
+        }
+    }
+
+    public function logout(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['logout'];
+            $this->empleadoRepository->desconectarEmpleado($id);
+            ServicioAutenticacion::cerrarSesion();
         }
     }
 }
