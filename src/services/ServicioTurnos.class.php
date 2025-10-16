@@ -40,7 +40,7 @@ class ServicioTurnos {
         $pdf->Cell(0, 3, date('H:i:s'), 0, 1, 'L');
         $pdf->Cell(0, 3, 'Servicios Celeris', 0, 1, 'L');
 		
-		$pdf->Output('F', $this->file);
+		$pdf->Output('I', 'ticket.pdf');
     }
 
     public function calcularPromedioEspera(array $turnos, bool $returnSeconds = false) {
