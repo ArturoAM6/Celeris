@@ -53,6 +53,19 @@ if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
     exit;
 }
+if ($ruta === '/turno/pdf' && isset($_GET['id'])) {
+    $controller = new TurnoController;
+    $turno = $controller->obtenerTurnoPorId($_GET['id']);
+    $cliente = $turno->getCliente();
+    $caja = $turno->getCaja();
+    $controller->imprimirTurno($cliente, $caja, $turno);
+    exit;
+}
+if ($ruta === '/turno/tiempo-espera') {
+    $controller = new TurnoController;
+    $tiempoEspera = $controller->obtenerTiempoEspera();
+    exit;
+}
 
 // =============== Autenticacion ===============
 if ($ruta === '/login') {
@@ -90,6 +103,8 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadosActivos = $empleadoController->listarEmpleadosActivos();
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
+        $HorarioController = new HorarioController();
+        $horarios = $HorarioController->listarEmpleados();
         $turnoController = new TurnoController();
         $turnos = $turnoController->listarTurnos();
         $turnosActivos = $turnoController->listarTurnosActivos();
@@ -119,11 +134,18 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadoController->desactivarEmpleado();
         exit;
     }
+        if ($ruta === '/admin/horario/asignar') {
+        $HorarioController = new HorarioController();
+        $HorarioController->modificarHorario();
+        exit;
+    }
+    ///COMO ESTE
     if ($ruta === '/admin/cajas/asignar') {
         $cajaController = new CajaController();
         $cajaController->asignarEmpleadoCaja();
         exit;
     }
+    ///
     if ($ruta === '/admin/cajas/abrir') {
         $cajaController = new CajaController();
         $cajaController->abrirCaja();
@@ -154,6 +176,7 @@ if ($_SESSION['id_rol'] === 1) {
 if ($_SESSION['id_rol'] === 2) {
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
+        $caja = $controller->ObtenerEmpleadoCaja();
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
 }

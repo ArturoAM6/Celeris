@@ -11,12 +11,25 @@
     <form action="<?= BASE_URL ?>/logout" method="post">
         <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
-    <h1>Panel de Administración - CELERIS</h1>
+    <h1>Panel de Operador - CELERIS</h1>
   </header>
   
   <section class="container">
     <div class="container-header">
-      <h2>Caja: NUMERO AQUI</h2>
+      <h2>Caja: <?php echo $caja->getNumero(); switch($caja->getDepartamento()){
+        case 1:
+          echo " Ventanillas";
+          break;
+        case 2:
+          echo " Asociados";
+          break;
+        case 3:
+          echo " Caja Fuerte";
+          break;
+        case 4:
+          echo " Asesoramiento Financiero";
+          break;
+      } ?></h2>
       <div class="container-acciones">
         <form method="post">
           <input type="hidden" name="btn-descanso">
@@ -43,6 +56,7 @@
           <div class="hero der">
               <div class="hero-header">
                   <h2>Próximos Turnos</h2>
+                  <!-- PONER UN LLAMAR TURNO SIGUIENTE UN BOTON -->
               </div>
               <div class="hero-content">
                   <ul>
