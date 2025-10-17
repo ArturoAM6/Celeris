@@ -225,7 +225,7 @@
                             <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
                             <td><?= htmlspecialchars($horario['hora_salida']) ?></td>
                             <td>
-                                <select name="turno[<?= $horario['id'] ?>]">
+                                <select name="turno">
                                     <?php foreach ($tiposTurno as $key => $label): ?>
                                         <option value="<?= $key ?>" <?= $horario['tipo_turno'] == $key ? 'selected' : '' ?>>
                                         <?= $label ?>
