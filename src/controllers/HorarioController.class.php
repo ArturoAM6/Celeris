@@ -12,11 +12,11 @@ class HorarioController {
 
     public function listarEmpleados() {
         try {
-            $horarios = $this->horarioRepository->todos();
+            $horario = $this->horarioRepository->todos();
+            return $horario;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
-            return $horarios;
     }
 
         public function editarEmpleado(): void {

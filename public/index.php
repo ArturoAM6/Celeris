@@ -88,7 +88,7 @@ if ($_SESSION['id_rol'] === 1) {
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
         $HorarioController = new HorarioController();
-        $horario = $HorarioController->listarEmpleados();
+        $horarios = $HorarioController->listarEmpleados();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
