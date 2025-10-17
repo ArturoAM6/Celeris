@@ -37,6 +37,10 @@ abstract class Empleado extends Persona {
         return $this->id_tipo_turno;
     }
 
+    public function setTipoTurno(int $id_tipo_turno): void {
+        $this->id_tipo_turno = $id_tipo_turno;
+    }
+
     // Metodo publico que devuelve el ID del horario. Devuelve un Int.
     public function getHorario(): int {
         return $this->id_horario;

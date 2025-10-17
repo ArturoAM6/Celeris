@@ -103,6 +103,8 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadosActivos = $empleadoController->listarEmpleadosActivos();
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
+        $HorarioController = new HorarioController();
+        $horarios = $HorarioController->listarEmpleados();
         $turnoController = new TurnoController();
         $turnos = $turnoController->listarTurnos();
         $turnosActivos = $turnoController->listarTurnosActivos();
@@ -131,11 +133,18 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadoController->desactivarEmpleado();
         exit;
     }
+        if ($ruta === '/admin/horario/asignar') {
+        $HorarioController = new HorarioController();
+        $HorarioController->modificarHorario();
+        exit;
+    }
+    ///COMO ESTE
     if ($ruta === '/admin/cajas/asignar') {
         $cajaController = new CajaController();
         $cajaController->asignarEmpleadoCaja();
         exit;
     }
+    ///
     if ($ruta === '/admin/cajas/abrir') {
         $cajaController = new CajaController();
         $cajaController->abrirCaja();
