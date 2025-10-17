@@ -7,5 +7,7 @@
 </head>
 <body>
     <h1>Error</h1>
+    <?php echo $error ?>
+    <br>
 </body>
 </html>

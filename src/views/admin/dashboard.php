@@ -8,16 +8,18 @@
 </head>
 <body>
   <header>
-    <a href="<?= BASE_URL ?>/logout" class="btn" style="background-color: #f4f3f2; color: black;">Salir</a>
+    <form action="<?= BASE_URL ?>/logout" method="post">
+        <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
+    </form>
     <h1>Panel de Administración - CELERIS</h1>
   </header>
   
   <section class="summary">
-    <div class="card">Total Turnos: <span>2</span></div>
-    <div class="card">En Espera: <span>0</span></div>
-    <div class="card">En Atención: <span>1</span></div>
-    <div class="card">Completados: <span>2</span></div>
-    <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
+    <div class="card">Total Turnos: <span><?= htmlspecialchars(count($turnosActivos)); ?></span></div>
+    <div class="card">En Espera: <span><?= htmlspecialchars(count($turnosEspera)); ?></span></div>
+    <div class="card">En Atención: <span><?= htmlspecialchars(count($turnosAtencion)); ?></span></div>
+    <div class="card">Completados: <span><?= htmlspecialchars(count($turnosCompletados)); ?></span></div>
+    <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
   
@@ -183,91 +185,123 @@
         </table>
     </div>
     <div class="tab-content" id="turnos">
-        <table>
+                <table>
             <thead>
                 <tr>
-                    <th>Algo</th>
+                    <th>ID</th>
+                    <th>Numero de Turno</th>
+                    <th>Cliente</th>
+                    <th>Departamento</th>
+                    <th>Caja</th>
+                    <th>Estado</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Turno</td>
-                </tr>
+                <?php if (empty($turnos)): ?>
+                    <tr>
+                        <td colspan="6" class="texto-centrado">No hay turnos activos</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($turnos as $turno): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($turno->getId()) ?></td>
+                            <td><?= htmlspecialchars($turno->getNumero()) ?></td>
+                            <td><?= htmlspecialchars($turno->getCliente() ?? "N/A") ?></td>
+                            <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno->getCaja())) ?></td>
+                            <td><?= htmlspecialchars($turno->getCaja()) ?></td>
+                            <td><?= htmlspecialchars($turno->getEstado()) ?></td>
+                            <td><?= htmlspecialchars($turno->getTimestampSolicitud()) ?></td>
+                            <td><?= htmlspecialchars($turno->getTimestampFinAtencion() ?? "N/A") ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
             </tbody>
         </table>
     </div>
     <div class="tab-content" id="horarios">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Hora Inicio</th>
-                    <th>Hora Fin</th>
-                    <th>Turno</th>
-                    <th>Lunes</th>
-                    <th>Martes</th>
-                    <th>Miercoles</th>
-                    <th>Jueves</th>
-                    <th>Viernes</th>
-                    <th>Sabado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $tiposTurno = [1 => 'Terciado', 2 => 'Semanal'];?>
-                <?php if (empty($horarios)): ?>
+        <form action="<?= BASE_URL ?>/admin/horario/asignar" method="post">
+            <table>
+                <thead>
                     <tr>
-                        <td colspan="10" class="texto-centrado">No hay horarios registrados</td>
+                        <th>Nombre</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Turno</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miercoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Sabado</th>
                     </tr>
-                <?php else: ?>
-                    <?php foreach ($horarios as $horario): ?>
+                </thead>
+                <tbody>
+                    <?php $tiposTurno = [1 => 'Terciado', 2 => 'Semanal'];?>
+                    <?php if (empty($horarios)): ?>
                         <tr>
-                            <td><?= htmlspecialchars($horario['id']) ?></td>
-                            <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
-                            <td><?= htmlspecialchars($horario['hora_salida']) ?></td>
-                            <td>
-                                <select name="turno">
-                                    <?php foreach ($tiposTurno as $key => $label): ?>
-                                        <option value="<?= $key ?>" <?= $horario['tipo_turno'] == $key ? 'selected' : '' ?>>
-                                        <?= $label ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                    </select>
-                            </td>
-                            <?php if ($horario['tipo_turno'] == 1): ?>
-                                <td class= "texto-centrado">✓</td>
-                                <td class= "texto-centrado">🗙</td>
-                                <td class= "texto-centrado">✓</td>
-                                <td class= "texto-centrado">🗙</td>
-                                <td class= "texto-centrado">✓</td>
-                                <td class= "texto-centrado">🗙</td>
-                            <?php else: ?>
-                                <td class="texto-centrado">✓</td>
-                                <td class="texto-centrado">✓</td>
-                                <td class="texto-centrado">✓</td>
-                                <td class="texto-centrado">✓</td>
-                                <td class="texto-centrado">✓</td>
-                                <td class="texto-centrado">✓</td>
-                            <?php endif; ?>
+                            <td colspan="10" class="texto-centrado">No hay horarios registrados</td>
                         </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-        <div>
-        <button type='submit' style='background-color: #007BFF; font-size: 20px; margin-top: 15px; border-radius: 7px;'>Guardar Cambios</button>
-        </div>
+                    <?php else: ?>
+                        <?php foreach ($horarios as $horario): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($horario['id']) ?></td>
+                                <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
+                                <td><?= htmlspecialchars($horario['hora_salida']) ?></td>
+                                <td>
+                                    <select name="id_tipo_turno[<?= $horario['id'] ?>]">
+                                        <?php foreach ($tiposTurno as $key => $label): ?>
+                                            <option value="<?= $key ?>" <?= $horario['tipo_turno'] == $key ? 'selected' : '' ?>>
+                                                <?= $label ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                                <?php if ($horario['tipo_turno'] == 1): ?>
+                                    <td class= "texto-centrado">✓</td>
+                                    <td class= "texto-centrado">🗙</td>
+                                    <td class= "texto-centrado">✓</td>
+                                    <td class= "texto-centrado">🗙</td>
+                                    <td class= "texto-centrado">✓</td>
+                                    <td class= "texto-centrado">🗙</td>
+                                <?php else: ?>
+                                    <td class="texto-centrado">✓</td>
+                                    <td class="texto-centrado">✓</td>
+                                    <td class="texto-centrado">✓</td>
+                                    <td class="texto-centrado">✓</td>
+                                    <td class="texto-centrado">✓</td>
+                                    <td class="texto-centrado">✓</td>
+                                <?php endif; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            <div>
+                <button type='submit' class="btn" style="margin-top: 10px;">Guardar Cambios</button>
+            </div>
+        </form>
     </div>
     <div class="tab-content" id="descansos">
         <table>
             <thead>
                 <tr>
-                    <th>Algo</th>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($empleados as $empleado): ?>
                 <tr>
-                    <td>Descanso</td>
+                    <td><?= $empleado->getId() ?></td>
+                    <td><?= $empleado->getNombreCompleto() ?></td>
+                    <td><?= $empleado->getEmail() ?></td>
+                    <td><?= $empleado->getRol() ?></td>
                 </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
