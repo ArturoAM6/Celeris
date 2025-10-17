@@ -35,7 +35,7 @@ class EmpleadoController {
 
     // ----IniOperador----
 
-    public function ObtenerEmpleadoCaja(): ?Caja{
+    public function ObtenerObjeto_IdCaja(): ?Caja{
         try {
             $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
             $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
@@ -45,7 +45,15 @@ class EmpleadoController {
             $this->manejarError($e->getMessage());
         }
     }
-        
+
+    public function CambiarEstadoCaja(int $id_caja, int $id_estado): void {
+        try {
+            
+            $this->cajaRepository->cambiarEstado($id_caja, $id_estado);
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
   
     // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {

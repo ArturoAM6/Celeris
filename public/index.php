@@ -163,7 +163,7 @@ if ($_SESSION['id_rol'] === 1) {
 if ($_SESSION['id_rol'] === 2) {
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
-        $caja = $controller->ObtenerEmpleadoCaja();
+        $caja = $controller->ObtenerObjeto_IdCaja();
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
 }

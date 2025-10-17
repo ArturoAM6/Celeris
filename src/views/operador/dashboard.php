@@ -33,7 +33,13 @@
       <div class="container-acciones">
         <form method="post">
           <input type="hidden" name="btn-descanso">
-          <button type="submit" class="btn">DESCANSO/ABRIR CAJA</button>
+          <?php if ($caja->getEstado() == 1): ?>
+              <button type="submit" class="btn">DESCANSO <?php
+              
+              ?></button>
+          <?php elseif ($caja->getEstado() == 3): ?>
+              <button type="submit" class="btn">ABRIR CAJA</button>
+          <?php endif; ?>
         </form>
       </div>
     </div>
