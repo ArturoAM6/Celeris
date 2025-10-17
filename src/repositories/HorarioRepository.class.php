@@ -12,7 +12,8 @@ class HorarioRepository {
         "SELECT e.id, h.hora_entrada, h.hora_salida, t.id as tipo_turno
         FROM empleados e
         INNER JOIN horarios h ON e.id_horario = h.id
-        INNER JOIN tipo_turno t ON e.id_tipo_turno = t.id"
+        INNER JOIN tipo_turno t ON e.id_tipo_turno = t.id
+        ORDER BY e.id"
         );
         $stmt->execute();
         $horarios = [];
