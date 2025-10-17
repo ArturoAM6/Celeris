@@ -96,6 +96,7 @@ if ($_SESSION['id_rol'] === 1) {
         $turnosEspera = $turnoController->listarTurnosEnEspera();
         $turnosAtencion = $turnoController->listarTurnosEnAtencion();
         $turnosCompletados = $turnoController->listarTurnosCompletados();
+        $empleadosPausa = $empleadoController-> empleadosConCajaPausada();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
@@ -145,6 +146,9 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadosPausados = $empleadoController->MostrarDatosDeEmpleados();
         exit;
     }
+
+
+
 } 
 // =============== Rutas internas - Operador ===============
 if ($_SESSION['id_rol'] === 2) {

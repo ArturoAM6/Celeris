@@ -30,6 +30,17 @@ class EmpleadoController {
 
     }
 
+    public function empleadosConCajaPausada(): array {
+        try {
+            $empleados = $this->empleadoRepository->buscarEmpleadosCajaAsignadaPausada();
+            return $empleados;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+
+
     public function listarEmpleadosAsignados(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosAsignados();
