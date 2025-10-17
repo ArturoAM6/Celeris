@@ -2,55 +2,67 @@
 
 class TurnoController {
     private TurnoRepository $turnoRepository;
-    // private CajaRepository $cajaRepository;
+    private CajaRepository $cajaRepository;
     private ClienteRepository $clienteRepository;
+    private ServicioTurnos $servicioTurnos;
 
     public function __construct() {
         $this->turnoRepository = new TurnoRepository();
-        // $this->cajaRepository = new CajaRepository();
+        $this->cajaRepository = new CajaRepository();
         $this->clienteRepository = new ClienteRepository();
+        $this->servicioTurnos = new ServicioTurnos;
     }
 
     // ============ VISTAS PÚBLICAS ============
-    
+    public function obtenerTurnoPorId(int $id): ?Turno {
+        try {
+            $turno = $this->turnoRepository->buscarPorId($id);
+            return $turno;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+
+    }
+
     public function generarTurno(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // $numeroCuenta = $_POST['numero_cuenta'] ?? '';
+                $turno = null;
+                $id_departamento = $_POST['id_departamento'];
+                $numeroCuenta = $_POST['numero_cuenta'] ?? '';
+                $cliente = null;
                 
-                // if (empty($numeroCuenta)) {
-                //     throw new Exception("Número de cuenta es obligatorio");
-                // }
-                
-                // $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
-                
-                // if (!$cliente) {
-                //     throw new Exception("Cliente no encontrado");
-                // }
+                if (!empty($numeroCuenta)) {
+                    $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
+                    
+                    if (!$cliente) {
+                        throw new Exception("Cliente no encontrado");
+                    }
+                }
+
+                // Asignar caja disponible
+                $caja = $this->cajaRepository->obtenerCajaDisponible($id_departamento);
                 
                 // Obtener siguiente número de turno
-                $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero();
+                $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero($id_departamento);
                 
-                // Asignar caja disponible
-                // $cajaId = $this->obtenerCajaDisponible();
-                
-                // if (!$cajaId) {
-                //     throw new Exception("No hay cajas disponibles");
-                // }
 
-                $cliente = null;
-                $caja = 1;
+                if (!$caja) {
+                    throw new Exception("No hay cajas disponibles");
+                }
                 
                 // Crear turno
                 $turno = new Turno(
                     $numeroTurno,
                     date('Y-m-d H:i:s'),
                     (!$cliente) ? null : $cliente->getId(),
-                    $caja
+                    $caja->getId()
                 );
                 
+                // Guardar turno
                 $this->turnoRepository->guardar($turno);
-                
+                $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
+
                 // Mostrar ticket
                 $turnoGenerado = $turno;
                 header('Location: ' . BASE_URL . '/turno/ticket?id=' . $turno->getId());
@@ -58,11 +70,50 @@ class TurnoController {
 
             } catch (Exception $e) {
                 $error = $e->getMessage();
+                $this->manejarError($e->getMessage());
                 require_once __DIR__ . '/../views/publicas/generar-turno.php';
             }
         } else {
             require_once __DIR__ . '/../views/publicas/generar-turno.php';
         }
+    }
+
+    public function obtenerTiempoEspera() {
+        try {
+            $turnos = $this->turnoRepository->obtenerTiempoEspera();
+            $promedio = $this->servicioTurnos->calcularPromedioEspera($turnos);
+            header('Content-Type: application/json');
+            echo json_encode(['promedio' => $promedio]);
+            exit;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function imprimirTurno(?Cliente $cliente, int $id_caja, Turno $turno): void {
+        $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+        switch ($caja->getDepartamento()) {
+            case 1:
+                $departamento = 'Cajas';
+                break;
+            case 2:
+                $departamento = 'Asociados';
+                break;
+            case 3:
+                $departamento = 'Caja Fuerte';
+                break;
+            case 4:
+                $departamento = 'Asesoramiento Financiero';
+                break;
+            default:
+                throw new Exception("No existe el departamento.");
+                break;
+        }
+        $this->servicioTurnos->generarTurnoPdf(
+            (!$cliente) ? "N/A" : $cliente->getNombreCompleto(),
+            $caja->getId(),
+            $departamento,
+            $turno->getNumero());
     }
 
     public function consultarTurno(): void {
@@ -107,8 +158,76 @@ class TurnoController {
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
-    } 
+    }
 
+    // ============ VISTAS INTERNAS ============
+    public function listarTurnos(): ?array {
+        try {
+            $turnos = $this->turnoRepository->todos();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosActivos(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosActivos();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosEnEspera(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosEnEspera();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosEnAtencion(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosEnAtencion();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarTurnosCompletados(): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnosCompletados();
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function obtenerDepartamentoTurno(int $id_caja): string {
+        try {
+            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+            $id_departamento = $caja->getDepartamento();
+            switch ($id_departamento) {
+                case 1:
+                    return 'Cajas';
+                case 2:
+                    return 'Asociados';
+                case 3:
+                    return 'Caja Fuerte';
+                case 4:
+                    return 'Ventanillas';
+                default:
+                    throw new Exception('Departamento no existente');
+            }
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    // ============ MANEJAR ERRORES ============
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';

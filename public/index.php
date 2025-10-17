@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../src/database/Database.class.php';
+require_once __DIR__ . '/../includes/fpdf186/fpdf.php';
 
 spl_autoload_register(function ($class) {
     $paths = [
@@ -47,9 +48,22 @@ if ($ruta === '/turno/consultar') {
     exit;
 }
 if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
-    $turnoRepository = new TurnoRepository;
-    $turno = $turnoRepository->buscarPorId($_GET['id']);
+    $controller = new TurnoController;
+    $turno = $controller->obtenerTurnoPorId($_GET['id']);
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
+    exit;
+}
+if ($ruta === '/turno/pdf' && isset($_GET['id'])) {
+    $controller = new TurnoController;
+    $turno = $controller->obtenerTurnoPorId($_GET['id']);
+    $cliente = $turno->getCliente();
+    $caja = $turno->getCaja();
+    $controller->imprimirTurno($cliente, $caja, $turno);
+    exit;
+}
+if ($ruta === '/turno/tiempo-espera') {
+    $controller = new TurnoController;
+    $tiempoEspera = $controller->obtenerTiempoEspera();
     exit;
 }
 
@@ -61,7 +75,8 @@ if ($ruta === '/login') {
 }
 
 if ($ruta === '/logout') {
-    ServicioAutenticacion::cerrarSesion();
+    $controller = new AuthController();
+    $controller->logout();
     header('Location: '. BASE_URL . '/');
     exit;
 }
@@ -85,10 +100,17 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadoController = new EmpleadoController();
         $empleados = $empleadoController->listarEmpleados();
         $empleadosAsignados = $empleadoController->listarEmpleadosAsignados();
+        $empleadosActivos = $empleadoController->listarEmpleadosActivos();
         $cajaController = new CajaController();
         $cajas = $cajaController->listarCajas();
         $HorarioController = new HorarioController();
         $horarios = $HorarioController->listarEmpleados();
+        $turnoController = new TurnoController();
+        $turnos = $turnoController->listarTurnos();
+        $turnosActivos = $turnoController->listarTurnosActivos();
+        $turnosEspera = $turnoController->listarTurnosEnEspera();
+        $turnosAtencion = $turnoController->listarTurnosEnAtencion();
+        $turnosCompletados = $turnoController->listarTurnosCompletados();
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
@@ -138,11 +160,19 @@ if ($_SESSION['id_rol'] === 1) {
         $cajaController->pausarCaja();
         exit;
     }
+
+    //Empleados pausados
+    if ($ruta === '/admin/empleados/pausados') {
+        $empleadoController = new EmpleadoController();
+        $empleadosPausados = $empleadoController->MostrarDatosDeEmpleados();
+        exit;
+    }
 } 
 // =============== Rutas internas - Operador ===============
 if ($_SESSION['id_rol'] === 2) {
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
+        $caja = $controller->ObtenerEmpleadoCaja();
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
 }

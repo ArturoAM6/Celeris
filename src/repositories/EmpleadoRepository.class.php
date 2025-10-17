@@ -3,6 +3,22 @@
 class EmpleadoRepository {
     private PDO $conexion;
 
+    //Funcion de Cesar :)
+    public function buscarEmpleadosConCajaPausada(): array{
+        $stmt = $this->conexion->prepare("
+        SELECT e.* FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+        JOIN cajas c ON ac.id_caja = c.id
+        WHERE c.id_estado = 3 AND e.activo = 1");
+
+        $stmt->execute();
+        $empleados =[];
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
+
     public function __construct() {
         $this->conexion = Database::getInstancia()->getConexion();
     }
@@ -107,6 +123,34 @@ class EmpleadoRepository {
     public function buscarEmpleadosAsignadosPorDepartamento(int $id_departamento): array {
         $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE id NOT IN (SELECT id_empleado FROM asignacion_cajas) AND id_rol = 2 AND activo = 1 AND id_departamento = :id_departamento");
         $stmt->execute([':id_departamento' => $id_departamento]);
+        $empleados = [];
+
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
+
+    public function iniciarSesionEmpleado(int $id): bool {
+        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 1 WHERE id = :id");
+        if ($stmt->execute([':id' => $id])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function desconectarEmpleado(int $id): bool {
+        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 0 WHERE id = :id");
+        if ($stmt->execute([':id' => $id])) {
+            return true;
+        }
+        return false;
+    }
+    //Se cambio la consulta SELECT * FROM empleados WHERE status = 1
+    public function buscarEmpleadosActivos(): ?array {
+        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
+        $stmt->execute();
         $empleados = [];
 
         while ($data = $stmt->fetch()) {

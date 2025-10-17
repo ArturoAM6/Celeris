@@ -2,9 +2,12 @@
 
 class EmpleadoController {
     private EmpleadoRepository $empleadoRepository;
+    private CajaRepository $cajaRepository;
+
 
     public function __construct() {
         $this->empleadoRepository = new EmpleadoRepository();
+        $this->cajaRepository = new CajaRepository();
     }
 
     public function listarEmpleados(): ?array {
@@ -16,9 +19,47 @@ class EmpleadoController {
         }
     }
 
-    public function listarEmpleadosAsignados(): array {
+    //Funcion de Cesar :) 
+    public function MostrarDatosDeEmpleados(): ?array {
+        try {
+            $empleados = $this->listarEmpleados();
+            require_once __DIR__ . '/../views/admin/dashboard.php';
+            return $empleados;
+        } 
+
+        catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+
+    }
+
+    // ----IniOperador----
+
+    public function ObtenerEmpleadoCaja(): ?Caja{
+        try {
+            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+            return $caja;
+
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+        
+  
+    // ----FinOperador----
+    public function listarEmpleadosAsignados(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosAsignados();
+            return $empleados;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function listarEmpleadosActivos(): ?array {
+        try {
+            $empleados = $this->empleadoRepository->buscarEmpleadosActivos();
             return $empleados;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());

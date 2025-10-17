@@ -13,7 +13,89 @@ class TurnoRepository {
             FROM turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno 
             AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
-            ORDER BY tl.timestamp_actualizacion DESC"
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion"
+        );
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+    }
+
+    public function obtenerTurnosActivos(): array {
+        $stmt = $this->conexion->prepare(
+            "SELECT t.*, tl.id_estado 
+            FROM turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno 
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
+            AND tl.id_estado NOT IN (4,5)
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
+        );
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+    }
+
+    public function obtenerTurnosEnEspera(): array {
+        $stmt = $this->conexion->prepare(
+            "SELECT t.*, tl.id_estado 
+            FROM turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno 
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
+            AND tl.id_estado = 2
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
+        );
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+    }
+
+    // ---IniOperador---
+
+    
+
+    // ----FinOperador---
+    public function obtenerTurnosEnAtencion(): array {
+        $stmt = $this->conexion->prepare(
+            "SELECT t.*, tl.id_estado 
+            FROM turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno 
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
+            AND tl.id_estado = 3
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
+        );
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+    }
+
+    public function obtenerTurnosCompletados(): array {
+        $stmt = $this->conexion->prepare(
+            "SELECT t.*, tl.id_estado 
+            FROM turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno 
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
+            AND tl.id_estado = 5
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
         );
         $stmt->execute();
         $turnos = [];
@@ -111,6 +193,18 @@ class TurnoRepository {
         $turno->setId($this->conexion->lastInsertId());
     }
 
+    public function guardarEnLog(int $id_turno, int $id_estado, string $timestamp_actualizacion): void {
+        $stmt = $this->conexion->prepare(
+            "INSERT INTO turnos_log (timestamp_actualizacion, id_turno, id_estado) 
+            VALUES (:timestamp_actualizacion, :id_turno, :id_estado)"
+        );
+        $stmt->execute([
+            ':timestamp_actualizacion' => $timestamp_actualizacion,
+            ':id_turno' => $id_turno,
+            ':id_estado' => $id_estado
+        ]);
+    }
+
     public function actualizar(Turno $turno): bool {
         $stmt = $this->conexion->prepare(
             "UPDATE turnos SET 
@@ -152,41 +246,22 @@ class TurnoRepository {
         return $resultado ? $resultado['id_estado'] : null;
     }
 
-    public function obtenerDepartamento(int $id): int {
-        $stmt = $this->conexion->prepare(
-            "SELECT id
-            FROM departamentos
-            WHERE id = (select id_departamento from cajas where id = :id)"
-            );
+    public function buscarDepartamentoTurno(int $id): int {
+        $stmt = $this->conexion->prepare("SELECT id from departamentos WHERE id = (SELECT id_departamento FROM cajas WHERE id = :id)");
         $stmt->execute([':id' => $id]);
         $resultado = $stmt->fetch();
 
-        switch ($resultado) {
-            case 1:
-                return 'Ventanillas';
-                break;
-            case 2:
-                return 'Asociados';
-                break;
-            case 3:
-                return 'Caja Fuerte';
-                break;
-            case 4:
-                return 'Asesoramiento Financiero';
-                break;
-            default:
-                throw new Exception("No hay departamentos con ese ID");
-                break;
-        }
+        return $resultado['id'];
     }
 
-    public function obtenerSiguienteNumero(): int {
-        $stmt = $this->conexion->prepare(
-            "SELECT MAX(numero) as max_numero 
-            FROM turnos 
-            WHERE DATE(timestamp_solicitud) = CURDATE()"
-            );
-        $stmt->execute();
+    public function obtenerSiguienteNumero(int $id_departamento): int {
+        $stmt = $this->conexion->prepare("SELECT MAX(t.numero) as max_numero
+            FROM turnos t, cajas c
+            WHERE t.id_caja = c.id
+            AND DATE(t.timestamp_solicitud) = CURDATE()
+            AND c.id_departamento = :id_departamento"
+        );
+        $stmt->execute([':id_departamento' => $id_departamento]);
         $resultado = $stmt->fetch();
         
         return $resultado && $resultado['max_numero'] ? $resultado['max_numero'] + 1 : 1;
@@ -214,6 +289,19 @@ class TurnoRepository {
         }
 
         return $this->crearTurnoDesdeArray($data);
+    }
+
+    public function obtenerTiempoEspera(): array {
+        $stmt = $this->conexion->prepare("SELECT 
+            timestamp_solicitud,
+            timestamp_inicio_atencion
+            FROM turnos");
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $data;
+        }
+        return $turnos;
     }
 
     private function registrarEstado(int $id_turno, int $id_estado): void {
