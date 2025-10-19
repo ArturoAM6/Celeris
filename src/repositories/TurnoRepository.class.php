@@ -63,6 +63,11 @@ class TurnoRepository {
         return $turnos;
     }
 
+    // ---IniOperador---
+
+    
+
+    // ----FinOperador---
     public function obtenerTurnosEnAtencion(): array {
         $stmt = $this->conexion->prepare(
             "SELECT t.*, tl.id_estado 
@@ -284,6 +289,19 @@ class TurnoRepository {
         }
 
         return $this->crearTurnoDesdeArray($data);
+    }
+
+    public function obtenerTiempoEspera(): array {
+        $stmt = $this->conexion->prepare("SELECT 
+            timestamp_solicitud,
+            timestamp_inicio_atencion
+            FROM turnos");
+        $stmt->execute();
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $data;
+        }
+        return $turnos;
     }
 
     private function registrarEstado(int $id_turno, int $id_estado): void {

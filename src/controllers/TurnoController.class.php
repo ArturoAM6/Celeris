@@ -62,9 +62,6 @@ class TurnoController {
                 // Guardar turno
                 $this->turnoRepository->guardar($turno);
                 $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
-                
-                // Imprimir ticket
-                $this->imprimirTurno($cliente, $caja, $turno, $id_departamento);
 
                 // Mostrar ticket
                 $turnoGenerado = $turno;
@@ -81,7 +78,20 @@ class TurnoController {
         }
     }
 
-    private function imprimirTurno(?Cliente $cliente, Caja $caja, Turno $turno, int $departamento): void {
+    public function obtenerTiempoEspera() {
+        try {
+            $turnos = $this->turnoRepository->obtenerTiempoEspera();
+            $promedio = $this->servicioTurnos->calcularPromedioEspera($turnos);
+            header('Content-Type: application/json');
+            echo json_encode(['promedio' => $promedio]);
+            exit;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function imprimirTurno(?Cliente $cliente, int $id_caja, Turno $turno): void {
+        $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
         switch ($caja->getDepartamento()) {
             case 1:
                 $departamento = 'Cajas';

@@ -24,6 +24,11 @@
             </div>
             <div class="hero-box-content">
                 <h3><?php echo $turno->getNumero() ?></h3>
+                <div id="tiempo-espera">
+                    Cargando...
+                </div>
+                <!-- DIV PARA DISPARAR IMPRESION AUTOMATICA -->
+                <div id="imprimir-turno" data-turno-id="<?= $turno->getId() ?>" ></div>
             </div>
         </div>
     </section>
@@ -32,6 +37,9 @@
     <footer class="footer">
         © 2025 Banco Celeris. Todos los derechos reservados.
     </footer>
+
+    <script>const BASE_URL = '<?= BASE_URL ?>';</script>
+    <script src="<?= BASE_URL ?>/js/turnos.js"></script>
 </body>
 
 </html>

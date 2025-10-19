@@ -2,9 +2,12 @@
 
 class EmpleadoController {
     private EmpleadoRepository $empleadoRepository;
+    private CajaRepository $cajaRepository;
+
 
     public function __construct() {
         $this->empleadoRepository = new EmpleadoRepository();
+        $this->cajaRepository = new CajaRepository();
     }
 
     public function listarEmpleados(): ?array {
@@ -41,6 +44,9 @@ class EmpleadoController {
 
 
 
+        
+  
+    // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosAsignados();
