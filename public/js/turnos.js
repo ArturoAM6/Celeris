@@ -12,31 +12,72 @@ function imprimirTurno(turnoId) {
   };
 }
 
-function actualizarTiempoEspera() {
-  fetch("tiempo-espera")
+let tiempoRestanteSegundos = 0;
+let turnosPendientes = 0;
+let intervaloCuentaRegresiva = null;
+let ultimaActualizacionServidor = 0;
+
+function formatearTiempo(segundos) {
+  if (segundos <= 0) return "0:00";
+  const mins = Math.floor(segundos / 60);
+  const secs = segundos % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function actualizarDisplay() {
+  const tiempoDiv = document.getElementById("tiempo-espera");
+
+  if (tiempoRestanteSegundos > 0) {
+    tiempoRestanteSegundos--;
+  }
+
+  tiempoDiv.innerHTML = `
+    <p>Turnos adelante: ${turnosPendientes}</p>
+    <p>Tiempo estimado: ${formatearTiempo(tiempoRestanteSegundos)}</p>
+  `;
+}
+
+function actualizarTiempo(turnoId) {
+  fetch(BASE_URL + `/turno/tiempo-espera?id=${turnoId}`)
     .then((res) => res.json())
     .then((data) => {
-      const contenedor = document.getElementById("tiempo-espera");
-      if (!contenedor) return; // si alguien borró el div, no explotes
+      const tiempoDiv = document.getElementById("tiempo-espera");
 
-      if (data.promedio) {
-        contenedor.textContent = data.promedio;
-      } else {
-        contenedor.textContent = "No disponible";
+      if (data.error) {
+        tiempoDiv.innerHTML = "<p>No disponible</p>";
+        return;
       }
+
+      const ahora = Math.floor(Date.now() / 1000);
+      const segundosTranscurridos = ahora - ultimaActualizacionServidor;
+
+      if (ultimaActualizacionServidor === 0 || Math.abs(data.tiempo_estimado_segundos - (tiempoRestanteSegundos + segundosTranscurridos)) > 10) {
+        tiempoRestanteSegundos = data.tiempo_estimado_segundos;
+      }
+
+      turnosPendientes = data.pendientes;
+      ultimaActualizacionServidor = ahora;
+
+      actualizarDisplay();
     })
-    .catch((err) => {
-      console.error("Error obteniendo tiempo:", err);
+    .catch(() => {
+      const tiempoDiv = document.getElementById("tiempo-espera");
+      tiempoDiv.innerHTML = "<p>Error al cargar</p>";
     });
 }
 
 // Ejecutar cuando la página termine de cargar
 document.addEventListener("DOMContentLoaded", () => {
-  actualizarTiempoEspera(); // primera carga
-  setInterval(actualizarTiempoEspera, 30000); // cada 10 segundos
-
   const imprimirDiv = document.getElementById("imprimir-turno");
+
   if (imprimirDiv && imprimirDiv.dataset.turnoId) {
-    imprimirTurno(imprimirDiv.dataset.turnoId);
+    const turnoId = imprimirDiv.dataset.turnoId;
+
+    actualizarTiempo(turnoId);
+    setInterval(() => actualizarTiempo(turnoId), 30000);
+
+    intervaloCuentaRegresiva = setInterval(actualizarDisplay, 1000);
+
+    imprimirTurno(turnoId);
   }
 });
