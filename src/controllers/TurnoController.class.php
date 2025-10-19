@@ -26,67 +26,100 @@ class TurnoController {
 
     public function generarTurno(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                $turno = null;
-                $id_departamento = $_POST['id_departamento'];
-                $numeroCuenta = $_POST['numero_cuenta'] ?? '';
-                $cliente = null;
+
+            if (isset($_POST['numero_cuenta']) && !isset($_POST['id_departamento'])) {
+                $numeroCuenta = $_POST['numero_cuenta'];
                 
-                if (!empty($numeroCuenta)) {
+                try {
                     $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
-                    
                     if (!$cliente) {
                         throw new Exception("Cliente no encontrado");
                     }
+                        
+                    require_once __DIR__ . '/../views/publicas/generar-turno.php';
+                    return;
+                } catch (Exception $e) {
+                    $error = $e->getMessage();
+                    $this->manejarError($e->getMessage());
+                    header('Location: ' . BASE_URL . '/');
+                    exit;
                 }
-
-                // Asignar caja disponible
-                $caja = $this->cajaRepository->obtenerCajaDisponible($id_departamento);
-                
-                // Obtener siguiente número de turno
-                $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero($id_departamento);
-                
-
-                if (!$caja) {
-                    throw new Exception("No hay cajas disponibles");
-                }
-                
-                // Crear turno
-                $turno = new Turno(
-                    $numeroTurno,
-                    date('Y-m-d H:i:s'),
-                    (!$cliente) ? null : $cliente->getId(),
-                    $caja->getId()
-                );
-                
-                // Guardar turno
-                $this->turnoRepository->guardar($turno);
-                $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
-
-                // Mostrar ticket
-                $turnoGenerado = $turno;
-                header('Location: ' . BASE_URL . '/turno/ticket?id=' . $turno->getId());
-                exit;
-
-            } catch (Exception $e) {
-                $error = $e->getMessage();
-                $this->manejarError($e->getMessage());
-                require_once __DIR__ . '/../views/publicas/generar-turno.php';
             }
+                
+            if (isset($_POST['id_departamento'])) {
+                try {
+                    $turno = null;
+                    $id_departamento = $_POST['id_departamento'];
+                    $numeroCuenta = $_POST['numero_cuenta'] ?? '';
+                    $cliente = null;
+                        
+                    if (!empty($numeroCuenta)) {
+                        $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
+                        
+                        if (!$cliente) {
+                            throw new Exception("Cliente no encontrado");
+                        }
+                    }
+                        
+                    // Asignar caja disponible
+                    $caja = $this->cajaRepository->obtenerCajaDisponible($id_departamento);
+                    // Obtener siguiente número de turno
+                    $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero($id_departamento);
+                    
+                    if (!$caja) {
+                        throw new Exception("No hay cajas disponibles");
+                    }
+                    
+                    // Crear turno
+                    $turno = new Turno(
+                        $numeroTurno,
+                        date('Y-m-d H:i:s'),
+                        (!$cliente) ? null : $cliente->getId(),
+                        $caja->getId()
+                    );
+                    
+                    // Guardar turno
+                    $this->turnoRepository->guardar($turno);
+                    $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
+                    
+                    // Mostrar ticket
+                    $turnoGenerado = $turno;
+                    header('Location: ' . BASE_URL . '/turno/ticket?id=' . $turno->getId());
+                    exit;
+                } catch (Exception $e) {
+                    $error = $e->getMessage();
+                    $this->manejarError($e->getMessage());
+                    require_once __DIR__ . '/../views/publicas/generar-turno.php';
+                }
+            }   
+            
         } else {
             require_once __DIR__ . '/../views/publicas/generar-turno.php';
         }
     }
 
-    public function obtenerTiempoEspera() {
+    public function obtenerTiempoEspera(): void {
+        header('Content-Type: application/json');
+        
+        if (!isset($_GET['id'])) {
+            throw new Exception("ID requerido");
+        }
+        
         try {
-            $turnos = $this->turnoRepository->obtenerTiempoEspera();
-            $promedio = $this->servicioTurnos->calcularPromedioEspera($turnos);
-            header('Content-Type: application/json');
-            echo json_encode(['promedio' => $promedio]);
+            $idTurno = (int)$_GET['id'];
+            $resultado = $this->turnoRepository->obtenerTiempoEspera($idTurno);
+            
+            if (isset($resultado['error'])) {
+                throw new Exception("Tiempo de espera no disponible");
+            }
+
+            $resultado['timestamp_servidor'] = time();
+            
+            echo json_encode($resultado);
             exit;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
+            exit;
         }
     }
 
@@ -111,7 +144,7 @@ class TurnoController {
         }
         $this->servicioTurnos->generarTurnoPdf(
             (!$cliente) ? "N/A" : $cliente->getNombreCompleto(),
-            $caja->getId(),
+            $caja->getNumero(),
             $departamento,
             $turno->getNumero());
     }

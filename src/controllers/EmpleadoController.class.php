@@ -41,10 +41,6 @@ class EmpleadoController {
             $this->manejarError($e->getMessage());
         }
     }
-
-
-
-        
   
     // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {

@@ -54,16 +54,21 @@ if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
     exit;
 }
 if ($ruta === '/turno/pdf' && isset($_GET['id'])) {
-    $controller = new TurnoController;
-    $turno = $controller->obtenerTurnoPorId($_GET['id']);
-    $cliente = $turno->getCliente();
+    $controllerTurno = new TurnoController();
+    $controllerCliente = new ClienteController();
+    $turno = $controllerTurno->obtenerTurnoPorId($_GET['id']);
+    if ($turno->getCliente() !== null) {
+        $cliente = $controllerCliente->obtenerClientePorId($turno->getCliente());
+    } else {
+        $cliente = null;
+    }
     $caja = $turno->getCaja();
-    $controller->imprimirTurno($cliente, $caja, $turno);
+    $controllerTurno->imprimirTurno($cliente, $caja, $turno);
     exit;
 }
-if ($ruta === '/turno/tiempo-espera') {
+if ($ruta === '/turno/tiempo-espera' && isset($_GET['id'])) {
     $controller = new TurnoController;
-    $tiempoEspera = $controller->obtenerTiempoEspera();
+    $controller->obtenerTiempoEspera($_GET['id']);
     exit;
 }
 
