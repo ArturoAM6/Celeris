@@ -33,18 +33,17 @@ class EmpleadoController {
 
     }
 
-    // ----IniOperador----
-
-    public function ObtenerEmpleadoCaja(): ?Caja{
+    public function empleadosConCajaPausada(): array {
         try {
-            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
-            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
-            return $caja;
-
+            $empleados = $this->empleadoRepository->buscarEmpleadosCajaAsignadaPausada();
+            return $empleados;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
     }
+
+
+
         
   
     // ----FinOperador----
