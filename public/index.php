@@ -49,7 +49,9 @@ if ($ruta === '/turno/consultar') {
 }
 if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
     $controller = new TurnoController;
+    $controllerCaja = new CajaController;
     $turno = $controller->obtenerTurnoPorId($_GET['id']);
+    $caja = $controllerCaja -> obtenerCajaPorId($turno->getCaja());
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
     exit;
 }
