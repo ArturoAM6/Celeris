@@ -203,7 +203,7 @@ if ($_SESSION['id_rol'] === 2) {
     // Numero de turno actual
     if ($ruta == '/operador/turno/actual') {
         $controller = new EmpleadoController();
-        $turno = $controller->
+        // $turno = $controller->
         
     }
 }
