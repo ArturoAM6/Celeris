@@ -8,7 +8,7 @@
 </head>
 <body>
     <header class="navbar">
-    <a href="landing-page.html" class="nav-logo" style="text-decoration: none;">
+    <a href="<?= BASE_URL ?>/" class="nav-logo" style="text-decoration: none;">
       <img src="<?= BASE_URL ?>/img/flash-on.png" class="rayo "alt="Logo">
       <h2 class="navbar-title">CELERIS</h2>
     </a>
