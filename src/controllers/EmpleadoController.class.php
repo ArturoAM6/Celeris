@@ -37,12 +37,23 @@ class EmpleadoController {
 
     }
 
-    // ----IniOperador----
-
-    public function ObtenerObjeto_IdCaja(): ?Caja{
+    public function empleadosConCajaPausada(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosCajaAsignadaPausada();
             return $empleados;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    // ----IniOperador----
+
+    public function ObtenerEmpleadoCaja(): ?Caja{
+        try {
+            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+            return $caja;
+
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
@@ -64,7 +75,7 @@ class EmpleadoController {
     }
 
     public function ObtenerObjetoTurno(): ?Turnos {
-
+        
     }
 
     // ----FinOperador----
