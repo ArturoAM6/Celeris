@@ -123,6 +123,12 @@ class TurnoController {
         }
     }
 
+    //--IniOperador--
+
+    
+
+    //FinOperador--
+
     public function imprimirTurno(?Cliente $cliente, int $id_caja, Turno $turno): void {
         $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
         switch ($caja->getDepartamento()) {
