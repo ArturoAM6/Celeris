@@ -37,6 +37,10 @@ class EmpleadoController {
 
     }
 
+    // ----IniOperador----
+
+    
+
     public function empleadosConCajaPausada(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosCajaAsignadaPausada();
