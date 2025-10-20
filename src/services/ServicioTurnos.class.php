@@ -42,46 +42,5 @@ class ServicioTurnos {
 		
 		$pdf->Output('I', 'ticket.pdf');
     }
-
-    public function calcularPromedioEspera(array $turnos, bool $returnSeconds = false) {
-        $totalSegundos = 0;
-        $contador = 0;
-        
-        foreach ($turnos as $t) {
-
-            if (!is_array($t)) continue;
-
-            $inicio = $t['timestamp_solicitud'];
-            $fin = $t['timestamp_inicio_atencion'];
-
-            if (!$inicio || !$fin) continue;
-
-            try {
-                $dtInicio = new DateTime($inicio);
-                $dtFin = new DateTime($fin);
-            } catch (Exception $e) {
-                continue;
-            }
-
-            $segundos = $dtFin->getTimestamp() - $dtInicio->getTimestamp();
-            if ($segundos < 0) continue;
-
-            $totalSegundos += $segundos;
-            $contador++;
-        }
-
-        if ($contador === 0) return null;
-
-        $promedio = (int) round($totalSegundos / $contador);
-
-        if ($returnSeconds) {
-            return (string) $promedio;
-        }
-
-        $h = floor($promedio / 3600);
-        $m = floor(($promedio % 3600) / 60);
-        $s = $promedio % 60;
-
-        return sprintf('%d horas, %d minutos', $h, $m);
-    }
+   
 }

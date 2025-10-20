@@ -137,18 +137,132 @@ VALUES ("Llamado"), ("En Espera"), ("En Atencion"), ("Cancelado"), ("Finalizado"
 INSERT INTO estado_caja (nombre)
 VALUES ("Abierta"), ("Cerrada"), ("Pausada"), ("Fuera de Servico");
 
+-- CAJAS, TODAS LAS CAJAS ESTAN ABIERTAS
+-- CAJAS DE VENTANILLAS
 INSERT INTO cajas (numero, id_departamento, id_estado)
-VALUES (1, 1, 1), (2, 1, 1), (1, 2, 1);
+VALUES (1, 1, 1), (2, 1, 1), (3, 1, 1), (4, 1, 1), (5, 1, 1);
 
+-- CAJAS DE ASOCIADOS
 INSERT INTO cajas (numero, id_departamento, id_estado)
-VALUES (1, 3, 1), (1, 4, 1);
+VALUES (1, 1, 1), (2, 2, 1), (3, 2, 1);
 
+-- CAJAS DE CAJA FUERTE
+INSERT INTO cajas (numero, id_departamento, id_estado)
+VALUES (1, 3, 1), (2, 3, 1);
 
+-- CAJAS DE ASESORAMIENTO FINANCIERO
+INSERT INTO cajas (numero, id_departamento, id_estado)
+VALUES (1, 4, 1), (2, 4, 1);
+
+-- EMPLEADOS
+-- ADMINISTRADORES
 INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
 VALUES ("Arturo", "Avila", "Martinez", "arturoam@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1),
-("Jose Angel", "Santoyo", "Moreno", "josesan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 1, 1),
-("Diego Isaac", "Puentes", "Villa", "diegop@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 2, 1),
-("Cesar Eduardo", "Martinez", "Ramos", "cesarmar@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1),
 ("Hector", "Sanchez", "Tamayo", "hectorsan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1);
 
-INSERT INTO asignacion_cajas (id_caja, id_empleado) values (1,2), (2,3), (3,4), (4, 2), (5, 3);
+-- OPERADORES
+-- OPERADORES VENTANILLAS
+INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
+VALUES ("Jose Angel", "Santoyo", "Moreno", "josesan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 1, 1),
+("Mariana Sofia", "Hernandez", "Ruiz", "marianaher@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 1, 1),
+("Jose", "Perez", "Gonzalez", "josepe@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 2, 1),
+("Luis", "Esquivel", "Rojas", "luisesqui@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 2, 1),
+("Juan", "Dominguez", "Lara", "juandom@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 2, 2, 1);
+-- ASIGNACIONES OPERADORES VENTANILLAS
+INSERT INTO asignacion_cajas (id_caja, id_empleado) values (1,3), (2,4), (3,5), (4, 6), (5, 7);
+
+-- OPERADORES ASOCIADOS
+INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
+VALUES ("Diego Isaac", "Puentes", "Villa", "diegop@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1),
+("Ricardo", "Salazar", "Pineda", "ricardosal@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1),
+("Daniel", "Navarro", "Quiroz", "danielnav@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 2, 2, 2, 1);
+-- ASIGNACIONES OPERADORES ASOCIADOS
+INSERT INTO asignacion_cajas (id_caja, id_empleado) values (6,8), (7,9), (8, 10);
+
+-- OPERADORES CAJA FUERTE
+INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
+VALUES ("Cesar Eduardo", "Martinez", "Ramos", "cesarmar@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 3, 2, 2, 1),
+("Valeria", "Torres", "Delgado", "valeriator@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 3, 2, 2, 1);
+-- ASIGNACIONES OPERADORES CAJA FUERTE
+INSERT INTO asignacion_cajas (id_caja, id_empleado) values (9,11), (10,12);
+
+-- OPERADORES ASESORAMIENTO FINANCERO
+INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
+VALUES ("Jorge Alberto", "Mendez", "Castañeda", "jorgemen@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 4, 2, 2, 1),
+("Adrian", "Salcedo", "Villalobos", "adriansal@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 4, 2, 2, 1);
+-- ASIGNACIONES OPERADORES ASESORAMIENTO FINANCIERO
+INSERT INTO asignacion_cajas (id_caja, id_empleado) values (11,13), (12,14);
+
+-- CLIENTES
+INSERT INTO clientes (nombre, apellido_paterno, apellido_materno, email, telefono, numero_cuenta, activo) VALUES
+('Carlos', 'Ramírez', 'López', 'carlos.ramirez@email.com', '8711234567', '012345678901234567890123', 1),
+('María', 'González', 'Hernández', 'maria.gonzalez@email.com', '8712345678', '123456789012345678901234', 1),
+('José', 'Martínez', 'García', 'jose.martinez@email.com', '8713456789', '234567890123456789012345', 1),
+('Ana', 'Torres', 'Sánchez', 'ana.torres@email.com', '8714567890', '345678901234567890123456', 1),
+('Luis', 'Flores', 'Morales', 'luis.flores@email.com', '8715678901', '456789012345678901234567', 0),
+('Patricia', 'Rodríguez', 'Ruiz', 'patricia.rodriguez@email.com', '8716789012', '567890123456789012345678', 1),
+('Miguel', 'Pérez', 'Jiménez', 'miguel.perez@email.com', '8717890123', '678901234567890123456789', 1),
+('Laura', 'Gómez', NULL, 'laura.gomez@email.com', '8718901234', '789012345678901234567890', 1),
+('Roberto', 'Díaz', 'Castro', 'roberto.diaz@email.com', '8719012345', '890123456789012345678901', 0),
+('Sofía', 'Vargas', 'Ortega', 'sofia.vargas@email.com', '8710123456', '901234567890123456789012', 1);
+
+-- Turnos con diferentes estados
+INSERT INTO turnos (numero, timestamp_solicitud, timestamp_llamado, timestamp_inicio_atencion, timestamp_fin_atencion, id_caja, id_cliente) VALUES
+(1, '2025-10-18 08:15:00', '2025-10-18 08:16:00', '2025-10-18 08:17:00', '2025-10-18 08:25:00', 1, 1),
+(2, '2025-10-18 08:20:00', '2025-10-18 08:26:00', '2025-10-18 08:27:00', '2025-10-18 08:35:00', 2, 2),
+(3, '2025-10-18 08:25:00', '2025-10-18 08:36:00', '2025-10-18 08:37:00', NULL, 3, 3),
+(4, '2025-10-18 08:30:00', '2025-10-18 08:38:00', NULL, NULL, 1, 4),
+(5, '2025-10-18 08:35:00', NULL, NULL, NULL, 2, 5),
+(6, '2025-10-18 09:00:00', '2025-10-18 09:02:00', '2025-10-18 09:03:00', '2025-10-18 09:15:00', 6, 6),
+(7, '2025-10-18 09:10:00', NULL, NULL, NULL, 7, NULL),
+(8, '2025-10-18 09:15:00', '2025-10-18 09:16:00', NULL, NULL, 9, 7),
+(9, '2025-10-18 09:20:00', NULL, NULL, NULL, 10, 8),
+(10, '2025-10-18 09:25:00', '2025-10-18 09:27:00', '2025-10-18 09:28:00', '2025-10-18 09:40:00', 11, 9);
+
+-- Log de estados para cada turno
+INSERT INTO turnos_log (id_turno, id_estado, timestamp_actualizacion) VALUES
+-- Turno 1: Finalizado
+(1, 2, '2025-10-18 08:15:00'),
+(1, 1, '2025-10-18 08:16:00'),
+(1, 3, '2025-10-18 08:17:00'),
+(1, 5, '2025-10-18 08:25:00'),
+
+-- Turno 2: Finalizado
+(2, 2, '2025-10-18 08:20:00'),
+(2, 1, '2025-10-18 08:26:00'),
+(2, 3, '2025-10-18 08:27:00'),
+(2, 5, '2025-10-18 08:35:00'),
+
+-- Turno 3: En Atención
+(3, 2, '2025-10-18 08:25:00'),
+(3, 1, '2025-10-18 08:36:00'),
+(3, 3, '2025-10-18 08:37:00'),
+
+-- Turno 4: Llamado
+(4, 2, '2025-10-18 08:30:00'),
+(4, 1, '2025-10-18 08:38:00'),
+
+-- Turno 5: En Espera
+(5, 2, '2025-10-18 08:35:00'),
+
+-- Turno 6: Finalizado
+(6, 2, '2025-10-18 09:00:00'),
+(6, 1, '2025-10-18 09:02:00'),
+(6, 3, '2025-10-18 09:03:00'),
+(6, 5, '2025-10-18 09:15:00'),
+
+-- Turno 7: En Espera (sin cliente asociado)
+(7, 2, '2025-10-18 09:10:00'),
+
+-- Turno 8: Llamado
+(8, 2, '2025-10-18 09:15:00'),
+(8, 1, '2025-10-18 09:16:00'),
+
+-- Turno 9: En Espera
+(9, 2, '2025-10-18 09:20:00'),
+
+-- Turno 10: Finalizado
+(10, 2, '2025-10-18 09:25:00'),
+(10, 1, '2025-10-18 09:27:00'),
+(10, 3, '2025-10-18 09:28:00'),
+(10, 5, '2025-10-18 09:40:00');

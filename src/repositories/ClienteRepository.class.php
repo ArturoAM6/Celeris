@@ -28,4 +28,26 @@ class ClienteRepository {
 
         return $cliente;
     }
+
+    public function buscarPorId(int $id): ?Cliente { 
+        $stmt = $this->conexion->prepare("SELECT * FROM clientes WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $data = $stmt->fetch();
+
+        if (!$data) {
+            return null;
+        }
+
+        $cliente = new Cliente(
+            $data['nombre'], 
+            $data['apellido_paterno'], 
+            $data['apellido_materno'], 
+            $data['email'], 
+            $data['numero_cuenta'], 
+            $data['telefono']
+        );
+        $cliente->setId($data['id']);
+
+        return $cliente;
+    }
 }

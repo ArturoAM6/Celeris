@@ -325,18 +325,50 @@ class TurnoRepository {
         return $this->crearTurnoDesdeArray($data);
     }
 
-    public function obtenerTiempoEspera(): array {
-        $stmt = $this->conexion->prepare("SELECT 
-            timestamp_solicitud,
-            timestamp_inicio_atencion
-            FROM turnos");
-        $stmt->execute();
-        $turnos = [];
-        while ($data = $stmt->fetch()) {
-            $turnos[] = $data;
-        }
-        return $turnos;
+    public function obtenerTiempoEspera(int $idTurno): array {
+    // Obtener turno
+    $stmtTurno = $this->conexion->prepare("SELECT id_caja, timestamp_solicitud FROM turnos WHERE id = :id");
+    $stmtTurno->execute([":id" => $idTurno]);
+    $turno = $stmtTurno->fetch();
+    
+    if (!$turno) {
+        return ['error' => 'Turno no encontrado'];
     }
+    
+    // Contar turnos pendientes adelante
+    $stmtPendientes = $this->conexion->prepare("SELECT COUNT(*) as pendientes FROM turnos 
+        WHERE id_caja = :id_caja 
+        AND id < :id 
+        AND timestamp_fin_atencion IS NULL"
+    );
+
+    $stmtPendientes->execute([
+        ":id_caja" => $turno['id_caja'], 
+        ":id" => $idTurno]
+    );
+
+    $pendientes = $stmtPendientes->fetch(PDO::FETCH_ASSOC)['pendientes'];
+    
+    // Calcular tiempo promedio últimos 10 turnos
+    $stmtPromedio = $this->conexion->prepare("SELECT AVG(TIMESTAMPDIFF(SECOND, timestamp_inicio_atencion, timestamp_fin_atencion)) as promedio
+        FROM turnos
+        WHERE id_caja = :id_caja
+        AND timestamp_solicitud IS NOT NULL
+        AND timestamp_inicio_atencion IS NOT NULL
+        ORDER BY id DESC
+        LIMIT 10
+    ");
+    $stmtPromedio->execute([":id_caja" => $turno['id_caja']]);
+    $promedioSegundos = $stmtPromedio->fetch(PDO::FETCH_ASSOC)['promedio'] ?? 300;
+    
+    $tiempoEstimado = $pendientes * $promedioSegundos;
+    
+    return [
+        'pendientes' => (int)$pendientes,
+        'tiempo_estimado_segundos' => (int)$tiempoEstimado,
+        'tiempo_estimado_minutos' => round($tiempoEstimado / 60)
+    ];
+}
 
     private function registrarEstado(int $id_turno, int $id_estado): void {
         $stmt = $this->conexion->prepare(
