@@ -3,11 +3,15 @@
 class EmpleadoController {
     private EmpleadoRepository $empleadoRepository;
     private CajaRepository $cajaRepository;
+    private TurnoRepository $turnoRepository;
+    private ClienteRepository $clienteRepository;
 
 
     public function __construct() {
         $this->empleadoRepository = new EmpleadoRepository();
         $this->cajaRepository = new CajaRepository();
+        $this->turnoRepository = new TurnoRepository();
+        $this->clienteRepository = new ClienteRepository();
     }
 
     public function listarEmpleados(): ?array {
@@ -33,7 +37,11 @@ class EmpleadoController {
 
     }
 
-    public function empleadosConCajaPausada(): array {
+    // ----IniOperador----
+
+    
+
+    public function empleadosConCajaPausada(): ?array {
         try {
             $empleados = $this->empleadoRepository->buscarEmpleadosCajaAsignadaPausada();
             return $empleados;
@@ -41,7 +49,39 @@ class EmpleadoController {
             $this->manejarError($e->getMessage());
         }
     }
-  
+
+    // ----IniOperador----
+
+    public function ObtenerEmpleadoCaja(): ?Caja{
+        try {
+            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+            return $caja;
+
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function CambiarEstadoCaja(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $id_caja = $_POST["id_caja"];
+                $id_estado = $_POST["id_estado"];
+                $this->cajaRepository->cambiarEstado($id_caja, $id_estado);
+                header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
+                exit;
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+
+    public function ObtenerObjetoTurno(): ?Turnos {
+        
+    }
+
     // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {
         try {

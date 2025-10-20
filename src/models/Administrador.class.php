@@ -15,37 +15,4 @@ class Administrador extends Empleado {
     public function getRol(): int {
         return self::ID_ROL;
     }
-
-    // Metodos
-    public function altaEmpleado() {
-        // Falta implementacion
-    }
-
-    public function bajaEmpleado() {
-        // Falta implementacion
-    }
-
-    public function modificarEmpleado() {
-        // Falta implementacion
-    }
-
-    public function desplegarEmpleados() {
-        // Falta implementacion
-    }
-
-    public function gestionarTipoTurnos() {
-        // Falta implementacion
-    }
-
-    public function gestionarCajas() {
-        // Falta implementacion
-    }
-
-    public function desplegarDepartamentos() {
-        // Falta implementacion
-    }
-
-    public function desplegarTurnos() {
-        // Falta implementacion
-    }
 }

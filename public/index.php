@@ -119,6 +119,10 @@ if ($_SESSION['id_rol'] === 1) {
         $turnosAtencion = $turnoController->listarTurnosEnAtencion();
         $turnosCompletados = $turnoController->listarTurnosCompletados();
         $empleadosPausa = $empleadoController-> empleadosConCajaPausada();
+        $datosPaginacion = $turnoController->gestionDeTurnos();
+        $turnosPaginados = $datosPaginacion['turnos'] ?? [];
+        $paginaActual = $datosPaginacion['paginaActual'] ?? 1;
+        $totalPaginas = $datosPaginacion['totalPaginas'] ?? 0;
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
@@ -176,6 +180,9 @@ if ($_SESSION['id_rol'] === 1) {
         exit;
     }
 
+    //Gestion de turnos
+
+
 
 
 } 
@@ -185,6 +192,28 @@ if ($_SESSION['id_rol'] === 2) {
         $controller = new EmpleadoController();
         $caja = $controller->ObtenerEmpleadoCaja();
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
+    }
+
+    //Pausar una caja
+    if ($ruta == '/operador/caja/pausar') {
+        $controller = new EmpleadoController();
+        $caja = $controller->CambiarEstadoCaja();
+        exit;
+    }
+
+    //Reanudar una caja
+    if ($ruta == '/operador/caja/reanudar') {
+        $controller = new EmpleadoController();
+        $caja = $controller->CambiarEstadoCaja();
+        exit;
+    }
+
+
+    // Numero de turno actual
+    if ($ruta == '/operador/turno/actual') {
+        $controller = new EmpleadoController();
+        // $turno = $controller->
+        
     }
 }
 // =============== Rutas internas - Recepcionista ===============

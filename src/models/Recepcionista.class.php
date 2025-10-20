@@ -15,8 +15,4 @@ class Recepcionista extends Empleado {
     public function getRol(): int {
         return self::ID_ROL;
     }
-
-    public function generarTurno() {
-        // Falta implementacion
-    }
 }

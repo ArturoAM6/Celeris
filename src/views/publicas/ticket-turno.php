@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Celeris - Banca líquida</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/turnos.css">
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2/qz-tray.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsrsasign@11.0/lib/jsrsasign-all-min.js"></script>
+    <script src="<?= BASE_URL ?>/js/qz-config.js"></script>
 </head>
 <body>
     <!-- Navbar -->
