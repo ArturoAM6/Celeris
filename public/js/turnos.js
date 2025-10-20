@@ -1,15 +1,34 @@
+async function imprimirTurno(turnoId) {
+  try {
+      // Conectar con QZ Tray
+    if (!qz.websocket.isActive()) {
+        await qz.websocket.connect();
+    }
 
-function imprimirTurno(turnoId) {
-  window.open(BASE_URL + `/turno/pdf?id=${turnoId}`, "_blank");
-  const iframe = document.createElement("iframe");
-  iframe.style.display = "none";
-  iframe.src = BASE_URL + `/turno/pdf?id=${turnoId}`;
-  document.body.appendChild(iframe);
+    // Obtener impresora predeterminada
+    const printer = await qz.printers.getDefault();
+    
+    // Configurar impresión PDF
+    const config = qz.configs.create(printer, {
+        size: { width: 2, height: 2.2 }, // pulgadas (50mm x 55mm aprox)
+        units: 'in'
+    });
 
-  iframe.onload = function () {
-    iframe.contentWindow.print();
-    setTimeout(() => iframe.remove(), 2000);
-  };
+    // URL del PDF
+    const pdfUrl = BASE_URL + `/turno/pdf?id=${turnoId}`;
+    
+    // Imprimir
+    const data = [{
+        type: 'pdf',
+        data: pdfUrl
+    }];
+    
+    await qz.print(config, data);
+    console.log('Impresión enviada correctamente');
+      
+  } catch (err) {
+      console.error('Error al imprimir:', err);
+  }
 }
 
 let tiempoRestanteSegundos = 0;

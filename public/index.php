@@ -191,6 +191,28 @@ if ($_SESSION['id_rol'] === 2) {
         $caja = $controller->ObtenerEmpleadoCaja();
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
+
+    //Pausar una caja
+    if ($ruta == '/operador/caja/pausar') {
+        $controller = new EmpleadoController();
+        $caja = $controller->CambiarEstadoCaja();
+        exit;
+    }
+
+    //Reanudar una caja
+    if ($ruta == '/operador/caja/reanudar') {
+        $controller = new EmpleadoController();
+        $caja = $controller->CambiarEstadoCaja();
+        exit;
+    }
+
+
+    // Numero de turno actual
+    if ($ruta == '/operador/turno/actual') {
+        $controller = new EmpleadoController();
+        // $turno = $controller->
+        
+    }
 }
 // =============== Rutas internas - Recepcionista ===============
 if ($_SESSION['id_rol'] === 3) {
