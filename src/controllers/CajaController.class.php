@@ -60,6 +60,11 @@ class CajaController {
         }
     }
 
+    public function obtenerCajaPorId(int $id_caja): ?Caja{
+        $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+        return $caja;
+    }
+
     public function abrirCaja(): void {
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {

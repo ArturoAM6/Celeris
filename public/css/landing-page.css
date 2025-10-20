@@ -146,15 +146,17 @@ a {
 .hero-pair {
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
   gap: 40px;
-  margin-top: 120px; /* espacio debajo del navbar */
+  flex: auto;
+  margin-top: 120px;
   margin-bottom: 80px;
 }
 
 .hero-box {
-  width: 748px;
-  padding: 180px;
+  width: 100%;
+  max-width: 700px; /* limita el tamaño en pantallas grandes */
+  padding: 60px;
   background-color: #f2f3f4;
   border-radius: 24px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -162,6 +164,8 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center; /* <-- centrado horizontal */
+  min-height: 500px;
 }
 
 .hero-box h1, .hero-box h2 {
@@ -175,15 +179,13 @@ a {
   margin-bottom: 20px;
 }
 
-.hero-icon {
-  width: 80px;
+.hero-box.right img.hero-icon {
+  width: 100%;
+  max-width: 400px; /* no más de 400px para mantener proporción */
   height: auto;
-  margin: 0 auto 12px;
-}
-
-.right img {
-  width: 500px;
-  margin-right: 50px;
+  display: block;
+  margin: 0 auto 20px;
+  object-fit: contain;
 }
 
 .cuenta-input {
@@ -206,4 +208,50 @@ a {
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
+}
+
+/* ==== Responsividad ==== */
+
+/* Tablets (pantallas medianas) */
+@media (max-width: 992px) {
+  .hero-box {
+    max-width: 90%;
+    padding: 40px;
+  }
+  .hero-box.right img.hero-icon {
+    max-width: 350px;
+  }
+}
+
+/* Celulares grandes */
+@media (max-width: 768px) {
+  .hero-pair {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .hero-box {
+    padding: 30px;
+  }
+  .hero-box.right img.hero-icon {
+    max-width: 300px;
+  }
+  .hero-box h1, .hero-box h2 {
+    font-size: 24px;
+  }
+}
+
+/* Celulares pequeños */
+@media (max-width: 480px) {
+  .hero-box {
+    padding: 20px;
+  }
+  .hero-box.right img.hero-icon {
+    max-width: 250px;
+  }
+  .hero-box h1, .hero-box h2 {
+    font-size: 20px;
+  }
+  .hero-box p {
+    font-size: 14px;
+  }
 }
