@@ -185,41 +185,67 @@
         </table>
     </div>
     <div class="tab-content" id="turnos">
-                <table>
-            <thead>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Numero de Turno</th>
+                <th>Cliente</th>
+                <th>Departamento</th>
+                <th>Caja</th>
+                <th>Estado</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($turnosPaginados)): ?>
                 <tr>
-                    <th>ID</th>
-                    <th>Numero de Turno</th>
-                    <th>Cliente</th>
-                    <th>Departamento</th>
-                    <th>Caja</th>
-                    <th>Estado</th>
-                    <th>Hora Inicio</th>
-                    <th>Hora Fin</th>
+                    <td colspan="8" class="texto-centrado">No hay turnos registrados</td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($turnos)): ?>
+            <?php else: ?>
+                <?php foreach ($turnosPaginados as $turno): ?>
                     <tr>
-                        <td colspan="6" class="texto-centrado">No hay turnos activos</td>
+                        <td><?= htmlspecialchars($turno['id']) ?></td>
+                        <td><?= htmlspecialchars($turno['numero']) ?></td>
+                        <td><?= htmlspecialchars($turno['id_cliente'] ?? "N/A") ?></td>
+                        <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno['id_caja'])) ?></td>
+                        <td><?= htmlspecialchars($turno['id_caja']) ?></td>
+                        <td>
+                            <?php 
+                            //$estadoId = $turnoRepository->obtenerEstadoActual($turno['id']);
+                            //switch ($estadoId) {
+                                //case 1: echo 'Llamado'; break;
+                                //case 2: echo 'En Espera'; break;
+                                //case 3: echo 'En Atención'; break;
+                                //case 4: echo 'Cancelado'; break;
+                                //case 5: echo 'Finalizado'; break;
+                                //default: echo 'N/A';
+                            //}
+                            ?>
+                        </td>
+                        <td><?= htmlspecialchars($turno['timestamp_solicitud']) ?></td>
+                        <td><?= htmlspecialchars($turno['timestamp_fin_atencion'] ?? "N/A") ?></td>
                     </tr>
-                <?php else: ?>
-                    <?php foreach ($turnos as $turno): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($turno->getId()) ?></td>
-                            <td><?= htmlspecialchars($turno->getNumero()) ?></td>
-                            <td><?= htmlspecialchars($turno->getCliente() ?? "N/A") ?></td>
-                            <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno->getCaja())) ?></td>
-                            <td><?= htmlspecialchars($turno->getCaja()) ?></td>
-                            <td><?= htmlspecialchars($turno->getEstado()) ?></td>
-                            <td><?= htmlspecialchars($turno->getTimestampSolicitud()) ?></td>
-                            <td><?= htmlspecialchars($turno->getTimestampFinAtencion() ?? "N/A") ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                        <?php endif; ?>
-            </tbody>
-        </table>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+    
+    <?php if ($totalPaginas > 1): ?>
+    <div>
+        <?php if ($paginaActual > 1): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina=<?= $paginaActual - 1 ?>">Anterior</a>
+        <?php endif; ?>
+        
+        Página <?= $paginaActual ?> de <?= $totalPaginas ?>
+        
+        <?php if ($paginaActual < $totalPaginas): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina=<?= $paginaActual + 1 ?>">Siguiente</a>
+        <?php endif; ?>
     </div>
+    <?php endif; ?>
+</div>
     <div class="tab-content" id="horarios">
         <form action="<?= BASE_URL ?>/admin/horario/asignar" method="post">
             <table>

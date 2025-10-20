@@ -25,6 +25,27 @@ class TurnoRepository {
         return $turnos;
     }
 
+    //PAGINACION
+    public function obtenerTurnosPaginados(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT * FROM turnos ORDER BY timestamp_solicitud DESC LIMIT :inicio, :porPagina";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function contarTurnos(): int {
+        $query = "SELECT COUNT(*) FROM turnos";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+
+
     public function obtenerTurnosActivos(): array {
         $stmt = $this->conexion->prepare(
             "SELECT t.*, tl.id_estado 

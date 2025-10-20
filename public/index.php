@@ -117,6 +117,10 @@ if ($_SESSION['id_rol'] === 1) {
         $turnosAtencion = $turnoController->listarTurnosEnAtencion();
         $turnosCompletados = $turnoController->listarTurnosCompletados();
         $empleadosPausa = $empleadoController-> empleadosConCajaPausada();
+        $datosPaginacion = $turnoController->gestionDeTurnos();
+        $turnosPaginados = $datosPaginacion['turnos'] ?? [];
+        $paginaActual = $datosPaginacion['paginaActual'] ?? 1;
+        $totalPaginas = $datosPaginacion['totalPaginas'] ?? 0;
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
@@ -173,6 +177,9 @@ if ($_SESSION['id_rol'] === 1) {
         $empleadosPausados = $empleadoController->MostrarDatosDeEmpleados();
         exit;
     }
+
+    //Gestion de turnos
+
 
 
 

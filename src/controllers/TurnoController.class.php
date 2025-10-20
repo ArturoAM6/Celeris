@@ -245,6 +245,37 @@ class TurnoController {
         }
     }
 
+    public function gestionDeTurnos(): array {
+    try {
+        $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $porPagina = 10;
+
+        $turnos = $this->turnoRepository->obtenerTurnosPaginados($pagina, $porPagina);
+        $totalTurnos = $this->turnoRepository->contarTurnos();
+        $totalPaginas = ceil($totalTurnos / $porPagina);
+
+        return [
+            'turnos' => $turnos,
+            'paginaActual' => $pagina,
+            'totalPaginas' => $totalPaginas,
+            'totalTurnos' => $totalTurnos
+        ];
+    } catch (Exception $e) {
+        error_log("Error en gestionDeTurnos: " . $e->getMessage());
+        return [
+            'turnos' => [],
+            'paginaActual' => 1,
+            'totalPaginas' => 0,
+            'totalTurnos' => 0
+        ];
+    }
+}
+
+
+
+
+    
+
     public function obtenerDepartamentoTurno(int $id_caja): string {
         try {
             $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
@@ -265,6 +296,8 @@ class TurnoController {
             $this->manejarError($e->getMessage());
         }
     }
+    
+
 
     // ============ MANEJAR ERRORES ============
     private function manejarError(string $mensaje): void {
