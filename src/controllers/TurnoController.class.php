@@ -125,7 +125,14 @@ class TurnoController {
 
     //--IniOperador--
 
-    
+    public function obtenerNumeroCajaActiva(int $id_caja): ?Turno {
+        try {
+            $turno = $this->turnoRepository->obtenerTurnoActivoPorCaja($id_caja);
+            return $turno;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
 
     //FinOperador--
 

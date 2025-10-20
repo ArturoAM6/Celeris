@@ -73,12 +73,12 @@ class TurnoRepository {
             AND t.id_caja = :id_caja"
         );
         $stmt->execute([':id_caja' => $id_caja]);
-        $turnos = [];
-        while ($data = $stmt->fetch()) {
-            $turnos[] = $this->crearTurnoDesdeArray($data);
+        $data = $stmt->fetch()
+        if (!$data) {
+            return null;
         }
 
-        return $turnos;
+        return $this->crearTurnoDesdeArray($data);  
         
     }
 
@@ -90,17 +90,19 @@ class TurnoRepository {
             AND t.id_caja = :id_caja"
         );
         $stmt->execute([':id_caja' => $id_caja]);
-        $turnos = [];
-        while ($data = $stmt->fetch()) {
-            $turnos[] = $this->crearTurnoDesdeArray($data);
+        $data = $stmt->fetch()
+        if (!$data) {
+            return null;
         }
 
-        return $turnos;
-        
+        return $this->crearTurnoDesdeArray($data);    
     }
+
 
         
     // ----FinOperador---
+
+    //USA ESTA EL OPERADOR
     public function obtenerTurnosEnAtencion(): array {
         $stmt = $this->conexion->prepare(
             "SELECT t.*, tl.id_estado 

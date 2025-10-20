@@ -182,6 +182,8 @@ if ($_SESSION['id_rol'] === 2) {
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
         $caja = $controller->ObtenerEmpleadoCaja();
+        $turno_controller = new TurnoController();
+        $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
 
@@ -200,12 +202,6 @@ if ($_SESSION['id_rol'] === 2) {
     }
 
 
-    // Numero de turno actual
-    if ($ruta == '/operador/turno/actual') {
-        $controller = new EmpleadoController();
-        $turno = $controller->
-        
-    }
 }
 // =============== Rutas internas - Recepcionista ===============
 if ($_SESSION['id_rol'] === 3) {

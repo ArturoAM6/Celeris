@@ -74,9 +74,6 @@ class EmpleadoController {
         }
     }
 
-    public function ObtenerObjetoTurno(): ?Turnos {
-        
-    }
 
     // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {
