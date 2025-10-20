@@ -93,8 +93,8 @@ class TurnoRepository {
             AND tl.id_estado = 3
             AND t.id_caja = :id_caja"
         );
-        $stmt->execute([':id_caja' => $id_caja]);
-        $data = $stmt->fetch()
+        $smtm->execute([':id_caja' => $id_caja]);
+        $data = $smtm->fetch();
         if (!$data) {
             return null;
         }
@@ -111,7 +111,7 @@ class TurnoRepository {
             AND t.id_caja = :id_caja"
         );
         $stmt->execute([':id_caja' => $id_caja]);
-        $data = $stmt->fetch()
+        $data = $stmt->fetch();
         if (!$data) {
             return null;
         }
