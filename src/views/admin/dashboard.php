@@ -294,7 +294,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($empleados as $empleado): ?>
+                <?php foreach ($empleadosPausa as $empleado): ?>
                 <tr>
                     <td><?= $empleado->getId() ?></td>
                     <td><?= $empleado->getNombreCompleto() ?></td>
@@ -304,6 +304,7 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
+        
     </div>
   </section>
 

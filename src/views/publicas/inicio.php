@@ -24,7 +24,7 @@
       <a href="<?= BASE_URL ?>/turno/generar" id="btn-no-cuentahabiente" class="btn-cta">No cuentahabiente</a>
 
       <div>
-        <form action="<?= BASE_URL ?>/turno/generar" class="cuenta-input" id="cuenta-input">
+        <form action="<?= BASE_URL ?>/turno/generar" method="post" class="cuenta-input" id="cuenta-input">
           <label for="numeroCuenta">Número de cuenta:</label>
           <input type="text" id="numeroCuenta" name="numero_cuenta" placeholder="Ingresa tu número de cuenta" required>
           <button type="submit" class="btn-cta" href="<?= BASE_URL ?>/turno/generar">Aceptar</button>

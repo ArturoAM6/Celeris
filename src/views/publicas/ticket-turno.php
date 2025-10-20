@@ -24,8 +24,37 @@
             </div>
             <div class="hero-box-content">
                 <h3><?php echo $turno->getNumero() ?></h3>
-                <div id="tiempo-espera">
-                    Cargando...
+
+                    <?php
+                    // Obtener el ID de la caja desde el turno
+                    $idCaja = $turno->getCaja();
+                    // Determinar el nombre del departamento según la caja
+                    switch ($idCaja) {
+                        case 1:
+                            $nombreDepartamento = 'Cajas';
+                            break;
+                        case 5:
+                            $nombreDepartamento = 'Asesoramiento Financiero';
+                            break;
+                        case 3:
+                            $nombreDepartamento = 'Asociados';
+                            break;
+                        case 4:
+                            $nombreDepartamento = 'Caja Fuerte';
+                            break;
+                    }
+                    ?>
+
+                    <p class="departamento">
+                        Departamento:
+                        <strong><?= htmlspecialchars($nombreDepartamento) ?></strong>
+                    </p>
+
+                    <div id="tiempo-espera">
+                        Cargando...
+                    </div>
+
+                    <div id="imprimir-turno" data-turno-id="<?= $turno->getId() ?>"></div>
                 </div>
                 <!-- DIV PARA DISPARAR IMPRESION AUTOMATICA -->
                 <div id="imprimir-turno" data-turno-id="<?= $turno->getId() ?>" ></div>
