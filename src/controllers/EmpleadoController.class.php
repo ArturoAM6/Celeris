@@ -3,11 +3,15 @@
 class EmpleadoController {
     private EmpleadoRepository $empleadoRepository;
     private CajaRepository $cajaRepository;
+    private TurnoRepository $turnoRepository;
+    private ClienteRepository $clienteRepository;
 
 
     public function __construct() {
         $this->empleadoRepository = new EmpleadoRepository();
         $this->cajaRepository = new CajaRepository();
+        $this->turnoRepository = new TurnoRepository();
+        $this->clienteRepository = new ClienteRepository();
     }
 
     public function listarEmpleados(): ?array {
@@ -46,15 +50,25 @@ class EmpleadoController {
         }
     }
 
-    public function CambiarEstadoCaja(int $id_caja, int $id_estado): void {
-        try {
-            
-            $this->cajaRepository->cambiarEstado($id_caja, $id_estado);
-        } catch (Exception $e) {
-            $this->manejarError($e->getMessage());
+    public function CambiarEstadoCaja(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $id_caja = $_POST["id_caja"];
+                $id_estado = $_POST["id_estado"];
+                $this->cajaRepository->cambiarEstado($id_caja, $id_estado);
+                header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
+                exit;
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
+                exit;
+            }
         }
     }
-  
+
+    public function ObtenerObjetoTurno(): ?Turnos {
+
+    }
+
     // ----FinOperador----
     public function listarEmpleadosAsignados(): ?array {
         try {

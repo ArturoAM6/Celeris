@@ -31,23 +31,26 @@
           break;
       } ?></h2>
       <div class="container-acciones">
-        <form method="post">
-          <input type="hidden" name="btn-descanso">
-          <?php if ($caja->getEstado() == 1): ?>
-              <button type="submit" class="btn">DESCANSO <?php
-              
-              ?></button>
-          <?php elseif ($caja->getEstado() == 3): ?>
+        <?php if ($caja->getEstado() == 1): ?>
+          <form method="post" action='<?= BASE_URL ?>/operador/caja/pausar'>
+              <input type="hidden" name="id_caja" value = "<?php echo $caja->getId(); ?>">
+              <input type="hidden" name="id_estado" value = "3">
+              <button type="submit" class="btn">DESCANSO</button>
+          </form>
+        <?php elseif ($caja->getEstado() == 3): ?>
+          <form method="post" action='<?= BASE_URL ?>/operador/caja/reanudar'>
+              <input type="hidden" name="id_caja" value = "<?php echo $caja->getId(); ?>">
+              <input type="hidden" name="id_estado" value = "1">
               <button type="submit" class="btn">ABRIR CAJA</button>
-          <?php endif; ?>
-        </form>
+          </form>
+        <?php endif; ?>
       </div>
     </div>
     <div class="container-content">
       <div class="hero-pair">
           <div class="hero izq">
               <div class="hero-header">
-                  <h2>Turno actual: EL NUMERO O NO HAY TURNOS SIENDO ATENDIDOS</h2>
+                  <h2>Turno actual: AQUI</h2>
                   <div class="hero-header-buttons">
                     <form method="post">
                       <input type="hidden" name="btn-finalizar">

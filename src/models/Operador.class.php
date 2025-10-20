@@ -15,17 +15,4 @@ class Operador extends Empleado {
     public function getRol(): int {
         return self::ID_ROL;
     }
-
-    // Metodos
-    public function atenderTurno() {
-        // Falta implementacion
-    }
-
-    public function llamarTurno() {
-        // Falta implementacion
-    }
-
-    public function finalizarTurno() {
-        // Falta implementacion
-    }
 }

@@ -65,8 +65,41 @@ class TurnoRepository {
 
     // ---IniOperador---
 
-    
+    public function obtenerTurnoActivoPorCaja(int $id_caja): ?Turno {
+        $smtm = $this->conexion->prepare(
+            "SELECT t.* from turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno
+            AND tl.id_estado = 3
+            AND t.id_caja = :id_caja"
+        );
+        $stmt->execute([':id_caja' => $id_caja]);
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
 
+        return $turnos;
+        
+    }
+
+    public function obtenerTurnoEsperaPorCaja(int $id_caja): ?Turno {
+        $smtm = $this->conexion->prepare(
+            "SELECT t.* from turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno
+            AND tl.id_estado = 2
+            AND t.id_caja = :id_caja"
+        );
+        $stmt->execute([':id_caja' => $id_caja]);
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+        
+    }
+
+        
     // ----FinOperador---
     public function obtenerTurnosEnAtencion(): array {
         $stmt = $this->conexion->prepare(
@@ -160,6 +193,7 @@ class TurnoRepository {
         return $turnos;
     }
 
+    //operador
     public function turnosPorCaja(int $id_caja): array {
         $stmt = $this->conexion->prepare(
             "SELECT t.*, tl.id_estado 
