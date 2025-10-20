@@ -199,12 +199,13 @@ if ($_SESSION['id_rol'] === 2) {
         exit;
     }
 
-    Numero de turno actual
-    if ($ruta == '/operador/turno/actual') {
-        $controller = new EmpleadoController();
-        $turno = $controller->
+
+    // Numero de turno actual
+    // if ($ruta == '/operador/turno/actual') {
+    //     $controller = new EmpleadoController();
+    //     $turno = $controller->
     
-    }
+    // }
 }
 // =============== Rutas internas - Recepcionista ===============
 if ($_SESSION['id_rol'] === 3) {
