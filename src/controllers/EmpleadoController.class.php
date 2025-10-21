@@ -54,10 +54,15 @@ class EmpleadoController {
 
     public function ObtenerEmpleadoCaja(): ?Caja{
         try {
-            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
-            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
-            return $caja;
-
+            if ($_SESSION["id_empleado"]) {
+                $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+                if (!$id_caja) {
+                    return null;
+                }
+                $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+                return $caja;
+            }
+            return null;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }

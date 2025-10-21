@@ -208,6 +208,10 @@ if ($_SESSION['id_rol'] === 2) {
             exit;
         }
         $caja = $controller->ObtenerEmpleadoCaja();
+        if (!$caja) {
+            header("location: " . BASE_URL . "/logout");
+            exit;
+        }
         $turno_controller = new TurnoController();
         $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
