@@ -85,7 +85,7 @@ if ($ruta === '/login') {
 if ($ruta === '/logout') {
     $controller = new AuthController();
     $controller->logout();
-    header('Location: '. BASE_URL . '/');
+    header("Location: " . BASE_URL . "/login");
     exit;
 }
 
