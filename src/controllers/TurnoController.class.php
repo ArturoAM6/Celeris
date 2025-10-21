@@ -300,13 +300,13 @@ class TurnoController {
             $id_departamento = $caja->getDepartamento();
             switch ($id_departamento) {
                 case 1:
-                    return 'Cajas';
+                    return 'Ventanillas';
                 case 2:
                     return 'Asociados';
                 case 3:
                     return 'Caja Fuerte';
                 case 4:
-                    return 'Ventanillas';
+                    return 'Asesoramiento Financiero';
                 default:
                     throw new Exception('Departamento no existente');
             }
