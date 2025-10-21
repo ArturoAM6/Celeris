@@ -36,6 +36,7 @@ if ($ruta === '/turno') {
     $controller = new TurnoController();
     $controller->pantallaTurnos();
     require_once __DIR__ . '/../src/views/publicas/pantalla-turnos.php';
+    exit;
 }
 if ($ruta === '/turno/generar') {
     $controller = new TurnoController();
