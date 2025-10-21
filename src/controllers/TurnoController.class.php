@@ -134,6 +134,55 @@ class TurnoController {
         }
     }
 
+    //llamar
+    public function llamarTurnoCaja(int $id_caja): ?Turno {
+        try {
+            $turno = $this->turnoRepository->obtenerTurnoLlamadoPorCaja($id_caja);
+            return $turno;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function obtenerNumeroEsperaCaja(int $id_caja): ?array {
+        try {
+            $turnos = $this->turnoRepository->obtenerTurnoEsperaPorCaja($id_caja);
+            return $turnos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function llamarUnTurno(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $id_turno = $_POST["id_turno"];
+                $id_estado_turno = $_POST["id_estado_turno"];
+                $this->turnoRepository->cambiarEstado($id_turno, $id_estado_turno);
+                header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
+                exit;
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+
+    public function empezarUnTurno(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $id_turno = $_POST["id_turno"];
+                $id_estado_turno = $_POST["id_estado_turno"];
+                $this->turnoRepository->cambiarEstado($id_turno, $id_estado_turno);
+                header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
+                exit;
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+
     //FinOperador--
 
     public function imprimirTurno(?Cliente $cliente, int $id_caja, Turno $turno): void {

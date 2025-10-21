@@ -87,14 +87,16 @@ class TurnoRepository {
     // ---IniOperador---
 
     public function obtenerTurnoActivoPorCaja(int $id_caja): ?Turno {
-        $smtm = $this->conexion->prepare(
+        $stmt = $this->conexion->prepare(
             "SELECT t.* from turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno
             AND tl.id_estado = 3
-            AND t.id_caja = :id_caja"
+            AND t.id_caja = :id_caja
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
         );
-        $smtm->execute([':id_caja' => $id_caja]);
-        $data = $smtm->fetch();
+        $stmt->execute([':id_caja' => $id_caja]);
+        $data = $stmt->fetch();
         if (!$data) {
             return null;
         }
@@ -103,12 +105,15 @@ class TurnoRepository {
         
     }
 
-    public function obtenerTurnoEsperaPorCaja(int $id_caja): ?Turno {
-        $smtm = $this->conexion->prepare(
+    //llamar un turno
+    public function obtenerTurnoLlamadoPorCaja(int $id_caja): ?Turno {
+        $stmt = $this->conexion->prepare(
             "SELECT t.* from turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno
-            AND tl.id_estado = 2
-            AND t.id_caja = :id_caja"
+            AND tl.id_estado = 1
+            AND t.id_caja = :id_caja
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
         );
         $stmt->execute([':id_caja' => $id_caja]);
         $data = $stmt->fetch();
@@ -116,7 +121,26 @@ class TurnoRepository {
             return null;
         }
 
-        return $this->crearTurnoDesdeArray($data);    
+        return $this->crearTurnoDesdeArray($data);  
+        
+    }
+
+    public function obtenerTurnoEsperaPorCaja(int $id_caja): ?array {
+        $stmt = $this->conexion->prepare(
+            "SELECT t.* from turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno
+            AND tl.id_estado = 2
+            AND t.id_caja = :id_caja
+            ORDER BY tl.timestamp_actualizacion ASC
+            LIMIT 5"
+        );
+        $stmt->execute([':id_caja' => $id_caja]);
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;    
     }
 
 
