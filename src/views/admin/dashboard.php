@@ -22,6 +22,47 @@
     <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
+
+  <!-- FILTROS SIMPLES -->
+  <section class="filtros-simple">
+    <form method="GET" action="<?= BASE_URL ?>/admin" class="form-filtros-inline">
+      <span class="filtro-label">Filtrar:</span>
+      
+      <select name="departamento" class="filtro-input">
+        <option value="">Departamento</option>
+        <option value="1" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '1' ? 'selected' : '' ?>>Ventanillas</option>
+        <option value="2" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '2' ? 'selected' : '' ?>>Asociados</option>
+        <option value="3" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '3' ? 'selected' : '' ?>>Caja Fuerte</option>
+        <option value="4" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '4' ? 'selected' : '' ?>>Asesoramiento Financiero</option>
+      </select>
+
+      <input 
+        type="number" 
+        name="caja" 
+        placeholder="Número de Caja" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['id_caja'] ?? '') ?>"
+      >
+
+      <input 
+        type="date" 
+        name="fecha" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['fecha'] ?? '') ?>"
+      >
+
+      <input 
+        type="number" 
+        name="numero" 
+        placeholder="Número de Turno" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['numero_turno'] ?? '') ?>"
+      >
+
+      <button type="submit" class="btn-filtrar-simple">Buscar</button>
+      <a style = "color : black;" href="<?= BASE_URL ?>/admin" class="btn-limpiar-simple">Limpiar</a>
+    </form>
+  </section>
   
   <section class="table-section">
     <div class="tab">
