@@ -144,7 +144,7 @@ VALUES (1, 1, 1), (2, 1, 1), (3, 1, 1), (4, 1, 1), (5, 1, 1);
 
 -- CAJAS DE ASOCIADOS
 INSERT INTO cajas (numero, id_departamento, id_estado)
-VALUES (1, 1, 1), (2, 2, 1), (3, 2, 1);
+VALUES (1, 2, 1), (2, 2, 1), (3, 2, 1);
 
 -- CAJAS DE CAJA FUERTE
 INSERT INTO cajas (numero, id_departamento, id_estado)
