@@ -104,6 +104,9 @@ if (!$empleado) {
 
 // =============== Rutas internas - Administrador ===============
 if ($_SESSION['id_rol'] === 1) {
+    if ($ruta === "/operador") {
+        header("Location: " . BASE_URL . "/admin");
+    }
     if ($ruta === '/admin') {
         $empleadoController = new EmpleadoController();
         $empleados = $empleadoController->listarEmpleados();
@@ -189,6 +192,9 @@ if ($_SESSION['id_rol'] === 1) {
 } 
 // =============== Rutas internas - Operador ===============
 if ($_SESSION['id_rol'] === 2) {
+    if ($ruta === "/admin") {
+        header("Location: " . BASE_URL . "/operador");
+    }
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
         $caja = $controller->ObtenerEmpleadoCaja();
