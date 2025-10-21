@@ -23,7 +23,6 @@
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
 
-  <!-- FILTROS SIMPLES -->
   <section class="filtros-simple">
     <form method="GET" action="<?= BASE_URL ?>/admin" class="form-filtros-inline">
       <span class="filtro-label">Filtrar:</span>
