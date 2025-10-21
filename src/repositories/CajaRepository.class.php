@@ -132,12 +132,12 @@ class CajaRepository {
 
     // ---Operador---
 
-    public function getNumeroCaja(int $id_empleado): int {
+    public function getNumeroCaja(int $id_empleado): ?int {
         $stmt = $this->conexion->prepare('SELECT id_caja FROM asignacion_cajas WHERE id_empleado = :id_empleado');
         $stmt->execute([':id_empleado' => $id_empleado]);
         $caja = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $caja['id_caja'];
+        return $caja['id_caja'] ?? null;
     }
 
     // ---Operador---
