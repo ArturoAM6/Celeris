@@ -56,6 +56,12 @@ class TurnoRepository {
         $params[':id_departamento'] = $filtros['id_departamento'];
     }
     
+    // Filtro por estado
+    if (!empty($filtros['id_estado'])) {
+        $condiciones[] = "estado_actual.id_estado = :id_estado";
+        $params[':id_estado'] = $filtros['id_estado'];
+    }
+    
     // Filtro por caja
     if (!empty($filtros['id_caja'])) {
         $condiciones[] = "t.id_caja = :id_caja";
