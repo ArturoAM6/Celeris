@@ -257,15 +257,25 @@ class TurnoController {
         $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         $porPagina = 10;
 
-        $turnos = $this->turnoRepository->obtenerTurnosPaginados($pagina, $porPagina);
-        $totalTurnos = $this->turnoRepository->contarTurnos();
+        // Obtener filtros simples desde GET
+        $filtros = [
+            'id_departamento' => $_GET['departamento'] ?? '',
+            'id_caja' => $_GET['caja'] ?? '',
+            'fecha' => $_GET['fecha'] ?? '',
+            'numero_turno' => $_GET['numero'] ?? ''
+        ];
+
+        // IMPORTANTE: Usar los nuevos métodos con filtros
+        $turnos = $this->turnoRepository->obtenerTurnosPaginadosConFiltros($pagina, $porPagina, $filtros);
+        $totalTurnos = $this->turnoRepository->contarTurnosConFiltros($filtros);
         $totalPaginas = ceil($totalTurnos / $porPagina);
 
         return [
             'turnos' => $turnos,
             'paginaActual' => $pagina,
             'totalPaginas' => $totalPaginas,
-            'totalTurnos' => $totalTurnos
+            'totalTurnos' => $totalTurnos,
+            'filtros' => $filtros
         ];
     } catch (Exception $e) {
         error_log("Error en gestionDeTurnos: " . $e->getMessage());
@@ -273,7 +283,8 @@ class TurnoController {
             'turnos' => [],
             'paginaActual' => 1,
             'totalPaginas' => 0,
-            'totalTurnos' => 0
+            'totalTurnos' => 0,
+            'filtros' => []
         ];
     }
 }
