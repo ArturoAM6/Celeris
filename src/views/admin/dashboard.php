@@ -35,6 +35,15 @@
         <option value="4" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '4' ? 'selected' : '' ?>>Asesoramiento Financiero</option>
       </select>
 
+      <select name="estado" class="filtro-input">
+        <option value="">Estado</option>
+        <option value="1" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '1' ? 'selected' : '' ?>>Llamado</option>
+        <option value="2" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '2' ? 'selected' : '' ?>>En espera</option>
+        <option value="3" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '3' ? 'selected' : '' ?>>En atencion</option>
+        <option value="4" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '4' ? 'selected' : '' ?>>Cancelado</option>
+        <option value="5" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '5' ? 'selected' : '' ?>>Finalizado</option>
+      </select>
+
       <input 
         type="number" 
         name="caja" 
@@ -248,20 +257,23 @@
                     <tr>
                         <td><?= htmlspecialchars($turno['id']) ?></td>
                         <td><?= htmlspecialchars($turno['numero']) ?></td>
-                        <td><?= htmlspecialchars($turno['id_cliente'] ?? "N/A") ?></td>
+                        <?php if ($turno['id_cliente']): ?>
+                            <td><?= htmlspecialchars($turno['id_cliente'] . " - " . $turno['cliente_nombre'] . " " . $turno['cliente_apellido_paterno']) ?></td>
+                        <?php else: ?>
+                            <td><?= htmlspecialchars('N/A') ?></td>
+                        <?php endif; ?>
                         <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno['id_caja'])) ?></td>
                         <td><?= htmlspecialchars($turno['id_caja']) ?></td>
                         <td>
                             <?php 
-                            //$estadoId = $turnoRepository->obtenerEstadoActual($turno['id']);
-                            //switch ($estadoId) {
-                                //case 1: echo 'Llamado'; break;
-                                //case 2: echo 'En Espera'; break;
-                                //case 3: echo 'En Atención'; break;
-                                //case 4: echo 'Cancelado'; break;
-                                //case 5: echo 'Finalizado'; break;
-                                //default: echo 'N/A';
-                            //}
+                            switch ($turno['id_estado']) {
+                                case 1: echo 'Llamado'; break;
+                                case 2: echo 'En Espera'; break;
+                                case 3: echo 'En Atención'; break;
+                                case 4: echo 'Cancelado'; break;
+                                case 5: echo 'Finalizado'; break;
+                                default: echo 'N/A';
+                            }
                             ?>
                         </td>
                         <td><?= htmlspecialchars($turno['timestamp_solicitud']) ?></td>

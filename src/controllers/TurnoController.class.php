@@ -260,6 +260,7 @@ class TurnoController {
         // Obtener filtros simples desde GET
         $filtros = [
             'id_departamento' => $_GET['departamento'] ?? '',
+            'id_estado' => $_GET['estado'] ?? '',
             'id_caja' => $_GET['caja'] ?? '',
             'fecha' => $_GET['fecha'] ?? '',
             'numero_turno' => $_GET['numero'] ?? ''
