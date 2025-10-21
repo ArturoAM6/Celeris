@@ -199,7 +199,7 @@
                                 ?>
                             </td>
                             <td class="acciones-tabla">
-                                <?php if ($caja->getEstado() != 1): ?>
+                                <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
                                 <button class="btn" onclick="abrirModalAsignar(
                                     <?= htmlspecialchars(json_encode([
                                         'id' => $caja->getId(),
@@ -221,6 +221,15 @@
                                         <button type="submit" class="btn">Pausar</button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
+                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <button type="submit" class="btn">Abrir</button>
+                                    </form>
+                                    <form action="<?= BASE_URL ?>/admin/cajas/fuera-servicio" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <button type="submit" class="btn">Fuera de servicio</button>
+                                    </form>
+                                <?php elseif ($caja->getEstado() == 4): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <button type="submit" class="btn">Abrir</button>
@@ -324,7 +333,7 @@
                     <?php else: ?>
                         <?php foreach ($horarios as $horario): ?>
                             <tr>
-                                <td><?= htmlspecialchars($horario['id']) ?></td>
+                                <td><?= htmlspecialchars($horario['id'] ." - ". $horario['nombre']. " ". $horario['apellido_paterno']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_salida']) ?></td>
                                 <td>
@@ -372,14 +381,20 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($empleadosPausa as $empleado): ?>
-                <tr>
-                    <td><?= $empleado->getId() ?></td>
-                    <td><?= $empleado->getNombreCompleto() ?></td>
-                    <td><?= $empleado->getEmail() ?></td>
-                    <td><?= $empleado->getRol() ?></td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if (!$empleadosPausa): ?>
+                    <tr>
+                        <td colspan="6" class="texto-centrado">No hay empleados en descanso actualmente</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($empleadosPausa as $empleado): ?>
+                    <tr>
+                        <td><?= $empleado->getId() ?></td>
+                        <td><?= $empleado->getNombreCompleto() ?></td>
+                        <td><?= $empleado->getEmail() ?></td>
+                        <td><?= $empleado->getRol() ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
         

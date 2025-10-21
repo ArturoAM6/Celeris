@@ -176,6 +176,11 @@ if ($_SESSION['id_rol'] === 1) {
         $cajaController->pausarCaja();
         exit;
     }
+    if ($ruta === '/admin/cajas/fuera-servicio') {
+        $cajaController = new CajaController();
+        $cajaController->fueraServicioCaja();
+        exit;
+    }
 
     //Empleados pausados
     if ($ruta === '/admin/empleados/pausados') {
@@ -197,6 +202,11 @@ if ($_SESSION['id_rol'] === 2) {
     }
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
+        $empleado = $controller->obtenerEmpleadoPorId($_SESSION["id_empleado"]);
+        if (!$controller->validarTipoTurno($empleado)) {
+            header("location: " . BASE_URL . "/logout");
+            exit;
+        }
         $caja = $controller->ObtenerEmpleadoCaja();
         $turno_controller = new TurnoController();
         $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());

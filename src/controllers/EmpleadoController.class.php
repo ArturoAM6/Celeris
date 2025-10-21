@@ -220,6 +220,21 @@ class EmpleadoController {
         }
     }
 
+    public function validarTipoTurno(Empleado $empleado): bool {
+        try {
+            if ($empleado->getTipoTurno() == 1) {
+                $diasPermitidos = array(1,3,5);
+                return (in_array(date('w'), $diasPermitidos)) ? true : false;
+            } elseif ($empleado->getTipoTurno() == 2) {
+                $diasPermitidos = array(1,2,3,4,5);
+                return (in_array(date('w'), $diasPermitidos)) ? true : false;
+            }
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+            return false;
+        }
+    }
+
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';
