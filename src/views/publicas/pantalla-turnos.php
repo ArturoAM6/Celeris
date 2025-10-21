@@ -1,65 +1,81 @@
+<?php
+$controllerp = new pantallaGeneralController();
+    $turnos = $controllerp->mostrarPantalla();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celeris - Banca líquida</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/landing-page.css">
+    <title>Celeris - Pantalla General</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/pantallaGeneral.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <header class="navbar">
-        <div class="nav-logo">
-            <a href="landing-page.html" class="navbar-brand" style="text-decoration: none; color: inherit;">
-                <img src="img/flash-on.png" class="rayo " alt="Logo">
-                <h2 class="navbar-title">CELERIS</h2>
-            </a>
-        </div>
-    </header>
+<header class="navbar">
+    <div class="nav-logo">
+        <a href="<?= BASE_URL ?>" class="navbar-brand">
+            <img src="<?= BASE_URL ?>/img/flash-on.png" class="rayo" alt="Logo">
+            <h2 class="navbar-title">CELERIS</h2>
+        </a>
+    </div>
+</header>
 
-    <section class="hero-pair">
-        <div class="hero-box izquierda">
-            <div class="hero-box-header">
-                <h2>Turnos en atencion</h2>
-            </div>
-            <div class="hero-box-content">
-                <ul>
-                    <?php if (empty($turnosEnAtencion)): ?>
-                        <li>No hay turnos en atencion</li>
-                            <?php else: ?>
-                                <?php foreach ($turnosEnAtencion as $turno): ?>
-                                    <li>
-                                        <?= htmlspecialchars($turno->getNumero()) ?> - Caja <?= htmlspecialchars($turno->getCaja()) ?>
-                                    </li>
-                            <?php endforeach; ?>
-                    <?php endif; ?>
-                </ul>
-            </div>
-        </div>
-        <div class="hero-box derecha">
-            <div class="hero-box-header">
-                <h2>Turnos en espera</h2>
-            </div>
-            <div class="hero-box-content">
-                <ul>
-                    <?php if (empty($turnosEnEspera)): ?>
-                        <li>No hay turnos en espera</li>
-                            <?php else: ?>
-                                <?php foreach ($turnosEnEspera as $turno): ?>
-                                    <li>
-                                        <?= htmlspecialchars($turno->getNumero()) ?> - Caja <?= htmlspecialchars($turno->getCaja()) ?>
-                                    </li>
-                            <?php endforeach; ?>
-                    <?php endif; ?>
-                </ul>
-            </div>
-        </div>
-    </section>
+<div class="main-container">
+    <div class="departamentos-grid">
 
-    <!-- Footer -->
-    <footer class="footer">
-        © 2025 Banco Celeris. Todos los derechos reservados.
-    </footer>
+        <?php foreach ($turnos as $departamento => $datos): ?>
+            <div class="departamento-card">
+                <div class="card-header">
+                    <h2><?php
+                    switch ($departamento){
+                        case 1:
+                            echo 'Cajas';
+                            break;
+                        case 2:
+                            echo 'Asociados';
+                            break;
+                        case 3:
+                            echo 'Caja Fuerte';
+                            break;
+                        case 4:
+                            echo 'Asesoramiento Financiero';
+                            break;
+                        default:
+                            echo 'Desconocido';
+                            break;
+                    }
+                    ?></h2>
+                </div>
+                <div class="turno-siguiente">
+                    <h3>Turno Siguiente</h3>
+                    <?php if ($datos['siguiente']): ?>
+                        <div class="numero-turno"><?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
+                        <div class="ventanilla-info">Ventanilla <?= htmlspecialchars($datos['siguiente']['id_caja']) ?></div>
+                    <?php else: ?>
+                        <div class="sin-turnos">Sin turnos pendientes</div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="turnos-espera">
+                    <h3>Turnos en espera</h3>
+                    <div class="lista-turnos">
+                        <?php if (!empty($datos['espera'])): ?>
+                            <?php foreach ($datos['espera'] as $turno): ?>
+                                <div class="turno-item">Turno: <?= htmlspecialchars($turno->getCaja()) ?></div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="sin-turnos">No hay turnos en espera</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+    </div>
+</div>
+
+<footer class="footer">
+    © 2025 Banco Celeris. Todos los derechos reservados
+</footer>
 </body>
-
 </html>

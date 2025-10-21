@@ -187,7 +187,9 @@ class TurnoRepository {
             WHERE t.id = tl.id_turno 
             AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id)
             AND tl.id_estado = 2
-            ORDER BY tl.timestamp_actualizacion ASC"
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC
+            LIMIT 4"
         );
         $stmt->execute();
         $turnos = [];
@@ -196,6 +198,24 @@ class TurnoRepository {
         }
 
         return $turnos;
+    }
+
+     public function obtenerSiguienteTurno(int $departamento): ?array {
+        $stmt = $this->conexion->prepare(
+            "SELECT 
+                t.*, 
+                tl.id_estado
+                FROM turnos t
+                INNER JOIN turnos_log tl ON tl.id_turno = t.id
+                INNER JOIN cajas c ON c.id = t.id_caja
+                WHERE c.id_departamento = :departamento
+                AND tl.id_estado = 3
+                ORDER BY t.id ASC
+                LIMIT 1
+            ");
+        $stmt->execute([':departamento' => $departamento]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?? null;
+
     }
 
     public function turnosEnAtencion(): array {

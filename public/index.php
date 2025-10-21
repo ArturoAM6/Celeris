@@ -33,9 +33,13 @@ if ($ruta === '/' || $ruta === '/index.php') {
 }
 
 if ($ruta === '/turno') {
+    header("Refresh:30");
     $controller = new TurnoController();
     $controller->pantallaTurnos();
+    $controllerp = new pantallaGeneralController();
+    $turnos = $controllerp->mostrarPantalla();
     require_once __DIR__ . '/../src/views/publicas/pantalla-turnos.php';
+    exit;
 }
 if ($ruta === '/turno/generar') {
     $controller = new TurnoController();

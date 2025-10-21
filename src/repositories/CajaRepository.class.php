@@ -167,5 +167,4 @@ class CajaRepository {
         require_once __DIR__ . '/../views/error.php';
     }
 }
-
 ?>
