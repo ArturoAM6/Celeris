@@ -127,25 +127,18 @@ class TurnoController {
 
     //--IniOperador--
 
-    public function obtenerNumeroCajaActiva(int $id_caja): ?Turno {
+    public function obtenerTurnosPorCaja(int $id_caja): ?array {
         try {
-            $turno = $this->turnoRepository->obtenerTurnoActivoPorCaja($id_caja);
-            return $turno;
+            $turnos = $this->turnoRepository->buscarTurnosPorCaja($id_caja);
+            return $turnos;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
     }
 
-    //llamar
-    public function llamarTurnoCaja(int $id_caja): ?Turno {
+    public function obtenerNumeroCajaActiva(int $id_caja): ?Turno {
         try {
-            $turno = $this->turnoRepository->obtenerTurnoLlamadoPorCaja($id_caja);
-            if (!$turno) {
-                return null;
-            } else {
-                $turno->setTimestampLlamado(date('Y-m-d H:i:s'));
-                $turno->setEstado(1);
-            }
+            $turno = $this->turnoRepository->obtenerTurnoActivoPorCaja($id_caja);
             return $turno;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
@@ -163,22 +156,20 @@ class TurnoController {
 
 
     //Nuevo llamarUnTurno
-    public function llamarUnTurno(): void {
+    public function llamarTurno(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Obtener la caja del empleado actual (como hace la vista)
                 $empleadoController = new EmpleadoController();
                 $caja = $empleadoController->ObtenerEmpleadoCaja();
+
                 if (!$caja) {
                     header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No se pudo determinar la caja'));
                     exit;
                 }
 
-                $idCaja = $caja->getId();
-
                 // 1) Verificar que NO exista ya un turno llamado o en atención para esta caja
-                $turnoLlamado = $this->turnoRepository->obtenerTurnoLlamadoPorCaja($idCaja);
-                $turnoAtencion = $this->turnoRepository->obtenerTurnoEnAtencionPorCaja($idCaja) ?? $this->obtenerNumeroCajaActiva($idCaja);
+                $turnoLlamado = $this->turnoRepository->obtenerTurnoLlamadoPorCaja($caja->getId());
+                $turnoAtencion = $this->obtenerNumeroCajaActiva($caja->getId());
 
                 if ($turnoLlamado || $turnoAtencion) {
                     header('Location: ' . BASE_URL . '/operador?error=' . urlencode('Ya existe un turno llamado o en atención.'));
@@ -186,16 +177,18 @@ class TurnoController {
                 }
 
                 // 2) Obtener la cola de espera y seleccionar el primer turno (FIFO)
-                $turnosEspera = $this->turnoRepository->obtenerTurnoEsperaPorCaja($idCaja); // devuelve array ordenado asc
+                $turnosEspera = $this->turnoRepository->obtenerTurnoEsperaPorCaja($caja->getId()); // devuelve array ordenado asc
                 if (empty($turnosEspera)) {
                     header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No hay turnos en espera.'));
                     exit;
                 }
 
                 $primerTurno = $turnosEspera[0];
-                $this->turnoRepository->cambiarEstado($primerTurno->getId(), 1); // marcar como Llamado (1)
 
-                header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('Turno llamado'));
+                $turno = $this->turnoRepository->cambiarEstado($primerTurno, 1); // marcar como Llamado (1)
+                $this->turnoRepository->actualizarTimestamp("timestamp_llamado", $turno->getId());
+
+                header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('turno ' . $turno->getId() . ' llamado'));
                 exit;
             } catch (Exception $e) {
                 header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
@@ -205,79 +198,18 @@ class TurnoController {
     }
 
 
-    public function empezarUnTurno(): void {
+    public function empezarTurno(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $id_turno = $_POST["id_turno"];
-                $id_estado_turno = $_POST["id_estado_turno"]; // se espera 3
+                $id_turno = $_POST['id_turno'];
 
-                // Obtener caja del empleado actual
                 $empleadoController = new EmpleadoController();
                 $caja = $empleadoController->ObtenerEmpleadoCaja();
+
                 if (!$caja) {
                     header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No se pudo determinar la caja.'));
                     exit;
                 }
-                $idCaja = $caja->getId();
-
-                // Obtener el turno por id
-                $turno_llamado = $this->turnoRepository->buscarPorId($id_turno);
-                if (!$turno_llamado) {
-                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('Turno no encontrado.'));
-                    exit;
-                }
-
-                // Verificar que el turno pertenezca a esta caja (normalizando tipo)
-                if ((int)$turno_llamado->getCaja() !== (int)$idCaja) {
-                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('El turno no pertenece a su caja.'));
-                    exit;
-                }
-
-                // Verificar que el estado actual sea '1' (Llamado)
-                $estadoActual = $this->turnoRepository->obtenerEstadoActual($id_turno);
-                if ((int)$estadoActual !== 1) {
-                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('El turno no está en estado Llamado.' . $estadoActual));
-                    exit;
-                }
-
-
-                // Cambiar a En atención (3)
-                $this->turnoRepository->cambiarEstado($turno_llamado->getId(), 3);
-                header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('Turno en atención.'));
-                exit;
-                
-            } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
-                exit;
-            }
-
-            // try {
-                //     $id_turno = $_POST["id_turno"];
-                //     $id_estado_turno = $_POST["id_estado_turno"];
-                //     $this->turnoRepository->cambiarEstado($id_turno, $id_estado_turno);
-                //     header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
-                //     exit;
-                // } catch (Exception $e) {
-                //     header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
-                //     exit;
-                // }
-        }
-    }
-
-    public function finalizarUnTurno(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                $id_turno = $_POST["id_turno"];
-                $id_estado_turno = $_POST["id_estado_turno"]; // se espera 5
-
-                // Obtener caja del empleado actual
-                $empleadoController = new EmpleadoController();
-                $caja = $empleadoController->ObtenerEmpleadoCaja();
-                if (!$caja) {
-                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No se pudo determinar la caja.'));
-                    exit;
-                }
-                $idCaja = $caja->getId();
 
                 // Obtener el turno por id
                 $turno = $this->turnoRepository->buscarPorId($id_turno);
@@ -286,24 +218,70 @@ class TurnoController {
                     exit;
                 }
 
+                // Verificar que el turno pertenezca a esta caja (normalizando tipo)
+                if ((int)$turno->getCaja() !== (int)$caja->getId()) {
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('El turno no pertenece a su caja.'));
+                    exit;
+                }
+
+                // Verificar que el estado actual sea '1' (Llamado)
+                $estadoActual = $this->turnoRepository->obtenerEstadoActual($turno->getId());
+                if ((int)$estadoActual !== 1) {
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('El turno no está en estado Llamado.'));
+                    exit;
+                }
+
+                // Cambiar a En atención (3)
+                $this->turnoRepository->cambiarEstado($turno, 3);
+                $this->turnoRepository->actualizarTimestamp("timestamp_inicio_atencion", $turno->getId());
+
+                header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('Turno en atención.'));
+                exit;
+                
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+
+    public function finalizarTurno(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $id_turno = $_POST["id_turno"];
+
+                $empleadoController = new EmpleadoController();
+                $caja = $empleadoController->ObtenerEmpleadoCaja();
+                if (!$caja) {
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No se pudo determinar la caja.'));
+                    exit;
+                }
+
+                // Obtener el turno por id
+                $turno = $this->turnoRepository->buscarPorId($id_turno);
+
+                if (!$turno) {
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('Turno no encontrado.'));
+                    exit;
+                }
+
                 // Verificar que el turno pertenezca a esta caja
-                // Aseguramos comparar enteros (evita fallo por tipo '1' !== 1)
-                if ((int)$turno->getCaja() !== (int)$idCaja) {
+                if ((int)$turno->getCaja() !== (int)$caja->getId()) {
                     header('Location: ' . BASE_URL . '/operador?error=' . urlencode('El turno no pertenece a su caja.'));
                     exit;
                 }
 
                 // Verificar que el estado actual sea '3' (En atención)
-                $estadoActual = $this->turnoRepository->obtenerEstadoActual($id_turno);
-                if ((int)$estadoActual !== 3) { // 3 = En atención
-                    header('Location: ' . BASE_URL . '/operador?...');
+                $estadoActual = $this->turnoRepository->obtenerEstadoActual($turno->getId());
+                if ((int)$estadoActual !== 3) {
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('El turno no esta siendo atendido'));
                     exit;
                 }
 
                 // Normalizamos el valor: quitamos espacios y casteamos a entero
                 $estadoActualNormalized = is_null($estadoActual) ? null : (int) trim($estadoActual);
                 if (is_null($estadoActualNormalized)) {
-                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No se encontró el estado del turno. Contacte al admin. ID turno: '.$id_turno));
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No se encontró el estado del turno. Contacte al admin. ID turno: '. $turno->getId()));
                     exit;
                 }
                 if ($estadoActualNormalized !== 3) {
@@ -323,55 +301,17 @@ class TurnoController {
                 }
 
                 // Cambiar a Finalizado (5)
-                $this->turnoRepository->cambiarEstado($id_turno, 5);
+                $this->turnoRepository->cambiarEstado($turno, 5);
+                $this->turnoRepository->actualizarTimestamp("timestamp_fin_atencion", $turno->getId());
+
                 header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('Turno finalizado.'));
                 exit;
             } catch (Exception $e) {
                 header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
                 exit;
             }
-
-            // try {
-                //     echo var_dump($_POST);
-                //     $id_turno = $_POST["id_turno"];
-                //     $id_estado_turno = $_POST["id_estado_turno"];
-                //     $this->turnoRepository->cambiarEstado($id_turno, $id_estado_turno);
-                //     header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
-                //     exit;
-                // } catch (Exception $e) {
-                //     header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
-                //     exit;
-                // }
         }
     }
-
-
-
-
-    // public function obtenerNumeroCajaActiva(int $idOperador): ?array {
-    //     // Retorna el turno que está actualmente en atención en la caja asignada al operador
-    //     $operador = $this->repositorioOperadores->obtenerPorId($idOperador);
-    //     if (!$operador) {
-    //         return null;
-    //     }
-
-    //     $caja = $operador['caja_asignada'] ?? null;
-    //     if (!$caja) {
-    //         return null;
-    //     }
-
-    //     // Consulta si hay un turno en atención en esa caja
-    //     $turnoEnAtencion = $this->repositorioTurnos->obtenerTurnoEnAtencionPorCaja($caja['id']);
-    //     return $turnoEnAtencion;
-    // }
-
-    // public function puedeLlamarTurno(int $idOperador): bool {
-    //     // Verifica si el operador puede llamar un nuevo turno. Si ya tiene uno en atención, devuelve false.
-    //     $turnoActual = $this->obtenerNumeroCajaActiva($idOperador);
-    //     return $turnoActual === null;
-    // }
-
-
 
     //FinOperador--
 
