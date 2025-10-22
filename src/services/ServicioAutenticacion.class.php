@@ -19,7 +19,13 @@ class ServicioAutenticacion {
     // Metodo estatico publico que maneja el cierre de sesión. No devuelve nada.
     public static function cerrarSesion(): void {
         session_start();
+        $_SESSION = array();
+        if (isset($_COOKIE[session_name()])) {
+            setcookie(session_name(), '', time()-3600, '/');
+        }
         session_destroy();
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        header("Expires: 0");
     }
 
     // Metodo estatico publico que para validacion de credenciales. Pide un objeto Empleado y un string. Devuelve un booleano.
