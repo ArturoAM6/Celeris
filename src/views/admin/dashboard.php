@@ -22,6 +22,55 @@
     <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
+
+  <section class="filtros-simple">
+    <form method="GET" action="<?= BASE_URL ?>/admin" class="form-filtros-inline">
+      <span class="filtro-label">Filtrar:</span>
+      
+      <select name="departamento" class="filtro-input">
+        <option value="">Departamento</option>
+        <option value="1" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '1' ? 'selected' : '' ?>>Ventanillas</option>
+        <option value="2" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '2' ? 'selected' : '' ?>>Asociados</option>
+        <option value="3" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '3' ? 'selected' : '' ?>>Caja Fuerte</option>
+        <option value="4" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '4' ? 'selected' : '' ?>>Asesoramiento Financiero</option>
+      </select>
+
+      <select name="estado" class="filtro-input">
+        <option value="">Estado</option>
+        <option value="1" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '1' ? 'selected' : '' ?>>Llamado</option>
+        <option value="2" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '2' ? 'selected' : '' ?>>En espera</option>
+        <option value="3" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '3' ? 'selected' : '' ?>>En atencion</option>
+        <option value="4" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '4' ? 'selected' : '' ?>>Cancelado</option>
+        <option value="5" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '5' ? 'selected' : '' ?>>Finalizado</option>
+      </select>
+
+      <input 
+        type="number" 
+        name="caja" 
+        placeholder="Número de Caja" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['id_caja'] ?? '') ?>"
+      >
+
+      <input 
+        type="date" 
+        name="fecha" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['fecha'] ?? '') ?>"
+      >
+
+      <input 
+        type="number" 
+        name="numero" 
+        placeholder="Número de Turno" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['numero_turno'] ?? '') ?>"
+      >
+
+      <button type="submit" class="btn-filtrar-simple">Buscar</button>
+      <a style = "color : black;" href="<?= BASE_URL ?>/admin" class="btn-limpiar-simple">Limpiar</a>
+    </form>
+  </section>
   
   <section class="table-section">
     <div class="tab">
@@ -150,7 +199,7 @@
                                 ?>
                             </td>
                             <td class="acciones-tabla">
-                                <?php if ($caja->getEstado() != 1): ?>
+                                <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
                                 <button class="btn" onclick="abrirModalAsignar(
                                     <?= htmlspecialchars(json_encode([
                                         'id' => $caja->getId(),
@@ -172,6 +221,15 @@
                                         <button type="submit" class="btn">Pausar</button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
+                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <button type="submit" class="btn">Abrir</button>
+                                    </form>
+                                    <form action="<?= BASE_URL ?>/admin/cajas/fuera-servicio" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <button type="submit" class="btn">Fuera de servicio</button>
+                                    </form>
+                                <?php elseif ($caja->getEstado() == 4): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <button type="submit" class="btn">Abrir</button>
@@ -208,20 +266,23 @@
                     <tr>
                         <td><?= htmlspecialchars($turno['id']) ?></td>
                         <td><?= htmlspecialchars($turno['numero']) ?></td>
-                        <td><?= htmlspecialchars($turno['id_cliente'] ?? "N/A") ?></td>
+                        <?php if ($turno['id_cliente']): ?>
+                            <td><?= htmlspecialchars($turno['id_cliente'] . " - " . $turno['cliente_nombre'] . " " . $turno['cliente_apellido_paterno']) ?></td>
+                        <?php else: ?>
+                            <td><?= htmlspecialchars('N/A') ?></td>
+                        <?php endif; ?>
                         <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno['id_caja'])) ?></td>
                         <td><?= htmlspecialchars($turno['id_caja']) ?></td>
                         <td>
                             <?php 
-                            //$estadoId = $turnoRepository->obtenerEstadoActual($turno['id']);
-                            //switch ($estadoId) {
-                                //case 1: echo 'Llamado'; break;
-                                //case 2: echo 'En Espera'; break;
-                                //case 3: echo 'En Atención'; break;
-                                //case 4: echo 'Cancelado'; break;
-                                //case 5: echo 'Finalizado'; break;
-                                //default: echo 'N/A';
-                            //}
+                            switch ($turno['id_estado']) {
+                                case 1: echo 'Llamado'; break;
+                                case 2: echo 'En Espera'; break;
+                                case 3: echo 'En Atención'; break;
+                                case 4: echo 'Cancelado'; break;
+                                case 5: echo 'Finalizado'; break;
+                                default: echo 'N/A';
+                            }
                             ?>
                         </td>
                         <td><?= htmlspecialchars($turno['timestamp_solicitud']) ?></td>
@@ -272,7 +333,7 @@
                     <?php else: ?>
                         <?php foreach ($horarios as $horario): ?>
                             <tr>
-                                <td><?= htmlspecialchars($horario['id']) ?></td>
+                                <td><?= htmlspecialchars($horario['id'] ." - ". $horario['nombre']. " ". $horario['apellido_paterno']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_salida']) ?></td>
                                 <td>
@@ -320,14 +381,20 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($empleadosPausa as $empleado): ?>
-                <tr>
-                    <td><?= $empleado->getId() ?></td>
-                    <td><?= $empleado->getNombreCompleto() ?></td>
-                    <td><?= $empleado->getEmail() ?></td>
-                    <td><?= $empleado->getRol() ?></td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if (!$empleadosPausa): ?>
+                    <tr>
+                        <td colspan="6" class="texto-centrado">No hay empleados en descanso actualmente</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($empleadosPausa as $empleado): ?>
+                    <tr>
+                        <td><?= $empleado->getId() ?></td>
+                        <td><?= $empleado->getNombreCompleto() ?></td>
+                        <td><?= $empleado->getEmail() ?></td>
+                        <td><?= $empleado->getRol() ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
         
@@ -427,12 +494,12 @@
                 
                 <div class="campo">
                     <label for="registrar_password">Contraseña *</label>
-                    <input type="password" id="registrar_password" name="password">
+                    <input type="password" id="registrar_password" name="password" require>
                 </div>
 
                 <div class="campo">
                     <label for="registrar_password2">Repita su contraseña *</label>
-                    <input type="password" id="registrar_password2" name="password2">
+                    <input type="password" id="registrar_password2" name="password2" require>
                 </div>
 
                 <div class="campo">

@@ -21,46 +21,50 @@
     </header>
 
     <section class="hero-pair">
-        <div class="hero-box izquierda">
-            <div class="hero-box-header">
-                <h2>SU TURNO</h2>
-            </div>
-            <div class="hero-box-content">
-                <h3><?php echo $turno->getNumero() ?></h3>
-                    <p>
-                        Departamento:
-                    <?php
-                    switch ($caja -> getDepartamento()){
-                        case 1:
-                            echo 'Cajas';
-                            break;
-                        case 2:
-                            echo 'Asociados';
-                            break;
-                        case 3:
-                            echo 'Caja Fuerte';
-                            break;
-                        case 4:
-                            echo 'Asesoramiento Financiero';
-                            break;
-                        default:
-                            echo 'No Especificado';
-                            break;
-                    }?>
-                    </p>
-
-
-                    <div id="tiempo-espera">
-                        Cargando...
-                    </div>
-
-                    <div id="imprimir-turno" data-turno-id="<?= $turno->getId() ?>"></div>
-                </div>
-                <!-- DIV PARA DISPARAR IMPRESION AUTOMATICA -->
-                <div id="imprimir-turno" data-turno-id="<?= $turno->getId() ?>" ></div>
-            </div>
+    <div class="hero-box izquierda">
+        <div class="hero-box-header">
+            <h2>TURNO</h2>
         </div>
-    </section>
+        <div class="hero-box-content">
+            <h3><?php echo $turno->getNumero() ?></h3>
+            <p>
+                Departamento:
+            <?php
+            // Obtener el departamento del turno
+            $departamentoTurno = $caja->getDepartamento();
+            
+            switch ($departamentoTurno){
+                case 1:
+                    echo 'Ventanillas';
+                    break;
+                case 2:
+                    echo 'Asociados';
+                    break;
+                case 3:
+                    echo 'Caja Fuerte';
+                    break;
+                case 4:
+                    echo 'Asesoramiento Financiero';
+                    break;
+                default:
+                    echo 'No Especificado';
+                    break;
+            }?>
+            </p>
+            <p>
+                Caja: #<?php echo $caja->getNumero(); ?>
+            </p>
+
+            <div id="tiempo-espera">
+                Cargando...
+            </div>
+
+            <div id="imprimir-turno" data-turno-id="<?= $turno->getId() ?>"></div>
+        </div>
+        <!-- DIV PARA DISPARAR IMPRESION AUTOMATICA -->
+        <div id="imprimir-turno" data-turno-id="/<?= $turno->getId() ?>" ></div>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer class="footer">

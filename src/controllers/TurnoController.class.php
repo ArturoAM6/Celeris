@@ -257,15 +257,26 @@ class TurnoController {
         $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         $porPagina = 10;
 
-        $turnos = $this->turnoRepository->obtenerTurnosPaginados($pagina, $porPagina);
-        $totalTurnos = $this->turnoRepository->contarTurnos();
+        // Obtener filtros simples desde GET
+        $filtros = [
+            'id_departamento' => $_GET['departamento'] ?? '',
+            'id_estado' => $_GET['estado'] ?? '',
+            'id_caja' => $_GET['caja'] ?? '',
+            'fecha' => $_GET['fecha'] ?? '',
+            'numero_turno' => $_GET['numero'] ?? ''
+        ];
+
+        // IMPORTANTE: Usar los nuevos métodos con filtros
+        $turnos = $this->turnoRepository->obtenerTurnosPaginadosConFiltros($pagina, $porPagina, $filtros);
+        $totalTurnos = $this->turnoRepository->contarTurnosConFiltros($filtros);
         $totalPaginas = ceil($totalTurnos / $porPagina);
 
         return [
             'turnos' => $turnos,
             'paginaActual' => $pagina,
             'totalPaginas' => $totalPaginas,
-            'totalTurnos' => $totalTurnos
+            'totalTurnos' => $totalTurnos,
+            'filtros' => $filtros
         ];
     } catch (Exception $e) {
         error_log("Error en gestionDeTurnos: " . $e->getMessage());
@@ -273,7 +284,8 @@ class TurnoController {
             'turnos' => [],
             'paginaActual' => 1,
             'totalPaginas' => 0,
-            'totalTurnos' => 0
+            'totalTurnos' => 0,
+            'filtros' => []
         ];
     }
 }
@@ -289,13 +301,13 @@ class TurnoController {
             $id_departamento = $caja->getDepartamento();
             switch ($id_departamento) {
                 case 1:
-                    return 'Cajas';
+                    return 'Ventanillas';
                 case 2:
                     return 'Asociados';
                 case 3:
                     return 'Caja Fuerte';
                 case 4:
-                    return 'Ventanillas';
+                    return 'Asesoramiento Financiero';
                 default:
                     throw new Exception('Departamento no existente');
             }

@@ -29,7 +29,7 @@ $controllerp = new pantallaGeneralController();
                     <h2><?php
                     switch ($departamento){
                         case 1:
-                            echo 'Cajas';
+                            echo 'Ventanillas';
                             break;
                         case 2:
                             echo 'Asociados';
@@ -50,7 +50,7 @@ $controllerp = new pantallaGeneralController();
                     <h3>Turno Siguiente</h3>
                     <?php if ($datos['siguiente']): ?>
                         <div class="numero-turno"><?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
-                        <div class="ventanilla-info">Ventanilla <?= htmlspecialchars($datos['siguiente']['id_caja']) ?></div>
+                        <div class="ventanilla-info">Caja <?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
                     <?php else: ?>
                         <div class="sin-turnos">Sin turnos pendientes</div>
                     <?php endif; ?>
@@ -61,7 +61,7 @@ $controllerp = new pantallaGeneralController();
                     <div class="lista-turnos">
                         <?php if (!empty($datos['espera'])): ?>
                             <?php foreach ($datos['espera'] as $turno): ?>
-                                <div class="turno-item">Turno: <?= htmlspecialchars($turno->getCaja()) ?></div>
+                                <div class="turno-item">Turno: <?= htmlspecialchars($turno->getNumero()) ?></div>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <div class="sin-turnos">No hay turnos en espera</div>

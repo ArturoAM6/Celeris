@@ -13,8 +13,8 @@ class pantallaGeneralController {
 
         foreach ($departamentos as $dep) {
             $turnos[$dep] = [
-                'siguiente' => $this->turnoRepository->obtenerSiguienteTurno(1),
-                'espera'    => $this->turnoRepository->turnosEnEspera()
+                'siguiente' => $this->turnoRepository->obtenerSiguienteTurno($dep),
+                'espera'    => $this->turnoRepository->turnosEnEspera($dep)
             ];
         }
 

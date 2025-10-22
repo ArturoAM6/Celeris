@@ -52,7 +52,7 @@ function actualizarDisplay() {
 
   tiempoDiv.innerHTML = `
     <p>Turnos adelante: ${turnosPendientes}</p>
-    <p>Tiempo estimado: ${formatearTiempo(tiempoRestanteSegundos)}</p>
+    <p>Tiempo de espera estimado: ${formatearTiempo(tiempoRestanteSegundos)}</p>
   `;
 }
 
