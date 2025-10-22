@@ -229,6 +229,58 @@ class EmpleadoController {
         }
     }
 
+    public function gestionDeEmpleados(): array {
+        try {
+            $pagina = isset($_GET['pagina_Empleados']) ? (int)$_GET['pagina_Empleados'] : 1;
+            $porPagina = 10;
+
+            $empleados = $this->empleadoRepository->obtenerEmpleadosPaginados($pagina, $porPagina);
+            $totalEmpleados = $this->empleadoRepository->contarEmpleados();
+            $totalPaginasEmpleados = ceil($totalEmpleados / $porPagina);
+
+            return [
+                'empleados' => $empleados,
+                'paginaActual' => $pagina,
+                'totalPaginas' => $totalPaginasEmpleados,
+                'totalEmpleados' => $totalEmpleados
+            ];
+        } catch (Exception $e) {
+            error_log("Error en gestionDeEmpleados: " . $e->getMessage());
+            return [
+                'empleados' => [],
+                'paginaActual' => 1,
+                'totalPaginas' => 0,
+                'totalEmpleados' => 0
+            ];
+        }
+    }
+
+    public function gestionDeDescansos(): array {
+        try {
+            $pagina = isset($_GET['pagina_Descanso']) ? (int)$_GET['pagina_Descanso'] : 1;
+            $porPagina = 10;
+
+            $descansos = $this->empleadoRepository->obtenerDescansosPaginados($pagina, $porPagina);
+            $totalDescansos = $this->empleadoRepository->contarDescansos();
+            $totalPaginasDescansos = ceil($totalDescansos / $porPagina);
+
+            return [
+                'descansos' => $descansos,
+                'paginaActual' => $pagina,
+                'totalPaginas' => $totalPaginasDescansos,
+                'totalDescansos' => $totalDescansos
+            ];
+        } catch (Exception $e) {
+            error_log("Error en gestionDeDescansos: " . $e->getMessage());
+            return [
+                'descansos' => [],
+                'paginaActual' => 1,
+                'totalPaginas' => 0,
+                'totalDescansos' => 0
+            ];
+        }
+    }
+  
     public function validarTipoTurno(Empleado $empleado): bool {
         try {
             if ($empleado->getTipoTurno() == 1) {

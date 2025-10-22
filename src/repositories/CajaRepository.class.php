@@ -130,6 +130,33 @@ class CajaRepository {
         ]);
     }
 
+    //PAGINACION
+    public function obtenerCajasPaginadas(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT * FROM cajas ORDER BY id ASC LIMIT :inicio, :porPagina";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $cajas = [];
+        while ($caja = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $cajas[] = $this->crearCajaDesdeArray($caja);
+        }
+
+        return $cajas;
+        
+    }
+
+    public function contarCajas(): int {
+        $query = "SELECT COUNT(*) FROM cajas";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    
+
     // ---Operador---
 
     public function getNumeroCaja(int $id_empleado): ?int {

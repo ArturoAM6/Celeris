@@ -166,4 +166,32 @@ class CajaController {
         require_once __DIR__ . '/../views/error.php';
     }
 
+
+
+    public function gestionDeCajas(): array {
+        try {
+            $pagina = isset($_GET['pagina_Caja']) ? (int)$_GET['pagina_Caja'] : 1;
+            $porPagina = 10;
+
+            $cajas = $this->cajaRepository->obtenerCajasPaginadas($pagina, $porPagina);
+            $totalCajas = $this->cajaRepository->contarCajas();
+            $totalPaginasCajas = ceil($totalCajas / $porPagina);
+
+            return [
+                'cajas' => $cajas,
+                'paginaActual' => $pagina,
+                'totalPaginas' => $totalPaginasCajas,
+                'totalCajas' => $totalCajas
+            ];
+        } catch (Exception $e) {
+            error_log("Error en gestionDeCajas: " . $e->getMessage());
+            return [
+                'cajas' => [],
+                'paginaActual' => 1,
+                'totalPaginas' => 0,
+                'totalCajas' => 0
+            ];
+        }
+    }
+
 }

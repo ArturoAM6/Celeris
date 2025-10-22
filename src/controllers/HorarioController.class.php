@@ -85,6 +85,32 @@ class HorarioController {
             }
         }
 
+        public function gestionDeHorarios(): array {
+        try {
+            $pagina = isset($_GET['pagina_Horario']) ? (int)$_GET['pagina_Horario'] : 1;
+            $porPagina = 10;
+
+            $horarios = $this->horarioRepository->obtenerHorariosPaginados($pagina, $porPagina);
+            $totalHorarios = $this->horarioRepository->contarHorarios();
+            $totalPaginasHorarios = ceil($totalHorarios / $porPagina);
+
+            return [
+                'horarios' => $horarios,
+                'paginaActual' => $pagina,
+                'totalPaginas' => $totalPaginasHorarios,
+                'totalHorarios' => $totalHorarios
+            ];
+        } catch (Exception $e) {
+            error_log("Error en gestionDeHorarios: " . $e->getMessage());
+            return [
+                'horarios' => [],
+                'paginaActual' => 1,
+                'totalPaginas' => 0,
+                'totalHorarios' => 0
+            ];
+        }
+    }
+
         private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';

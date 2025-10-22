@@ -35,6 +35,35 @@ class HorarioRepository {
             ':id' => $empleado->getId()
         ]);
     }
+
+    //PAGINACION
+    public function obtenerHorariosPaginados(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT e.id, h.hora_entrada, h.hora_salida, t.id as tipo_turno
+               FROM empleados e
+               INNER JOIN horarios h ON e.id_horario = h.id
+               INNER JOIN tipo_turno t ON e.id_tipo_turno = t.id
+               ORDER BY e.id ASC LIMIT :inicio, :porPagina;";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $horarios = [];
+        while ($horario = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $horarios[] = ($horario);
+        }
+
+        return $horarios;
+        
+    }
+
+    public function contarHorarios(): int {
+        $query = "SELECT COUNT(*) FROM empleados";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
 }
 
 ?> 

@@ -130,6 +130,22 @@ if ($_SESSION['id_rol'] === 1) {
         $turnosPaginados = $datosPaginacion['turnos'] ?? [];
         $paginaActual = $datosPaginacion['paginaActual'] ?? 1;
         $totalPaginas = $datosPaginacion['totalPaginas'] ?? 0;
+        $datosPaginacionCajas = $cajaController->gestionDeCajas();
+        $cajasPaginadas = $datosPaginacionCajas['cajas'] ?? [];
+        $paginaActualCajas = $datosPaginacionCajas['paginaActual'] ?? 1;
+        $totalPaginasCajas = $datosPaginacionCajas['totalPaginas'] ?? 0;
+        $datosPaginacionEmpleados = $empleadoController->gestionDeEmpleados();
+        $empleadosPaginados = $datosPaginacionEmpleados['empleados'] ?? [];
+        $paginaActualEmpleados = $datosPaginacionEmpleados['paginaActual'] ?? 1;
+        $totalPaginasEmpleados = $datosPaginacionEmpleados['totalPaginas'] ?? 0;
+        $datosPaginacionHorarios = $HorarioController->gestionDeHorarios();
+        $horariosPaginados = $datosPaginacionHorarios['horarios'] ?? [];
+        $paginaActualHorarios = $datosPaginacionHorarios['paginaActual'] ?? 1;
+        $totalPaginasHorarios = $datosPaginacionHorarios['totalPaginas'] ?? 0;
+        $datosPaginacionDescansos = $empleadoController->gestionDeDescansos();
+        $descansosPaginados = $datosPaginacionDescansos['descansos'] ?? [];
+        $paginaActualDescansos = $datosPaginacionDescansos['paginaActual'] ?? 1;
+        $totalPaginasDescansos = $datosPaginacionDescansos['totalPaginas'] ?? 0;
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
