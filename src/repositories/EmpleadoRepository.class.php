@@ -2,41 +2,7 @@
 
 class EmpleadoRepository {
     private PDO $conexion;
-
-    public function buscarEmpleadosCajaAsignadaPausada(): array{
-        $stmt = $this->conexion->prepare ("
-        SELECT e.*, c.id as id_caja, ec.nombre as estado_caja
-        FROM empleados e
-        JOIN asignacion_cajas ac ON e.id = ac.id_empleado
-        JOIN cajas c ON ac.id_caja = c.id
-        JOIN estado_caja ec ON c.id_estado = ec.id
-        WHERE ec.nombre = 'Pausada'
-        ");
-
-        $stmt->execute();
-        $empleados=[];
-        while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
-        }
-
-        return $empleados;
-    }
-
-    public function buscarEmpleadosConCajaPausada(): array{
-        $stmt = $this->conexion->prepare("
-        SELECT e.* FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
-        JOIN cajas c ON ac.id_caja = c.id
-        WHERE c.id_estado = 3 AND e.activo = 1");
-
-        $stmt->execute();
-        $empleados =[];
-        while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
-        }
-
-        return $empleados;
-    }
-
+    
     public function __construct() {
         $this->conexion = Database::getInstancia()->getConexion();
     }
@@ -149,6 +115,53 @@ class EmpleadoRepository {
 
         return $empleados;
     }
+    
+    public function buscarEmpleadosActivos(): ?array {
+        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
+        $stmt->execute();
+        $empleados = [];
+
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
+
+    // REVISAR buscarEmpleadosCajaAsignadaPausada y buscarEmpleadosConCajaPausada. EmpleadoController linea 44.
+    public function buscarEmpleadosCajaAsignadaPausada(): array{
+        $stmt = $this->conexion->prepare ("
+        SELECT e.*, c.id as id_caja, ec.nombre as estado_caja
+        FROM empleados e
+        JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+        JOIN cajas c ON ac.id_caja = c.id
+        JOIN estado_caja ec ON c.id_estado = ec.id
+        WHERE ec.nombre = 'Pausada'
+        ");
+
+        $stmt->execute();
+        $empleados=[];
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
+
+    public function buscarEmpleadosConCajaPausada(): array{
+        $stmt = $this->conexion->prepare("
+        SELECT e.* FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+        JOIN cajas c ON ac.id_caja = c.id
+        WHERE c.id_estado = 3 AND e.activo = 1");
+
+        $stmt->execute();
+        $empleados =[];
+        while ($data = $stmt->fetch()) {
+            $empleados[] = $this->crearEmpleadoSegunRol($data);
+        }
+
+        return $empleados;
+    }
 
     public function iniciarSesionEmpleado(int $id): bool {
         $stmt = $this->conexion->prepare("UPDATE empleados SET status = 1 WHERE id = :id");
@@ -164,18 +177,6 @@ class EmpleadoRepository {
             return true;
         }
         return false;
-    }
-    
-    public function buscarEmpleadosActivos(): ?array {
-        $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
-        $stmt->execute();
-        $empleados = [];
-
-        while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
-        }
-
-        return $empleados;
     }
 
     private function crearEmpleadoSegunRol(array $data): Empleado {

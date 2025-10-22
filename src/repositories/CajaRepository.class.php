@@ -7,6 +7,49 @@ class CajaRepository {
         $this->conexion = Database::getInstancia()->getConexion();
     }
 
+    public function todos(): array {
+        $stmt = $this->conexion->prepare('SELECT * FROM cajas');
+        $stmt->execute();
+        $cajas= [];
+
+        while ($caja = $stmt->fetch()) {
+            $cajas[] = $this->crearCajaDesdeArray($caja);
+        }
+
+        return $cajas;
+    }
+
+    // public function guardar(Caja $caja): void {
+    //     $stmt = $this->conexion->prepare(
+    //         "INSERT INTO cajas (numero, id_departamento, id_estado) 
+    //         VALUES (:numero, :id_departamento, :id_estado)"
+    //     );
+    //     $stmt->execute([
+    //         ':numero' => $caja->getNumero(),
+    //         ':id_departamento' => $caja->getDepartamento(),
+    //         ':id_estado' => $caja->getEstado()
+    //     ]);
+
+    //     $caja->setId($this->conexion->lastInsertId());
+    // }
+
+    public function actualizar(Caja $caja): bool {
+        $stmt = $this->conexion->prepare(
+            "UPDATE cajas SET 
+            numero = :numero,
+            id_departamento = :id_departamento,
+            id_estado = :id_estado
+            WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            ':numero' => $caja->getNumero(),
+            ':id_departamento' => $caja->getDepartamento(),
+            ':id_estado' => $caja->getEstado(),
+            ':id' => $caja->getId()
+        ]);
+    }
+
     public function obtenerCajaPorId(int $id): ?Caja {
         $stmt = $this->conexion->prepare('SELECT * FROM cajas WHERE id = :id');
         $stmt->execute([':id' => $id]);
@@ -67,49 +110,6 @@ class CajaRepository {
         $caja = $this->crearCajaDesdeArray($caja);  
 
         return $caja;
-    }
-
-    public function todos(): array {
-        $stmt = $this->conexion->prepare('SELECT * FROM cajas');
-        $stmt->execute();
-        $cajas= [];
-
-        while ($caja = $stmt->fetch()) {
-            $cajas[] = $this->crearCajaDesdeArray($caja);
-        }
-
-        return $cajas;
-    }
-
-    // public function guardar(Caja $caja): void {
-    //     $stmt = $this->conexion->prepare(
-    //         "INSERT INTO cajas (numero, id_departamento, id_estado) 
-    //         VALUES (:numero, :id_departamento, :id_estado)"
-    //     );
-    //     $stmt->execute([
-    //         ':numero' => $caja->getNumero(),
-    //         ':id_departamento' => $caja->getDepartamento(),
-    //         ':id_estado' => $caja->getEstado()
-    //     ]);
-
-    //     $caja->setId($this->conexion->lastInsertId());
-    // }
-
-    public function actualizar(Caja $caja): bool {
-        $stmt = $this->conexion->prepare(
-            "UPDATE cajas SET 
-            numero = :numero,
-            id_departamento = :id_departamento,
-            id_estado = :id_estado
-            WHERE id = :id"
-        );
-
-        return $stmt->execute([
-            ':numero' => $caja->getNumero(),
-            ':id_departamento' => $caja->getDepartamento(),
-            ':id_estado' => $caja->getEstado(),
-            ':id' => $caja->getId()
-        ]);
     }
 
     public function asignarCaja(int $id_caja, int $id_empleado): void {

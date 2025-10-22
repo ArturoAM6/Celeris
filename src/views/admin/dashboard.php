@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de administrador - CELERIS</title>
   <link rel="stylesheet" href="<?= BASE_URL ?>/css/pan_admin_emp.css">
+  <script src="https://kit.fontawesome.com/d4435a1b16.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
@@ -209,30 +210,30 @@
                                         'id_empleado' => $empleado_id ?? null
                                     ])) 
                                     ?>
-                                    )">Asignar Caja</button>
+                                    )"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <?php endif?>
                                 <?php if ($caja->getEstado() == 1): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cerrar" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Cerrar</button>
+                                        <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
                                     </form>
                                     <form action="<?= BASE_URL ?>/admin/cajas/pausar" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Pausar</button>
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Abrir</button>
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                     </form>
                                     <form action="<?= BASE_URL ?>/admin/cajas/fuera-servicio" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Fuera de servicio</button>
+                                        <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 4): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Abrir</button>
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                     </form>
                                 <?php endif ?>
                             </td>
