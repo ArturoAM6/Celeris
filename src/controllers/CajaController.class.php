@@ -108,10 +108,16 @@ class CajaController {
         }
     }
 
+    //OPERADOR CAMBIO -pendiente de ver si se puede-
     public function pausarCaja(): void {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             try {
-                $id = $_POST['id'];
+                // Aceptamos ambos nombres de campo para compatibilidad
+                $id = $_POST['id'] ?? $_POST['id_caja'] ?? null;
+
+                if (!$id) {
+                    throw new Exception("ID de caja no proporcionado.");
+                }
 
                 $caja = $this->cajaRepository->obtenerCajaPorId($id);
 
@@ -119,11 +125,52 @@ class CajaController {
                     throw new Exception("La caja no existe.");
                 }
 
+                // VALIDACION ADICIONAL: No permitir pausar si existe un turno llamado o en atención
+                $turnoRepo = new TurnoRepository();
+                $turnoLlamado = $turnoRepo->obtenerTurnoLlamadoPorCaja($id);
+                $turnosAtencion = $turnoRepo->obtenerTurnosEnAtencion(); // devuelve todos, filtramos por caja
+
+                // comprobar si hay turno en atencion para esta caja
+                $hayAtencionEnCaja = false;
+                foreach ($turnosAtencion as $t) {
+                    if ((int)$t->getCaja() === (int)$id) {
+                        $hayAtencionEnCaja = true;
+                        break;
+                    }
+                }
+
+                if ($turnoLlamado || $hayAtencionEnCaja) {
+                    header('Location: ' . BASE_URL . '/operador?error=' . urlencode('No puede entrar en descanso: existe un turno llamado o en atención.'));
+                    exit;
+                }
+
                 $this->cajaRepository->cambiarEstado($id, 3);
-                header('Location: ' . BASE_URL . '/admin?mensaje=cambio_exitoso');
+                header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('Caja en descanso.'));
                 exit;
             } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+
+    //OPERADOR CAMBIO -pendiente de ver si se puede-
+    public function reanudarCaja(): void {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                $id = $_POST['id'] ?? $_POST['id_caja'] ?? null;
+                if (!$id) {
+                    throw new Exception("ID de caja no proporcionado.");
+                }
+                $caja = $this->cajaRepository->obtenerCajaPorId($id);
+                if (!$caja) {
+                    throw new Exception("La caja no existe.");
+                }
+                $this->cajaRepository->cambiarEstado($id, 1);
+                header('Location: ' . BASE_URL . '/operador?mensaje=' . urlencode('Caja reabierta.'));
+                exit;
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
                 exit;
             }
         }

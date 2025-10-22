@@ -65,6 +65,17 @@ class TurnoRepository {
         return $turnos;
     }
 
+    public function obtenerTurnoEnAtencionPorCaja(int $idCaja): ?array {
+        //  Verifica si el operador puede llamar un nuevo turno.
+        //  Si ya tiene uno en atención, devuelve false.
+        foreach ($this->turnos as $turno) {
+            if ($turno['caja_id'] === $idCaja && $turno['estado'] === 'EN_ATENCION') {
+                return $turno;
+            }
+        }
+        return null;
+    }
+
     public function obtenerTurnosEnEspera(): array {
         $stmt = $this->conexion->prepare(
             "SELECT t.*, tl.id_estado 
@@ -88,7 +99,7 @@ class TurnoRepository {
 
     public function obtenerTurnoActivoPorCaja(int $id_caja): ?Turno {
         $stmt = $this->conexion->prepare(
-            "SELECT t.* from turnos t, turnos_log tl 
+            "SELECT t.*, tl.id_estado from turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno
             AND tl.id_estado = 3
             AND t.id_caja = :id_caja
@@ -101,7 +112,9 @@ class TurnoRepository {
             return null;
         }
 
-        return $this->crearTurnoDesdeArray($data);  
+        $turno = $this->crearTurnoDesdeArray($data);  
+        $turno->setEstado($data['id_estado']);
+        return $turno;
         
     }
 
@@ -131,6 +144,7 @@ class TurnoRepository {
             WHERE t.id = tl.id_turno
             AND tl.id_estado = 2
             AND t.id_caja = :id_caja
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
             ORDER BY tl.timestamp_actualizacion ASC
             LIMIT 5"
         );
@@ -324,7 +338,7 @@ class TurnoRepository {
         $stmt->execute([':id_turno' => $id_turno]);
         $resultado = $stmt->fetch();
         
-        return $resultado ? $resultado['id_estado'] : null;
+        return $resultado ? (int)$resultado['id_estado'] : null;
     }
 
     public function buscarDepartamentoTurno(int $id): int {

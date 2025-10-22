@@ -228,6 +228,14 @@ if ($_SESSION['id_rol'] === 2) {
         exit;
     }
 
+    //Finalizar turno
+    if ($ruta == '/operador/caja/finalizar') {
+        $controller = new EmpleadoController();
+        $turno_controller = new TurnoController();
+        $turno = $turno_controller->finalizarUnTurno();
+        exit;
+    }
+
 }
 // =============== Rutas internas - Recepcionista ===============
 if ($_SESSION['id_rol'] === 3) {

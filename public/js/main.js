@@ -131,3 +131,19 @@ if (selectDepartamento && selectEmpleado) {
       });
   });
 }
+
+
+// Deshabilita el botón "Llamar" en la vista de operador cuando se envía el formulario.
+// Evita doble-click y da feedback inmediato.
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.form-llamar').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      // deshabilitar todos los botones de llamar
+      document.querySelectorAll('.form-llamar button').forEach(function(btn) {
+        btn.disabled = true;
+        btn.innerText = 'Llamando...';
+      });
+    });
+  });
+});
+
