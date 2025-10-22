@@ -254,7 +254,7 @@ class TurnoController {
 
     public function gestionDeTurnos(): array {
     try {
-        $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $pagina = isset($_GET['pagina_Turno']) ? (int)$_GET['pagina_Turno'] : 1;
         $porPagina = 10;
 
         // Obtener filtros simples desde GET
@@ -266,7 +266,6 @@ class TurnoController {
             'numero_turno' => $_GET['numero'] ?? ''
         ];
 
-        // IMPORTANTE: Usar los nuevos métodos con filtros
         $turnos = $this->turnoRepository->obtenerTurnosPaginadosConFiltros($pagina, $porPagina, $filtros);
         $totalTurnos = $this->turnoRepository->contarTurnosConFiltros($filtros);
         $totalPaginas = ceil($totalTurnos / $porPagina);
@@ -289,11 +288,7 @@ class TurnoController {
         ];
     }
 }
-
-
-
-
-    
+ 
 
     public function obtenerDepartamentoTurno(int $id_caja): string {
         try {

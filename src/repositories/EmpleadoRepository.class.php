@@ -221,6 +221,63 @@ class EmpleadoRepository {
         return $empleado;
     }
 
+    //PAGINACION
+    public function obtenerEmpleadosPaginados(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT * FROM empleados ORDER BY id ASC LIMIT :inicio, :porPagina";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $empleados = [];
+        while ($empleado = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $empleados[] = $this->crearEmpleadoSegunRol($empleado);
+        }
+
+        return $empleados;
+        
+    }
+
+    public function contarEmpleados(): int {
+        $query = "SELECT COUNT(*) FROM empleados";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function obtenerDescansosPaginados(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT e.* FROM empleados e 
+            JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+            JOIN cajas c ON ac.id_caja = c.id
+            WHERE c.id_estado = 3 AND e.activo = 1 
+            ORDER BY e.id DESC 
+            LIMIT :inicio, :porPagina";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $descansos = [];
+        while ($descanso = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $descansos[] = $this->crearEmpleadoSegunRol($descanso);
+        }
+
+        return $descansos;
+        
+    }
+
+    public function contarDescansos(): int {
+        $query = "SELECT COUNT(*) FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+        JOIN cajas c ON ac.id_caja = c.id
+        WHERE c.id_estado = 3 AND e.activo = 1";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';
