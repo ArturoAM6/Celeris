@@ -16,17 +16,7 @@ class ClienteRepository {
             return null;
         }
 
-        $cliente = new Cliente(
-            $data['nombre'], 
-            $data['apellido_paterno'], 
-            $data['apellido_materno'], 
-            $data['email'], 
-            $data['numero_cuenta'], 
-            $data['telefono']
-        );
-        $cliente->setId($data['id']);
-
-        return $cliente;
+        return $this->crearClienteDesdeArray($data);
     }
 
     public function buscarPorId(int $id): ?Cliente { 
@@ -38,7 +28,12 @@ class ClienteRepository {
             return null;
         }
 
-        $cliente = new Cliente(
+        return $this->crearClienteDesdeArray($data);
+    }
+
+    private function crearClienteDesdeArray(array $data): Cliente {
+        try {
+            $cliente = new Cliente(
             $data['nombre'], 
             $data['apellido_paterno'], 
             $data['apellido_materno'], 
@@ -49,5 +44,13 @@ class ClienteRepository {
         $cliente->setId($data['id']);
 
         return $cliente;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    private function manejarError(string $mensaje): void {
+        $error = $mensaje;
+        require_once __DIR__ . '/../views/error.php';
     }
 }
