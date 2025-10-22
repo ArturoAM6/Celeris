@@ -214,6 +214,8 @@ if ($_SESSION['id_rol'] === 2) {
         }
         $turno_controller = new TurnoController();
         $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());
+        $turno_espera = $turno_controller->obtenerNumeroEsperaCaja($caja->getId());
+        $turno_llamado = $turno_controller->llamarTurnoCaja($caja->getId());
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
 
@@ -231,6 +233,29 @@ if ($_SESSION['id_rol'] === 2) {
         exit;
     }
 
+    //Llamar un turno
+    if ($ruta == '/operador/caja/llamar') {
+        $controller = new EmpleadoController();
+        $turno_controller = new TurnoController();
+        $turno = $turno_controller->llamarUnTurno();
+        exit;
+    }
+
+    //Empezar el turno
+    if ($ruta == '/operador/caja/empezar') {
+        $controller = new EmpleadoController();
+        $turno_controller = new TurnoController();
+        $turno = $turno_controller->empezarUnTurno();
+        exit;
+    }
+
+    //Finalizar turno
+    if ($ruta == '/operador/caja/finalizar') {
+        $controller = new EmpleadoController();
+        $turno_controller = new TurnoController();
+        $turno = $turno_controller->finalizarUnTurno();
+        exit;
+    }
 
 }
 // =============== Rutas internas - Recepcionista ===============
