@@ -119,6 +119,7 @@ class EmpleadoController {
                 $apellido_paterno = $_POST['apellido_paterno'];
                 $apellido_materno = $_POST['apellido_materno'] ?? '';
                 $password = $_POST['password'];
+                $password2 = $_POST['password2'];
                 $email = $_POST['email'];
                 $id_rol = $_POST['id_rol'];
                 $id_departamento = $_POST['id_departamento'];
@@ -126,6 +127,9 @@ class EmpleadoController {
 
                 if (empty($nombre) || empty($apellido_paterno) || empty($password) || empty($email) || empty($id_rol) || empty($id_departamento) || empty($id_tipo_turno)) {
                     throw new Exception("Los campos con * son obligatorios");
+                }
+                if (!$this->contraseñasSonIguales($password, $password2)){
+                    throw new Exception("Las contraseñas no coinciden");
                 }
 
                 $empleado = $this->instanciarEmpleadoSegunRol($_POST);
@@ -286,4 +290,51 @@ class EmpleadoController {
         }
     }
 
+    private function validar_nombre($name) {
+    $resultado;
+    if(!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,12}$/", $name)){
+        $resultado = false;
+    } else {
+        $resultado = true;
+    }
+    return $resultado;
+    }
+
+    private function validar_apellido($last_name) {
+        $resultado;
+        if(!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,12}$/", $last_name)){
+            $resultado = false;
+        } else {
+            $resultado = true;
+        }
+        return $resultado;
+    }
+    
+    private function validar_contraseña($pass) {
+    $resultado;
+    if(!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/", $pass)){
+        $resultado = false;
+    } else {
+        $resultado = true;
+    }
+    return $resultado;
+    }
+    
+     private function contraseñasSonIguales($pass, $pass2){
+    if ($pass === $pass2){
+        return true;
+    } else{
+        return false;
+    }
+    }
+
+    private function validarEmail(){
+        $resultado;
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $resultado = false;
+    } else {
+        $resultado = true;
+    }
+    return $resultado;
+    }
 }

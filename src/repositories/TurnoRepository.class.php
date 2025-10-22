@@ -305,22 +305,58 @@ public function contarTurnosConFiltros(array $filtros): int {
         return $turnos;
     }
 
-    public function turnosEnEspera(): array {
-        $stmt = $this->conexion->prepare(
-            "SELECT t.* 
-            FROM turnos t, turnos_log tl 
-            WHERE t.id = tl.id_turno 
-            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id)
-            AND tl.id_estado = 2
-            ORDER BY tl.timestamp_actualizacion ASC"
-        );
+    public function turnosEnEspera(?int $departamento = null): array {
+    $query = "SELECT t.*, 
+        c.numero
+        FROM turnos t
+        INNER JOIN turnos_log tl ON t.id = tl.id_turno
+        INNER JOIN cajas c ON c.id = t.id_caja
+        WHERE tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id)
+        AND tl.id_estado = 2";
+    
+    // Solo filtrar por departamento si se proporciona
+    if ($departamento !== null) {
+        $query .= " AND c.id_departamento = :departamento";
+    }
+    
+    $query .= " AND DATE(tl.timestamp_actualizacion) = CURDATE()
+        ORDER BY tl.timestamp_actualizacion ASC
+        LIMIT 4";
+    
+    $stmt = $this->conexion->prepare($query);
+    
+    if ($departamento !== null) {
+        $stmt->execute([':departamento' => $departamento]);
+    } else {
         $stmt->execute();
-        $turnos = [];
-        while ($data = $stmt->fetch()) {
-            $turnos[] = $this->crearTurnoDesdeArray($data);
-        }
+    }
+    
+    $turnos = [];
+    while ($data = $stmt->fetch()) {
+        $turnos[] = $this->crearTurnoDesdeArray($data);
+    }
 
-        return $turnos;
+    return $turnos;
+}
+
+     public function obtenerSiguienteTurno(int $departamento): ?array {
+        $stmt = $this->conexion->prepare(
+            "SELECT 
+                t.*,
+                c.numero, 
+                tl.id_estado
+                FROM turnos t
+                INNER JOIN turnos_log tl ON tl.id_turno = t.id
+                INNER JOIN cajas c ON c.id = t.id_caja
+                WHERE c.id_departamento = :departamento
+                AND tl.id_estado = 3
+                ORDER BY t.id ASC
+                LIMIT 1
+            ");
+        $stmt->execute([':departamento' => $departamento]);
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        return $resultado ?: null; // Convierte false a null
     }
 
     public function turnosEnAtencion(): array {

@@ -494,12 +494,12 @@
                 
                 <div class="campo">
                     <label for="registrar_password">Contraseña *</label>
-                    <input type="password" id="registrar_password" name="password">
+                    <input type="password" id="registrar_password" name="password" require>
                 </div>
 
                 <div class="campo">
                     <label for="registrar_password2">Repita su contraseña *</label>
-                    <input type="password" id="registrar_password2" name="password2">
+                    <input type="password" id="registrar_password2" name="password2" require>
                 </div>
 
                 <div class="campo">
