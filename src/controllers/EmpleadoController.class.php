@@ -54,10 +54,15 @@ class EmpleadoController {
 
     public function ObtenerEmpleadoCaja(): ?Caja{
         try {
-            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
-            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
-            return $caja;
-
+            if ($_SESSION["id_empleado"]) {
+                $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+                if (!$id_caja) {
+                    return null;
+                }
+                $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+                return $caja;
+            }
+            return null;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
@@ -217,6 +222,21 @@ class EmpleadoController {
                 header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
                 exit;
             }
+        }
+    }
+
+    public function validarTipoTurno(Empleado $empleado): bool {
+        try {
+            if ($empleado->getTipoTurno() == 1) {
+                $diasPermitidos = array(1,3,5);
+                return (in_array(date('w'), $diasPermitidos)) ? true : false;
+            } elseif ($empleado->getTipoTurno() == 2) {
+                $diasPermitidos = array(1,2,3,4,5);
+                return (in_array(date('w'), $diasPermitidos)) ? true : false;
+            }
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+            return false;
         }
     }
 

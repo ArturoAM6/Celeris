@@ -1,5 +1,35 @@
-// Obtener el elemento con id="defaultOpen" y hacer clic en el
-document.getElementById("defaultOpen").click();
+// Restaurar la pestaña activa al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  const activeTab = localStorage.getItem('activeTab');
+  
+  if (activeTab) {
+    // Si hay una pestaña guardada, abrirla
+    const tabButtons = document.getElementsByClassName('tab-links');
+    for (let i = 0; i < tabButtons.length; i++) {
+      const buttonText = tabButtons[i].textContent.trim().toLowerCase();
+      if (buttonText === activeTab.toLowerCase()) {
+        tabButtons[i].click();
+        return;
+      }
+    }
+  }
+  
+  // Si no hay pestaña guardada, abrir la primera por defecto
+  document.getElementById("defaultOpen").click();
+});
+
+// Guardar la pestaña activa antes de enviar cualquier formulario
+document.addEventListener('DOMContentLoaded', function() {
+  const forms = document.querySelectorAll('form');
+  forms.forEach(form => {
+    form.addEventListener('submit', function() {
+      const activeTabContent = document.querySelector('.tab-content[style*="display: block"]');
+      if (activeTabContent) {
+        localStorage.setItem('activeTab', activeTabContent.id);
+      }
+    });
+  });
+});
 
 function openTab(evt, tabName) {
   // Declarar las variables
@@ -20,6 +50,9 @@ function openTab(evt, tabName) {
   // Mostrar la pestaña actual y añadir "active" en la clase del boton que abrio la pestaña
   document.getElementById(tabName).style.display = "block";
   evt.currentTarget.className += " active";
+  
+  // Guardar la pestaña activa en localStorage
+  localStorage.setItem('activeTab', tabName);
 }
 
 function abrirModal(modalName) {

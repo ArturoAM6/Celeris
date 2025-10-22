@@ -44,6 +44,131 @@ class TurnoRepository {
         return (int) $stmt->fetchColumn();
     }
 
+    public function obtenerTurnosPaginadosConFiltros(int $pagina, int $porPagina, array $filtros): array {
+    $inicio = ($pagina - 1) * $porPagina;
+    
+    $condiciones = ["1=1"];
+    $params = [];
+    
+    // Filtro por departamento
+    if (!empty($filtros['id_departamento'])) {
+        $condiciones[] = "c.id_departamento = :id_departamento";
+        $params[':id_departamento'] = $filtros['id_departamento'];
+    }
+    
+    // Filtro por estado
+    if (!empty($filtros['id_estado'])) {
+        $condiciones[] = "estado_actual.id_estado = :id_estado";
+        $params[':id_estado'] = $filtros['id_estado'];
+    }
+    
+    // Filtro por caja
+    if (!empty($filtros['id_caja'])) {
+        $condiciones[] = "t.id_caja = :id_caja";
+        $params[':id_caja'] = $filtros['id_caja'];
+    }
+    
+    // Filtro por fecha
+    if (!empty($filtros['fecha'])) {
+        $condiciones[] = "DATE(t.timestamp_solicitud) = :fecha";
+        $params[':fecha'] = $filtros['fecha'];
+    }
+    
+    // Filtro por número de turno
+    if (!empty($filtros['numero_turno'])) {
+        $condiciones[] = "t.numero = :numero_turno";
+        $params[':numero_turno'] = $filtros['numero_turno'];
+    }
+    
+    $where = implode(" AND ", $condiciones);
+    
+    $query = "
+        SELECT 
+            t.*,
+            c.numero as numero_caja,
+            c.id_departamento,
+            d.nombre as nombre_departamento,
+            cl.nombre as cliente_nombre,
+            cl.apellido_paterno as cliente_apellido_paterno,
+            estado_actual.id_estado,
+            estado_actual.nombre_estado
+        FROM turnos t
+        INNER JOIN cajas c ON t.id_caja = c.id
+        INNER JOIN departamentos d ON c.id_departamento = d.id
+        LEFT JOIN clientes cl ON t.id_cliente = cl.id
+        INNER JOIN (
+            SELECT 
+                tl.id_turno,
+                tl.id_estado,
+                et.nombre as nombre_estado
+            FROM turnos_log tl
+            INNER JOIN estado_turno et ON tl.id_estado = et.id
+            INNER JOIN (
+                SELECT id_turno, MAX(id) as max_id
+                FROM turnos_log
+                GROUP BY id_turno
+            ) latest ON tl.id_turno = latest.id_turno AND tl.id = latest.max_id
+        ) estado_actual ON t.id = estado_actual.id_turno
+        WHERE $where
+        ORDER BY t.timestamp_solicitud DESC
+        LIMIT :inicio, :porPagina
+    ";
+    
+    $stmt = $this->conexion->prepare($query);
+    $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+    $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+    
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function contarTurnosConFiltros(array $filtros): int {
+    $condiciones = ["1=1"];
+    $params = [];
+    
+    if (!empty($filtros['id_departamento'])) {
+        $condiciones[] = "c.id_departamento = :id_departamento";
+        $params[':id_departamento'] = $filtros['id_departamento'];
+    }
+    
+    if (!empty($filtros['id_caja'])) {
+        $condiciones[] = "t.id_caja = :id_caja";
+        $params[':id_caja'] = $filtros['id_caja'];
+    }
+    
+    if (!empty($filtros['fecha'])) {
+        $condiciones[] = "DATE(t.timestamp_solicitud) = :fecha";
+        $params[':fecha'] = $filtros['fecha'];
+    }
+    
+    if (!empty($filtros['numero_turno'])) {
+        $condiciones[] = "t.numero = :numero_turno";
+        $params[':numero_turno'] = $filtros['numero_turno'];
+    }
+    
+    $where = implode(" AND ", $condiciones);
+    
+    $query = "
+        SELECT COUNT(*) as total
+        FROM turnos t
+        INNER JOIN cajas c ON t.id_caja = c.id
+        WHERE $where
+    ";
+    
+    $stmt = $this->conexion->prepare($query);
+    
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    
+    $stmt->execute();
+    return (int) $stmt->fetchColumn();
+    }
+
 
 
     public function obtenerTurnosActivos(): array {

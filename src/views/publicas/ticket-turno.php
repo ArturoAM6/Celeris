@@ -32,7 +32,7 @@
                     <?php
                     switch ($caja -> getDepartamento()){
                         case 1:
-                            echo 'Cajas';
+                            echo 'Ventanillas';
                             break;
                         case 2:
                             echo 'Asociados';

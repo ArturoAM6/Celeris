@@ -36,6 +36,7 @@ if ($ruta === '/turno') {
     $controller = new TurnoController();
     $controller->pantallaTurnos();
     require_once __DIR__ . '/../src/views/publicas/pantalla-turnos.php';
+    exit;
 }
 if ($ruta === '/turno/generar') {
     $controller = new TurnoController();
@@ -84,7 +85,7 @@ if ($ruta === '/login') {
 if ($ruta === '/logout') {
     $controller = new AuthController();
     $controller->logout();
-    header('Location: '. BASE_URL . '/');
+    header("Location: " . BASE_URL . "/login");
     exit;
 }
 
@@ -103,6 +104,9 @@ if (!$empleado) {
 
 // =============== Rutas internas - Administrador ===============
 if ($_SESSION['id_rol'] === 1) {
+    if ($ruta === "/operador") {
+        header("Location: " . BASE_URL . "/admin");
+    }
     if ($ruta === '/admin') {
         $empleadoController = new EmpleadoController();
         $empleados = $empleadoController->listarEmpleados();
@@ -172,6 +176,11 @@ if ($_SESSION['id_rol'] === 1) {
         $cajaController->pausarCaja();
         exit;
     }
+    if ($ruta === '/admin/cajas/fuera-servicio') {
+        $cajaController = new CajaController();
+        $cajaController->fueraServicioCaja();
+        exit;
+    }
 
     //Empleados pausados
     if ($ruta === '/admin/empleados/pausados') {
@@ -188,9 +197,21 @@ if ($_SESSION['id_rol'] === 1) {
 } 
 // =============== Rutas internas - Operador ===============
 if ($_SESSION['id_rol'] === 2) {
+    if ($ruta === "/admin") {
+        header("Location: " . BASE_URL . "/operador");
+    }
     if ($ruta === '/operador') {
         $controller = new EmpleadoController();
+        $empleado = $controller->obtenerEmpleadoPorId($_SESSION["id_empleado"]);
+        if (!$controller->validarTipoTurno($empleado)) {
+            header("location: " . BASE_URL . "/logout");
+            exit;
+        }
         $caja = $controller->ObtenerEmpleadoCaja();
+        if (!$caja) {
+            header("location: " . BASE_URL . "/logout");
+            exit;
+        }
         $turno_controller = new TurnoController();
         $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());
         $turno_espera = $turno_controller->obtenerNumeroEsperaCaja($caja->getId());
