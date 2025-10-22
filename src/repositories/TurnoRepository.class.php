@@ -211,15 +211,59 @@ public function contarTurnosConFiltros(array $filtros): int {
 
     // ---IniOperador---
 
+    public function buscarTurnosPorCaja(int $id_caja): array {
+        $stmt = $this->conexion->prepare("SELECT t.*, tl.id_estado 
+        FROM turnos t, turnos_log tl 
+        WHERE t.id = tl.id_turno 
+        AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id) 
+        AND DATE(tl.timestamp_actualizacion) = CURDATE() 
+        AND tl.id_estado NOT IN (4,5)
+        AND id_caja = :id_caja
+        ORDER BY tl.timestamp_actualizacion ASC");
+        $stmt->execute([":id_caja" => $id_caja]);
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
+        }
+
+        return $turnos;
+    }
+
     public function obtenerTurnoActivoPorCaja(int $id_caja): ?Turno {
-        $smtm = $this->conexion->prepare(
+        $stmt = $this->conexion->prepare(
+            "SELECT t.*, tl.id_estado from turnos t, turnos_log tl 
+            WHERE t.id = tl.id_turno
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id)
+            AND tl.id_estado = 3
+            AND t.id_caja = :id_caja
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
+        );
+        $stmt->execute([':id_caja' => $id_caja]);
+        $data = $stmt->fetch();
+        if (!$data) {
+            return null;
+        }
+
+        $turno = $this->crearTurnoDesdeArray($data);  
+        $turno->setEstado($data['id_estado']);
+        return $turno;
+        
+    }
+
+    //llamar un turno
+    public function obtenerTurnoLlamadoPorCaja(int $id_caja): ?Turno {
+        $stmt = $this->conexion->prepare(
             "SELECT t.* from turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno
-            AND tl.id_estado = 3
-            AND t.id_caja = :id_caja"
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id)
+            AND tl.id_estado = 1
+            AND t.id_caja = :id_caja
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC"
         );
-        $smtm->execute([':id_caja' => $id_caja]);
-        $data = $smtm->fetch();
+        $stmt->execute([':id_caja' => $id_caja]);
+        $data = $stmt->fetch();
         if (!$data) {
             return null;
         }
@@ -228,20 +272,24 @@ public function contarTurnosConFiltros(array $filtros): int {
         
     }
 
-    public function obtenerTurnoEsperaPorCaja(int $id_caja): ?Turno {
-        $smtm = $this->conexion->prepare(
+    public function obtenerTurnoEsperaPorCaja(int $id_caja): ?array {
+        $stmt = $this->conexion->prepare(
             "SELECT t.* from turnos t, turnos_log tl 
             WHERE t.id = tl.id_turno
+            AND tl.id = (SELECT MAX(id) FROM turnos_log WHERE id_turno = t.id)
             AND tl.id_estado = 2
-            AND t.id_caja = :id_caja"
+            AND t.id_caja = :id_caja
+            AND DATE(tl.timestamp_actualizacion) = CURDATE()
+            ORDER BY tl.timestamp_actualizacion ASC
+            LIMIT 5"
         );
         $stmt->execute([':id_caja' => $id_caja]);
-        $data = $stmt->fetch();
-        if (!$data) {
-            return null;
+        $turnos = [];
+        while ($data = $stmt->fetch()) {
+            $turnos[] = $this->crearTurnoDesdeArray($data);
         }
 
-        return $this->crearTurnoDesdeArray($data);    
+        return $turnos;    
     }
 
 
@@ -446,8 +494,16 @@ public function contarTurnosConFiltros(array $filtros): int {
         ]);
     }
 
-    public function cambiarEstado(int $id_turno, int $id_estado): void {
-        $this->registrarEstado($id_turno, $id_estado);
+    public function cambiarEstado(Turno $turno, int $id_estado): ?Turno {
+        $turno->setEstado($id_estado);
+        $this->registrarEstado($turno);
+        return $turno;
+    }
+
+    public function actualizarTimestamp(string $timestamp, int $id_turno): void {
+        $stmt = $this->conexion->prepare("UPDATE turnos SET $timestamp = :timestamp_actualizacion WHERE id = :id");
+        
+        $stmt->execute(["timestamp_actualizacion" => date("Y-m-d H:i:s"), ":id" => $id_turno]);
     }
 
     public function obtenerEstadoActual(int $id_turno): ?int {
@@ -461,7 +517,7 @@ public function contarTurnosConFiltros(array $filtros): int {
         $stmt->execute([':id_turno' => $id_turno]);
         $resultado = $stmt->fetch();
         
-        return $resultado ? $resultado['id_estado'] : null;
+        return $resultado ? (int)$resultado['id_estado'] : null;
     }
 
     public function buscarDepartamentoTurno(int $id): int {
@@ -554,15 +610,15 @@ public function contarTurnosConFiltros(array $filtros): int {
     ];
 }
 
-    private function registrarEstado(int $id_turno, int $id_estado): void {
+    private function registrarEstado(Turno $turno): void {
         $stmt = $this->conexion->prepare(
             "INSERT INTO turnos_log (id_turno, id_estado, timestamp_actualizacion) 
             VALUES (:id_turno, :id_estado, NOW())"
         );
         
         $stmt->execute([
-            ':id_turno' => $id_turno,
-            ':id_estado' => $id_estado
+            ':id_turno' => $turno->getId(),
+            ':id_estado' => $turno->getEstadoId()
         ]);
     }
 
@@ -586,6 +642,10 @@ public function contarTurnosConFiltros(array $filtros): int {
         
         if (isset($data['timestamp_fin_atencion'])) {
             $turno->setTimestampFinAtencion($data['timestamp_fin_atencion']);
+        }
+
+        if (isset($data['id_estado'])) {
+            $turno->setEstado($data['id_estado']);
         }
 
         return $turno;

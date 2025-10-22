@@ -220,19 +220,31 @@ if ($_SESSION['id_rol'] === 2) {
         header("Location: " . BASE_URL . "/operador");
     }
     if ($ruta === '/operador') {
-        $controller = new EmpleadoController();
-        $empleado = $controller->obtenerEmpleadoPorId($_SESSION["id_empleado"]);
-        if (!$controller->validarTipoTurno($empleado)) {
+        $empleadoController = new EmpleadoController();
+        $empleado = $empleadoController->obtenerEmpleadoPorId($_SESSION["id_empleado"]);
+        if (!$empleadoController->validarTipoTurno($empleado)) {
             header("location: " . BASE_URL . "/logout");
             exit;
         }
-        $caja = $controller->ObtenerEmpleadoCaja();
+        $caja = $empleadoController->ObtenerEmpleadoCaja();
         if (!$caja) {
             header("location: " . BASE_URL . "/logout");
             exit;
         }
-        $turno_controller = new TurnoController();
-        $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());
+        $turnoController = new TurnoController();
+        $turnos = $turnoController->obtenerTurnosPorCaja($caja->getId());
+        $turnoLlamado = null;
+        $turnoEnAtencion = null;
+        $turnosEnEspera = [];
+        foreach($turnos as $turno) {
+            if ($turno->getEstadoId() === 1) {
+                $turnoLlamado = $turno;
+            } elseif ($turno->getEstadoId() === 3) {
+                $turnoEnAtencion = $turno;
+            } elseif ($turno->getEstadoId() === 2) {
+                $turnosEnEspera[] = $turno;
+            }
+        }
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
 
@@ -250,6 +262,29 @@ if ($_SESSION['id_rol'] === 2) {
         exit;
     }
 
+    //Llamar un turno
+    if ($ruta == '/operador/caja/llamar') {
+        $controller = new EmpleadoController();
+        $turnoController = new TurnoController();
+        $turno = $turnoController->llamarTurno();
+        exit;
+    }
+
+    //Empezar el turno
+    if ($ruta == '/operador/caja/empezar') {
+        $controller = new EmpleadoController();
+        $turnoController = new TurnoController();
+        $turno = $turnoController->empezarTurno();
+        exit;
+    }
+
+    //Finalizar turno
+    if ($ruta == '/operador/caja/finalizar') {
+        $controller = new EmpleadoController();
+        $turnoController = new TurnoController();
+        $turno = $turnoController->finalizarTurno();
+        exit;
+    }
 
 }
 // =============== Rutas internas - Recepcionista ===============

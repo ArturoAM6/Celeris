@@ -109,4 +109,8 @@ class Turno {
                 return 'Desconocido';
         }
     }
+
+    public function setEstado(int $id_estado): void {
+        $this->id_estado = $id_estado;
+    }
 }
