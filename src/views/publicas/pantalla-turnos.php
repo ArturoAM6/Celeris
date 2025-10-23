@@ -1,7 +1,3 @@
-<?php
-$controllerp = new pantallaGeneralController();
-    $turnos = $controllerp->mostrarPantalla();
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -52,7 +48,7 @@ $controllerp = new pantallaGeneralController();
                         <div class="numero-turno"><?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
                         <div class="ventanilla-info">Caja <?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
                     <?php else: ?>
-                        <div class="sin-turnos">Sin turnos pendientes</div>
+                        <div class="sin-turnos">Sin turnos llamados</div>
                     <?php endif; ?>
                 </div>
 

@@ -1,118 +1,40 @@
 <?php
 
 class EmpleadoController {
-    private EmpleadoRepository $empleadoRepository;
-    private CajaRepository $cajaRepository;
-    private TurnoRepository $turnoRepository;
-    private ClienteRepository $clienteRepository;
-
+    private ServicioEmpleados $servicioEmpleados;
 
     public function __construct() {
-        $this->empleadoRepository = new EmpleadoRepository();
-        $this->cajaRepository = new CajaRepository();
-        $this->turnoRepository = new TurnoRepository();
-        $this->clienteRepository = new ClienteRepository();
+        $this->servicioEmpleados = new ServicioEmpleados();
     }
 
-    public function listarEmpleados(): ?array {
+    public function listarTodos(): ?array {
         try {
-            $empleados = $this->empleadoRepository->todos();
+            $empleados = $this->servicioEmpleados->obtenerTodos();
             return $empleados;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
     }
 
-    //Funcion de Cesar :) 
-    public function MostrarDatosDeEmpleados(): ?array {
+    public function listarAsignados(): ?array {
         try {
-            $empleados = $this->listarEmpleados();
-            require_once __DIR__ . '/../views/admin/dashboard.php';
-            return $empleados;
-        } 
-
-        catch (Exception $e) {
-            $this->manejarError($e->getMessage());
-        }
-
-    }
-
-    // ----IniOperador----
-
-    
-
-    public function empleadosConCajaPausada(): ?array {
-        try {
-            $empleados = $this->empleadoRepository->buscarEmpleadosCajaAsignadaPausada();
+            $empleados = $this->servicioEmpleados->obtenerAsignados();
             return $empleados;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
     }
 
-    // ----IniOperador----
-
-    public function ObtenerEmpleadoCaja(): ?Caja{
+    public function listarActivos(): ?array {
         try {
-            if ($_SESSION["id_empleado"]) {
-                $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
-                if (!$id_caja) {
-                    return null;
-                }
-                $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
-                return $caja;
-            }
-            return null;
-        } catch (Exception $e) {
-            $this->manejarError($e->getMessage());
-        }
-    }
-
-    public function CambiarEstadoCaja(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                $id_caja = $_POST["id_caja"];
-                $id_estado = $_POST["id_estado"];
-                $this->cajaRepository->cambiarEstado($id_caja, $id_estado);
-                header('Location: ' . BASE_URL . '/operador?mensaje=funciono');
-                exit;
-            } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/operador?error=' . urlencode($e->getMessage()));
-                exit;
-            }
-        }
-    }
-
-
-    // ----FinOperador----
-    public function listarEmpleadosAsignados(): ?array {
-        try {
-            $empleados = $this->empleadoRepository->buscarEmpleadosAsignados();
+            $empleados = $this->servicioEmpleados->obtenerActivos();
             return $empleados;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
     }
 
-    public function listarEmpleadosActivos(): ?array {
-        try {
-            $empleados = $this->empleadoRepository->buscarEmpleadosActivos();
-            return $empleados;
-        } catch (Exception $e) {
-            $this->manejarError($e->getMessage());
-        }
-    }
-
-    public function obtenerEmpleadoPorId(int $id): ?Empleado {
-        try {
-            $empleado = $this->empleadoRepository->buscarPorId($id);
-            return $empleado;
-        } catch (Exception $e) {
-            $this->manejarError($e->getMessage());
-        }
-    }
-
-    public function crearEmpleado(): void {
+    public function generar(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $nombre = $_POST['nombre'];
@@ -128,12 +50,10 @@ class EmpleadoController {
                 if (empty($nombre) || empty($apellido_paterno) || empty($password) || empty($email) || empty($id_rol) || empty($id_departamento) || empty($id_tipo_turno)) {
                     throw new Exception("Los campos con * son obligatorios");
                 }
-                if (!$this->contraseñasSonIguales($password, $password2)){
-                    throw new Exception("Las contraseñas no coinciden");
-                }
 
-                $empleado = $this->instanciarEmpleadoSegunRol($_POST);
-                $this->empleadoRepository->guardar($empleado);
+                if (!$this->servicioEmpleados->crear($_POST)) {
+                    throw new Exception("Algo salió mal durante la creación del empleado");
+                }
 
                 header('Location: ' . BASE_URL . '/admin?mensaje=creado');
                 exit;
@@ -144,7 +64,7 @@ class EmpleadoController {
         }
     }
 
-    public function editarEmpleado(): void {
+    public function editar(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $id = $_POST['id'];
@@ -160,16 +80,9 @@ class EmpleadoController {
                     throw new Exception("Los campos con * son obligatorios");
                 }
 
-                $empleado = $this->empleadoRepository->buscarPorId($id);
-
-                if (!$empleado) {
-                    throw new Exception("Empleado no encontrado");
+                if (!$this->servicioEmpleados->actualizar($_POST)) {
+                    throw new Exception("Algo salió mal durante la actualización del empleado");
                 }
-
-                $empleadoActualizado = $this->instanciarEmpleadoSegunRol($_POST);
-                $empleadoActualizado->setId($id);
-
-                $this->empleadoRepository->actualizar($empleadoActualizado);
                 
                 header('Location: ' . BASE_URL . '/admin?mensaje=actualizado');
                 exit;
@@ -180,24 +93,30 @@ class EmpleadoController {
         }
     }
 
-    public function desactivarEmpleado(): void {
+    public function desactivar(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $id = $_POST['id'];
-
-                $empleado = $this->empleadoRepository->buscarPorId($id);
-
-                if (!$empleado) {
-                    throw new Exception("Empleado no encontrado");
+                
+                if (!$this->servicioEmpleados->desactivar($id)) {
+                    throw new Exception("Algo salió mal durante la desactivación del empleado");
                 }
-
-                $this->empleadoRepository->bajaEmpleado($empleado);
+            
                 header('Location: ' . BASE_URL . '/admin?mensaje=eliminado');
                 exit;
             } catch (Exception $e) {
                 header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
                 exit;
             }
+        }
+    }
+
+    public function mostrarPorId(int $id): ?Empleado {
+        try {
+            $empleado = $this->servicioEmpleados->obtenerPorId($id);
+            return $empleado;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
         }
     }
 
@@ -210,15 +129,7 @@ class EmpleadoController {
                     throw new Exception("error: Falta el ID del departamento");
                 }
     
-                $empleados = $this->empleadoRepository->buscarEmpleadosAsignadosPorDepartamento($idDepartamento);
-                $data = [];
-    
-                foreach ($empleados as $empleado) {
-                    $data[] = [
-                        'id' => $empleado->getId(),
-                        'nombre' => $empleado->getNombreCompleto()
-                    ];
-                }
+                $data = $this->servicioEmpleados->obtenerNoAsignadosPorDepartamento($idDepartamento);
     
                 header('Content-Type: application/json');
                 echo json_encode($data);
@@ -229,164 +140,81 @@ class EmpleadoController {
         }
     }
 
-    public function gestionDeEmpleados(): array {
+    public function gestion(): array {
         try {
             $pagina = isset($_GET['pagina_Empleados']) ? (int)$_GET['pagina_Empleados'] : 1;
             $porPagina = 10;
 
-            $empleados = $this->empleadoRepository->obtenerEmpleadosPaginados($pagina, $porPagina);
-            $totalEmpleados = $this->empleadoRepository->contarEmpleados();
-            $totalPaginasEmpleados = ceil($totalEmpleados / $porPagina);
-
-            return [
-                'empleados' => $empleados,
-                'paginaActual' => $pagina,
-                'totalPaginas' => $totalPaginasEmpleados,
-                'totalEmpleados' => $totalEmpleados
-            ];
+            return $this->servicioEmpleados->gestion($pagina, $porPagina);
         } catch (Exception $e) {
-            error_log("Error en gestionDeEmpleados: " . $e->getMessage());
-            return [
-                'empleados' => [],
-                'paginaActual' => 1,
-                'totalPaginas' => 0,
-                'totalEmpleados' => 0
-            ];
+            $this->manejarError($e->getMessage());
         }
     }
 
-    public function gestionDeDescansos(): array {
+    public function gestionDescansos(): array {
         try {
             $pagina = isset($_GET['pagina_Descanso']) ? (int)$_GET['pagina_Descanso'] : 1;
             $porPagina = 10;
 
-            $descansos = $this->empleadoRepository->obtenerDescansosPaginados($pagina, $porPagina);
-            $totalDescansos = $this->empleadoRepository->contarDescansos();
-            $totalPaginasDescansos = ceil($totalDescansos / $porPagina);
-
-            return [
-                'descansos' => $descansos,
-                'paginaActual' => $pagina,
-                'totalPaginas' => $totalPaginasDescansos,
-                'totalDescansos' => $totalDescansos
-            ];
-        } catch (Exception $e) {
-            error_log("Error en gestionDeDescansos: " . $e->getMessage());
-            return [
-                'descansos' => [],
-                'paginaActual' => 1,
-                'totalPaginas' => 0,
-                'totalDescansos' => 0
-            ];
-        }
-    }
-  
-    public function validarTipoTurno(Empleado $empleado): bool {
-        try {
-            if ($empleado->getTipoTurno() == 1) {
-                $diasPermitidos = array(1,3,5);
-                return (in_array(date('w'), $diasPermitidos)) ? true : false;
-            } elseif ($empleado->getTipoTurno() == 2) {
-                $diasPermitidos = array(1,2,3,4,5);
-                return (in_array(date('w'), $diasPermitidos)) ? true : false;
-            }
+            return $this->servicioEmpleados->gestionDescansos($pagina, $porPagina);
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
-            return false;
+        }
+    }
+
+    public function listarHorarios(): array {
+        try {
+            $horarios = $this->servicioEmpleados->obtenerHorarios();
+            return $horarios;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function editarHorario(): void {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $empleados = $_POST['id_tipo_turno'];
+
+                if (empty($empleados)) {
+                    throw new Exception("No hay empleados");
+                }
+                
+                if (!$this->servicioEmpleados->actualizarHorario($empleados)) {
+                    throw new Exception("Algo salió mal durante la actualización de horarios");
+                }
+                
+                header('Location: ' . BASE_URL . '/admin?mensaje=actualizado');
+                exit;
+            } catch (Exception $e) {
+                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+    
+    public function gestionHorarios(): array {
+        try {
+            $pagina = isset($_GET['pagina_Horario']) ? (int)$_GET['pagina_Horario'] : 1;
+            $porPagina = 10;
+
+            return $this->servicioEmpleados->gestionHorarios($pagina, $porPagina);
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function obtenerEmpleadoPorCaja(array $data): ?array {
+        try {
+            $empleados = $this->servicioEmpleados->obtenerEmpleadoPorCaja($data);
+            return $empleados;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
         }
     }
 
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';
-    }
-
-    private function instanciarEmpleadoSegunRol(array $data): Empleado {
-        $passwordHash = !empty($data['password']) 
-            ? password_hash($data['password'], PASSWORD_DEFAULT)
-            : $data['password_hash'];
-
-        switch ($data['id_rol']) {
-            case 1:
-                return new Administrador(
-                    $data['nombre'],
-                    $data['apellido_paterno'],
-                    $data['apellido_materno'] ?? null,
-                    $data['email'],
-                    $passwordHash,
-                    $data['id_departamento'],
-                    $data['id_tipo_turno'],
-                );
-            case 2:
-                return new Operador(
-                    $data['nombre'],
-                    $data['apellido_paterno'],
-                    $data['apellido_materno'] ?? null,
-                    $data['email'],
-                    $passwordHash,
-                    $data['id_departamento'],
-                    $data['id_tipo_turno']
-                );
-            case 3:
-                return new Recepcionista(
-                    $data['nombre'],
-                    $data['apellido_paterno'],
-                    $data['apellido_materno'] ?? null,
-                    $data['email'],
-                    $passwordHash,
-                    $data['id_departamento'],
-                    $data['id_tipo_turno']
-                );
-            default:
-                throw new Exception("Rol desconocido");
-        }
-    }
-
-    private function validar_nombre($name) {
-    $resultado;
-    if(!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,12}$/", $name)){
-        $resultado = false;
-    } else {
-        $resultado = true;
-    }
-    return $resultado;
-    }
-
-    private function validar_apellido($last_name) {
-        $resultado;
-        if(!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,12}$/", $last_name)){
-            $resultado = false;
-        } else {
-            $resultado = true;
-        }
-        return $resultado;
-    }
-    
-    private function validar_contraseña($pass) {
-    $resultado;
-    if(!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/", $pass)){
-        $resultado = false;
-    } else {
-        $resultado = true;
-    }
-    return $resultado;
-    }
-    
-     private function contraseñasSonIguales($pass, $pass2){
-    if ($pass === $pass2){
-        return true;
-    } else{
-        return false;
-    }
-    }
-
-    private function validarEmail(){
-        $resultado;
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $resultado = false;
-    } else {
-        $resultado = true;
-    }
-    return $resultado;
     }
 }
