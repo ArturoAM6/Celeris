@@ -29,6 +29,7 @@ $ruta = str_replace('/Celeris/public', '', $ruta);
 
 // =============== Rutas publicas ===============
 if ($ruta === '/' || $ruta === '/index.php') {
+    session_unset();
     require_once __DIR__ . '/../src/views/publicas/inicio.php';
     exit;
 }
@@ -209,7 +210,7 @@ if ($_SESSION['id_rol'] === 2) {
         $turnos = $turnoController->listarTurnosPorCaja($caja->getId());
         $turnoLlamado = $turnos["turnoLlamado"] ?? null;
         $turnoEnAtencion = $turnos["turnoEnAtencion"] ?? null;
-        $turnosEnEspera = $turnos["turnoEnEspera"];
+        $turnosEnEspera = $turnos["turnoEnEspera"] ?? null;
         
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
