@@ -7,16 +7,12 @@ class ClienteRepository {
         $this->conexion = Database::getInstancia()->getConexion();
     }
 
-    public function buscarPorNumeroCuenta(string $numero_cuenta): ?Cliente { 
-        $stmt = $this->conexion->prepare("SELECT * FROM clientes WHERE numero_cuenta = :numero_cuenta");
-        $stmt->execute([':numero_cuenta' => $numero_cuenta]);
+    public function buscarPorNumeroCuenta(string $numeroCuenta): ?Cliente { 
+        $stmt = $this->conexion->prepare("SELECT * FROM clientes WHERE numero_cuenta = :numeroCuenta");
+        $stmt->execute([':numeroCuenta' => $numeroCuenta]);
         $data = $stmt->fetch();
 
-        if (!$data) {
-            return null;
-        }
-
-        return $this->crearClienteDesdeArray($data);
+        return $data ? $this->crearClienteDesdeArray($data) : null;
     }
 
     public function buscarPorId(int $id): ?Cliente { 
@@ -24,15 +20,10 @@ class ClienteRepository {
         $stmt->execute([':id' => $id]);
         $data = $stmt->fetch();
 
-        if (!$data) {
-            return null;
-        }
-
-        return $this->crearClienteDesdeArray($data);
+        return $data ? $this->crearClienteDesdeArray($data) : null;
     }
 
     private function crearClienteDesdeArray(array $data): Cliente {
-        try {
             $cliente = new Cliente(
             $data['nombre'], 
             $data['apellido_paterno'], 
@@ -44,13 +35,5 @@ class ClienteRepository {
         $cliente->setId($data['id']);
 
         return $cliente;
-        } catch (Exception $e) {
-            $this->manejarError($e->getMessage());
-        }
-    }
-
-    private function manejarError(string $mensaje): void {
-        $error = $mensaje;
-        require_once __DIR__ . '/../views/error.php';
     }
 }

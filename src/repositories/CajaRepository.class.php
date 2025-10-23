@@ -13,72 +13,41 @@ class CajaRepository {
         $cajas= [];
 
         while ($caja = $stmt->fetch()) {
-            $cajas[] = $this->crearCajaDesdeArray($caja);
+            $cajas[] = $this->crearDesdeArray($caja);
         }
 
         return $cajas;
     }
 
-    // public function guardar(Caja $caja): void {
-    //     $stmt = $this->conexion->prepare(
-    //         "INSERT INTO cajas (numero, id_departamento, id_estado) 
-    //         VALUES (:numero, :id_departamento, :id_estado)"
-    //     );
-    //     $stmt->execute([
-    //         ':numero' => $caja->getNumero(),
-    //         ':id_departamento' => $caja->getDepartamento(),
-    //         ':id_estado' => $caja->getEstado()
-    //     ]);
-
-    //     $caja->setId($this->conexion->lastInsertId());
-    // }
-
-    public function actualizar(Caja $caja): bool {
-        $stmt = $this->conexion->prepare(
-            "UPDATE cajas SET 
-            numero = :numero,
-            id_departamento = :id_departamento,
-            id_estado = :id_estado
-            WHERE id = :id"
-        );
-
-        return $stmt->execute([
-            ':numero' => $caja->getNumero(),
-            ':id_departamento' => $caja->getDepartamento(),
-            ':id_estado' => $caja->getEstado(),
-            ':id' => $caja->getId()
-        ]);
-    }
-
-    public function obtenerCajaPorId(int $id): ?Caja {
+    public function buscarPorId(int $id): ?Caja {
         $stmt = $this->conexion->prepare('SELECT * FROM cajas WHERE id = :id');
         $stmt->execute([':id' => $id]);
         $caja = $stmt->fetch();
 
         if (!$caja) {
-            throw new Exception("La caja no existe");
+            return null;
         }
 
-        return $this->crearCajaDesdeArray($caja);
+        return $this->crearDesdeArray($caja);
     }
 
-    public function obtenerCajasPorDepartamento(int $id_departamento): array {
-        $stmt = $this->conexion->prepare('SELECT * FROM cajas WHERE id_departamento = :id_departamento');
-        $stmt->execute([':id_departamento' => $id_departamento]);
+    public function buscarPorDepartamento(int $idDepartamento): array {
+        $stmt = $this->conexion->prepare('SELECT * FROM cajas WHERE id_departamento = :idDepartamento');
+        $stmt->execute([':idDepartamento' => $idDepartamento]);
         $cajas= [];
 
         while ($caja = $stmt->fetch()) {
-            $cajas[] = $this->crearCajaDesdeArray($caja);
+            $cajas[] = $this->crearDesdeArray($caja);
         }
 
         return $cajas;
     }
 
-    public function obtenerCajaDisponible(int $id_departamento): ?Caja {
+    public function buscarDisponible(int $idDepartamento): ?Caja {
         $stmt = $this->conexion->prepare('SELECT c.id, c.numero, c.id_departamento, c.id_estado, COUNT(t.id) AS ocurrencias
             FROM cajas c
             JOIN turnos t ON t.id_caja = c.id
-            WHERE c.id_departamento = :id_departamento
+            WHERE c.id_departamento = :idDepartamento
             AND c.id_estado = 1
             AND t.id NOT IN (
                 SELECT tl.id_turno
@@ -94,44 +63,35 @@ class CajaRepository {
             UNION
             SELECT c.id, c.numero, c.id_departamento, c.id_estado, 0 AS ocurrencias
             FROM cajas c
-            WHERE c.id_departamento = :id_departamento
+            WHERE c.id_departamento = :idDepartamento
             AND c.id_estado = 1
             AND c.id NOT IN (SELECT id_caja FROM turnos)
             ORDER BY ocurrencias ASC, id ASC
             LIMIT 1'
         );
-        $stmt->execute([':id_departamento' => $id_departamento]);
+        $stmt->execute([':idDepartamento' => $idDepartamento]);
         $caja = $stmt->fetch();
 
         if (!$caja) {
-            throw new Exception("Error de base de datos");
+            return null;
         }
 
-        $caja = $this->crearCajaDesdeArray($caja);  
+        $caja = $this->crearDesdeArray($caja);  
 
         return $caja;
     }
 
-    public function asignarCaja(int $id_caja, int $id_empleado): void {
-        $stmt = $this->conexion->prepare("UPDATE asignacion_cajas SET id_caja = :id_caja, id_empleado = :id_empleado WHERE id_caja = :id");
-        $stmt->execute([
-            ':id_caja' => $id_caja,
-            ':id_empleado' => $id_empleado,
-            ':id' => $id_caja
-        ]);
-    }
-
-    public function cambiarEstado(int $id_caja, int $id_estado): bool {
-        $stmt = $this->conexion->prepare('UPDATE cajas SET id_estado = :id_estado WHERE id = :id');
+    public function actualizarEstado(Caja $caja): bool {
+        $stmt = $this->conexion->prepare('UPDATE cajas SET id_estado = :idEstado WHERE id = :id');
         
         return $stmt->execute([
-            'id_estado' => $id_estado, 
-            ':id' => $id_caja
+            'idEstado' => $caja->getEstado(), 
+            ':id' => $caja->getId()
         ]);
     }
 
     //PAGINACION
-    public function obtenerCajasPaginadas(int $pagina, int $porPagina): array {
+    public function obtenerPaginacion(int $pagina, int $porPagina): array {
         $inicio = ($pagina - 1) * $porPagina;
         $query = "SELECT * FROM cajas ORDER BY id ASC LIMIT :inicio, :porPagina";
         $stmt = $this->conexion->prepare($query);
@@ -141,43 +101,21 @@ class CajaRepository {
 
         $cajas = [];
         while ($caja = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $cajas[] = $this->crearCajaDesdeArray($caja);
+            $cajas[] = $this->crearDesdeArray($caja);
         }
 
         return $cajas;
         
     }
 
-    public function contarCajas(): int {
+    public function contar(): int {
         $query = "SELECT COUNT(*) FROM cajas";
         $stmt = $this->conexion->prepare($query);
         $stmt->execute();
         return (int) $stmt->fetchColumn();
     }
 
-    
-
-    // ---Operador---
-
-    public function getNumeroCaja(int $id_empleado): ?int {
-        $stmt = $this->conexion->prepare('SELECT id_caja FROM asignacion_cajas WHERE id_empleado = :id_empleado');
-        $stmt->execute([':id_empleado' => $id_empleado]);
-        $caja = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $caja['id_caja'] ?? null;
-    }
-
-    // ---Operador---
-
-    public function getCajaEmpleado(int $id_caja): int {
-        $stmt = $this->conexion->prepare('SELECT id_empleado FROM asignacion_cajas WHERE id_caja = :id_caja');
-        $stmt->execute([':id_caja' => $id_caja]);
-        $empleado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $empleado['id_empleado'];
-    }
-
-    private function crearCajaDesdeArray(array $data): Caja {
+    private function crearDesdeArray(array $data): Caja {
         $caja = new Caja(
             $data['numero'],
             $data['id_departamento'],
@@ -188,10 +126,4 @@ class CajaRepository {
 
         return $caja;
     }
-
-    private function manejarError(string $mensaje): void {
-        $error = $mensaje;
-        require_once __DIR__ . '/../views/error.php';
-    }
 }
-?>

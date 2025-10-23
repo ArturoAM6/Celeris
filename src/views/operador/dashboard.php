@@ -37,14 +37,14 @@
         <div class="container-acciones">
           <!-- // No puede poner en descanso: existe turno llamado o en atención. -->
           <?php if ($caja->getEstado() == 1 && empty($turnoLlamado) && empty($turnoEnAtencion)): ?>
-              <form method="post" action='<?= BASE_URL ?>/operador/caja/pausar'>
-                  <input type="hidden" name="id_caja" value="<?php echo $caja->getId(); ?>">
+              <form method="post" action='<?= BASE_URL ?>/operador/caja/cambiar-estado'>
+                  <input type="hidden" name="id" value="<?php echo $caja->getId(); ?>">
                   <input type="hidden" name="id_estado" value="3">
                   <button type="submit" class="btn">DESCANSO</button>
               </form>
           <?php elseif ($caja->getEstado() == 3): ?>
-              <form method="post" action='<?= BASE_URL ?>/operador/caja/reanudar'>
-                  <input type="hidden" name="id_caja" value="<?php echo $caja->getId(); ?>">
+              <form method="post" action='<?= BASE_URL ?>/operador/caja/cambiar-estado'>
+                  <input type="hidden" name="id" value="<?php echo $caja->getId(); ?>">
                   <input type="hidden" name="id_estado" value="1">
                   <button type="submit" class="btn">ABRIR CAJA</button>
               </form>
@@ -55,17 +55,19 @@
       <div class="hero-pair">
           <div class="hero izq">
               <div class="hero-header">
-                  <h2>Turno actual: <?php echo (empty($turnoEnAtencion)) ? "No hay turnos en atencion" : $turnoEnAtencion->getNumero(); ?></h2>
+                  <h2>Turno actual: <?php echo (empty($turnoEnAtencion)) ? "No hay turnos en atencion" : $turnoEnAtencion[0]->getNumero(); ?></h2>
                   
                   <?php if ($caja->getEstado() == 1): ?>
-                      <?php if (!empty($turnoEnAtencion) && $turnoEnAtencion->getEstadoId() == 3): ?>
-                          <form method="post" action='<?= BASE_URL ?>/operador/caja/finalizar'>
-                              <input type="hidden" name="id_turno" value="<?php echo $turnoEnAtencion->getId(); ?>">
+                      <?php if (!empty($turnoEnAtencion) && $turnoEnAtencion[0]->getEstadoId() == 3): ?>
+                          <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
+                              <input type="hidden" name="id_turno" value="<?php echo $turnoEnAtencion[0]->getId(); ?>">
+                              <input type="hidden" name="id_estado" value="5">
                               <button type="submit" class="btn">Finalizar</button>
                           </form>
-                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado->getEstadoId() == 1): ?>
-                          <form method="post" action='<?= BASE_URL ?>/operador/caja/empezar'>
-                              <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado->getId(); ?>">
+                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1): ?>
+                          <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
+                              <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado[0]->getId(); ?>">
+                              <input type="hidden" name="id_estado" value="3">
                               <button type="submit" class="btn">Atender Turno</button>
                           </form>
                       <?php endif; ?>
@@ -90,8 +92,9 @@
                               <li>
                                   <p>Turno N° <?= $turno->getNumero(); ?></p>
                                   <?php if ($caja->getEstado() == 1 && empty($turnoLlamado)): ?>
-                                      <form method="post" action='<?= BASE_URL ?>/operador/caja/llamar' class="form-llamar">
+                                      <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado' class="form-llamar">
                                           <input type="hidden" name="id_turno" value="<?= $turno->getId(); ?>">
+                                          <input type="hidden" name="id_estado" value="1">
                                           <button type="submit" class="btn btn-llamar">Llamar turno</button>
                                       </form>
                                   <?php else: ?>

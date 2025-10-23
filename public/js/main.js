@@ -79,9 +79,23 @@ function abrirModalEditar(empleado) {
 function abrirModalAsignar(caja) {
   
   document.getElementById("asign_id").value = caja.id;
-  document.getElementById("asign_numero").value = caja.numero;
-  document.getElementById("asign_id_departamento").value = caja.id_departamento;
-  document.getElementById("asign_id_estado").value = caja.id_estado;
+  switch (caja.id_departamento) {
+    case 1:
+      document.getElementById("asign_id_departamento").value = "Ventanillas";
+      break
+    case 2:
+      document.getElementById("asign_id_departamento").value = "Asociados";
+      break;
+    case 3:
+      document.getElementById("asign_id_departamento").value = "Caja Fuerte";
+      break;
+    case 4:
+      document.getElementById("asign_id_departamento").value = "Asesoramiento Financiero";
+      break;
+    default:
+      document.getElementById("asign_id_departamento").value = "Error al cargar departamentos...";
+      break;
+  }
   if (caja.empleado) {
     document.getElementById("asign_id_empleado").value = caja.id_empleado;
   }
