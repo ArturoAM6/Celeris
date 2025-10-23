@@ -54,10 +54,15 @@ class EmpleadoController {
 
     public function ObtenerEmpleadoCaja(): ?Caja{
         try {
-            $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
-            $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
-            return $caja;
-
+            if ($_SESSION["id_empleado"]) {
+                $id_caja = $this->cajaRepository->getNumeroCaja($_SESSION["id_empleado"]);
+                if (!$id_caja) {
+                    return null;
+                }
+                $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
+                return $caja;
+            }
+            return null;
         } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
@@ -114,6 +119,7 @@ class EmpleadoController {
                 $apellido_paterno = $_POST['apellido_paterno'];
                 $apellido_materno = $_POST['apellido_materno'] ?? '';
                 $password = $_POST['password'];
+                $password2 = $_POST['password2'];
                 $email = $_POST['email'];
                 $id_rol = $_POST['id_rol'];
                 $id_departamento = $_POST['id_departamento'];
@@ -121,6 +127,9 @@ class EmpleadoController {
 
                 if (empty($nombre) || empty($apellido_paterno) || empty($password) || empty($email) || empty($id_rol) || empty($id_departamento) || empty($id_tipo_turno)) {
                     throw new Exception("Los campos con * son obligatorios");
+                }
+                if (!$this->contraseñasSonIguales($password, $password2)){
+                    throw new Exception("Las contraseñas no coinciden");
                 }
 
                 $empleado = $this->instanciarEmpleadoSegunRol($_POST);
@@ -271,6 +280,21 @@ class EmpleadoController {
             ];
         }
     }
+  
+    public function validarTipoTurno(Empleado $empleado): bool {
+        try {
+            if ($empleado->getTipoTurno() == 1) {
+                $diasPermitidos = array(1,3,5);
+                return (in_array(date('w'), $diasPermitidos)) ? true : false;
+            } elseif ($empleado->getTipoTurno() == 2) {
+                $diasPermitidos = array(1,2,3,4,5);
+                return (in_array(date('w'), $diasPermitidos)) ? true : false;
+            }
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+            return false;
+        }
+    }
 
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
@@ -318,4 +342,51 @@ class EmpleadoController {
         }
     }
 
+    private function validar_nombre($name) {
+    $resultado;
+    if(!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,12}$/", $name)){
+        $resultado = false;
+    } else {
+        $resultado = true;
+    }
+    return $resultado;
+    }
+
+    private function validar_apellido($last_name) {
+        $resultado;
+        if(!preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,12}$/", $last_name)){
+            $resultado = false;
+        } else {
+            $resultado = true;
+        }
+        return $resultado;
+    }
+    
+    private function validar_contraseña($pass) {
+    $resultado;
+    if(!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/", $pass)){
+        $resultado = false;
+    } else {
+        $resultado = true;
+    }
+    return $resultado;
+    }
+    
+     private function contraseñasSonIguales($pass, $pass2){
+    if ($pass === $pass2){
+        return true;
+    } else{
+        return false;
+    }
+    }
+
+    private function validarEmail(){
+        $resultado;
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $resultado = false;
+    } else {
+        $resultado = true;
+    }
+    return $resultado;
+    }
 }

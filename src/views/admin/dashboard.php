@@ -165,7 +165,7 @@
                                 ?>
                             </td>
                             <td class="acciones-tabla">
-                                <?php if ($caja->getEstado() != 1): ?>
+                                <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
                                 <button class="btn" onclick="abrirModalAsignar(
                                     <?= htmlspecialchars(json_encode([
                                         'id' => $caja->getId(),
@@ -187,6 +187,15 @@
                                         <button type="submit" class="btn">Pausar</button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
+                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <button type="submit" class="btn">Abrir</button>
+                                    </form>
+                                    <form action="<?= BASE_URL ?>/admin/cajas/fuera-servicio" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <button type="submit" class="btn">Fuera de servicio</button>
+                                    </form>
+                                <?php elseif ($caja->getEstado() == 4): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <button type="submit" class="btn">Abrir</button>
@@ -352,7 +361,7 @@
                     <?php else: ?>
                         <?php foreach ($horariosPaginados as $horario): ?>
                             <tr>
-                                <td><?= htmlspecialchars($horario['id']) ?></td>
+                                <td><?= htmlspecialchars($horario['id'] ." - ". $horario['nombre']. " ". $horario['apellido_paterno']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_salida']) ?></td>
                                 <td>
@@ -541,12 +550,12 @@
                 
                 <div class="campo">
                     <label for="registrar_password">Contraseña *</label>
-                    <input type="password" id="registrar_password" name="password">
+                    <input type="password" id="registrar_password" name="password" require>
                 </div>
 
                 <div class="campo">
                     <label for="registrar_password2">Repita su contraseña *</label>
-                    <input type="password" id="registrar_password2" name="password2">
+                    <input type="password" id="registrar_password2" name="password2" require>
                 </div>
 
                 <div class="campo">
