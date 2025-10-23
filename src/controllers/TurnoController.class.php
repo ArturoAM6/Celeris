@@ -26,6 +26,7 @@ class TurnoController {
                 
                 try {
                     $cliente = $this->servicioTurnos->obtenerClientePorNumeroCuenta($numeroCuenta);
+                    $this->servicioTurnos->iniciarSesionCliente($cliente);
                     if (!$cliente) {
                         throw new Exception("Cliente no encontrado");
                     }
@@ -56,7 +57,9 @@ class TurnoController {
                     }
                         
                     $turno = $this->servicioTurnos->generarTurno($_POST, $cliente);
-
+                    if ($cliente) {
+                        $this->servicioTurnos->cerrarSesionCliente();
+                    }
                     header('Location: ' . BASE_URL . '/turno/ticket?id=' . $turno->getId());
                     exit;
                 } catch (Exception $e) {

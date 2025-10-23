@@ -53,6 +53,16 @@ class ServicioTurnos {
         return $turno;
     }
 
+    public function iniciarSesionCliente(Cliente $cliente): void {
+        $_SESSION["numeroCuenta"] = $cliente->getNumeroCuenta();
+        $_SESSION["idCliente"] = $cliente->getId();
+    }
+
+    public function cerrarSesionCliente(): void {
+        session_unset();
+        session_destroy();
+    }
+
     public function imprimirTurno(?Cliente $cliente, int $idCaja, Turno $turno): void {
         $caja = $this->cajaRepository->buscarPorId($idCaja);
         switch ($caja->getDepartamento()) {
