@@ -197,7 +197,7 @@ if ($_SESSION['id_rol'] === 1) {
         exit;
     }
 
-    //Gestion de turnos
+
 
 
 

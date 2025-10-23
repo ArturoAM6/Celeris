@@ -28,7 +28,7 @@ class TurnoController {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tipo = $_POST['tipo'] ?? 'no_cuentahabiente';
 
-        // Si viene número de cuenta y NO viene departamento seleccionado
+        
         if (isset($_POST['numero_cuenta']) && !isset($_POST['id_departamento'])) {
             $numeroCuenta = $_POST['numero_cuenta'];
 
@@ -38,7 +38,7 @@ class TurnoController {
                     throw new Exception("Cliente no encontrado");
                 }
                 
-                // AQUÍ ESTABLECES LA SESIÓN Y EL TIPO
+                
                 $_SESSION['numero_cuenta'] = $numeroCuenta;
                 $_SESSION['cuentahabiente'] = 'cuentahabiente';
                 $tipo = 'cuentahabiente';
