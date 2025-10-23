@@ -77,6 +77,7 @@
               </div>
               <div class="hero-content">
                   <h3>INFORMACION DEL TURNO</h3>
+                  
               </div>
           </div>
           <div class="hero der">
