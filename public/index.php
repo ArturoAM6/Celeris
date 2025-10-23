@@ -29,6 +29,7 @@ $ruta = str_replace('/Celeris/public', '', $ruta);
 
 // =============== Rutas publicas ===============
 if ($ruta === '/' || $ruta === '/index.php') {
+    session_unset();
     require_once __DIR__ . '/../src/views/publicas/inicio.php';
     exit;
 }

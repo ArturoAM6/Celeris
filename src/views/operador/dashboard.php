@@ -92,7 +92,7 @@
                           <?php foreach ($turnosEnEspera as $turno): ?>
                               <li>
                                   <p>Turno N° <?= $turno->getNumero(); ?></p>
-                                  <?php if ($caja->getEstado() == 1 && empty($turnoLlamado)): ?>
+                                  <?php if ($caja->getEstado() == 1 && empty($turnoLlamado) && empty($turnoEnAtencion)): ?>
                                       <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado' class="form-llamar">
                                           <input type="hidden" name="id_turno" value="<?= $turno->getId(); ?>">
                                           <input type="hidden" name="id_estado" value="1">

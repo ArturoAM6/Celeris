@@ -76,23 +76,29 @@
                                 ?>
                             </td>
                             <td class="acciones-tabla">
-                                <button class="btn" onclick="abrirModalEditar(
-                                    <?= htmlspecialchars(json_encode([
-                                        'id' => $empleado->getId(),
-                                        'nombre' => $empleado->getNombre(),
-                                        'apellido_paterno' => $empleado->getApellidoPaterno(),
-                                        'apellido_materno' => $empleado->getApellidoMaterno(),
-                                        'password_hash' => $empleado->getPasswordHash(),
-                                        'email' => $empleado->getEmail(),
-                                        'id_rol' => $empleado->getRol(),
-                                        'id_departamento' => $empleado->getDepartamento(),
-                                        'id_tipo_turno' => $empleado->getTipoTurno()
-                                    ])) 
-                                    ?>
-                                )">Editar</button>
+                                <div class="tooltip">
+                                    <button class="btn" onclick="abrirModalEditar(
+                                        <?= htmlspecialchars(json_encode([
+                                            'id' => $empleado->getId(),
+                                            'nombre' => $empleado->getNombre(),
+                                            'apellido_paterno' => $empleado->getApellidoPaterno(),
+                                            'apellido_materno' => $empleado->getApellidoMaterno(),
+                                            'password_hash' => $empleado->getPasswordHash(),
+                                            'email' => $empleado->getEmail(),
+                                            'id_rol' => $empleado->getRol(),
+                                            'id_departamento' => $empleado->getDepartamento(),
+                                            'id_tipo_turno' => $empleado->getTipoTurno()
+                                        ])) 
+                                        ?>
+                                    )"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <span class="tooltiptext">Editar Empleado</span>
+                                </div>
                                 <form action="<?= BASE_URL ?>/admin/empleados/borrar" method="post">
                                     <input type="hidden" name="id" value="<?= $empleado->getId() ?>">
-                                    <button class="btn" type="submit" onclick="return confirm('¿Estás seguro de eliminar este empleado?')">Dar de baja</button>
+                                    <div class="tooltip">
+                                        <button class="btn" type="submit" onclick="return confirm('¿Estás seguro de eliminar este empleado?')"><i class="fa-solid fa-user-minus"></i></button>
+                                        <span class="tooltiptext">Dar de baja empleado</span>
+                                    </div>
                                 </form>
                             </td>
                         </tr>
@@ -162,6 +168,7 @@
                             </td>
                             <td class="acciones-tabla">
                                 <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
+                                <div class="tooltip">
                                 <button class="btn" onclick="abrirModalAsignar(
                                     <?= htmlspecialchars(json_encode([
                                         'id' => $caja->getId(),
@@ -172,34 +179,51 @@
                                     ])) 
                                     ?>
                                     )"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <span class="tooltiptext">Asignar Caja</span>
+                                </div>
                                 <?php endif?>
                                 <?php if ($caja->getEstado() == 1): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="2">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
+                                            <span class="tooltiptext">Cerrar Caja</span>
+                                        </div>
                                     </form>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="3">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
+                                            <span class="tooltiptext">Pausar Caja</span>
+                                        </div>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="1">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                            <span class="tooltiptext">Abrir Caja</span>
+                                        </div>
                                     </form>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="4">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                                            <span class="tooltiptext">Caja Fuera de Servicio</span>
+                                        </div>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 4): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="1">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                            <span class="tooltiptext">Abrir Caja</span>
+                                        </div>
                                     </form>
                                 <?php endif ?>
                             </td>
