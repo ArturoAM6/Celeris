@@ -18,7 +18,7 @@
         <div>
             <form action="<?= BASE_URL ?>/turno/generar" method="post" class="button-grid">
                 <?php if (isset($numeroCuenta)): ?>
-                    <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars($numeroCuenta) ?>">
+                    <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars(umeroCuenta) ?>">
                 <?php endif; ?>
 
                 <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
