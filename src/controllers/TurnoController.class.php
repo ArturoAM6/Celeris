@@ -19,10 +19,51 @@ class TurnoController {
     }
 
     public function generarTurno(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $tipo = $_POST['tipo'] ?? 'no_cuentahabiente';
 
-            if (isset($_POST['numero_cuenta']) && !isset($_POST['id_departamento'])) {
-                $numeroCuenta = $_POST['numero_cuenta'];
+        
+        if (isset($_POST['numero_cuenta']) && !isset($_POST['id_departamento'])) {
+            $numeroCuenta = $_POST['numero_cuenta'];
+
+            try {
+                $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
+                if (!$cliente) {
+                    throw new Exception("Cliente no encontrado");
+                }
+                
+                
+                $_SESSION['numero_cuenta'] = $numeroCuenta;
+                $_SESSION['cuentahabiente'] = 'cuentahabiente';
+                $tipo = 'cuentahabiente';
+                    
+                require_once __DIR__ . '/../views/publicas/generar-turno.php';
+                return;
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+                $this->manejarError($e->getMessage());
+                header('Location: ' . BASE_URL . '/');
+                exit;
+            }
+        }
+
+        // Si es no cuentahabiente y NO viene departamento
+        if ($tipo === 'no_cuentahabiente' && !isset($_POST['id_departamento'])){
+            // Limpiar sesión para asegurar que no tenga datos de cuentahabiente
+            unset($_SESSION['numero_cuenta']);
+            unset($_SESSION['cuentahabiente']);
+            
+            require_once __DIR__ . '/../views/publicas/generar-turno.php';
+            return;
+        }
+            
+        // Si YA se seleccionó departamento
+        if (isset($_POST['id_departamento'])) {
+            try {
+                $turno = null;
+                $id_departamento = $_POST['id_departamento'];
+                $numeroCuenta = $_POST['numero_cuenta'] ?? '';
+                $cliente = null;
                 
                 try {
                     $cliente = $this->servicioTurnos->obtenerClientePorNumeroCuenta($numeroCuenta);
@@ -30,14 +71,6 @@ class TurnoController {
                     if (!$cliente) {
                         throw new Exception("Cliente no encontrado");
                     }
-                        
-                    require_once __DIR__ . '/../views/publicas/generar-turno.php';
-                    return;
-                } catch (Exception $e) {
-                    $error = $e->getMessage();
-                    $this->manejarError($e->getMessage());
-                    header('Location: ' . BASE_URL . '/');
-                    exit;
                 }
             }
                 
@@ -67,12 +100,41 @@ class TurnoController {
                     $this->manejarError($e->getMessage());
                     require_once __DIR__ . '/../views/publicas/generar-turno.php';
                 }
-            }   
-            
-        } else {
-            require_once __DIR__ . '/../views/publicas/generar-turno.php';
-        }
+                
+                // Crear turno
+                $turno = new Turno(
+                    $numeroTurno,
+                    date('Y-m-d H:i:s'),
+                    (!$cliente) ? null : $cliente->getId(),
+                    $caja->getId()
+                );
+                
+                // Guardar turno
+                $this->turnoRepository->guardar($turno);
+                $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
+                
+                // Limpiar sesión después de generar turno
+                unset($_SESSION['numero_cuenta']);
+                unset($_SESSION['cuentahabiente']);
+                
+                // Redirigir al ticket
+                header('Location: ' . BASE_URL . '/turno/ticket?id=' . $turno->getId());
+                exit;
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+                $this->manejarError($e->getMessage());
+                require_once __DIR__ . '/../views/publicas/generar-turno.php';
+            }
+        }   
+        
+    } else {
+        // GET: Limpiar cualquier sesión previa
+        unset($_SESSION['numero_cuenta']);
+        unset($_SESSION['cuentahabiente']);
+        $tipo = 'no_cuentahabiente';
+        require_once __DIR__ . '/../views/publicas/generar-turno.php';
     }
+}
 
     public function mostrarTiempoEspera(): void {
         header('Content-Type: application/json');
