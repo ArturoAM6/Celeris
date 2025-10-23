@@ -30,27 +30,3 @@ class Database {
         return $this->conexion;
     }
 }
-
-
-// // Otra opcion
-// class Databases {
-//     // Propiedades
-//     public ?PDO $conexion = null; // Propiedad publica que debe ser tipo PDO, puede ser null.
-
-//     // Metodo publico que instancia un nuevo objeto PDO en la propiedad $conexion y devuelve la misma propiedad conexion.
-//     public function conectar() {
-//         try {
-//             // Creacion y asignacion de un objeto PDO a la propiedad $conexion.
-//             $this->conexion = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=ut8mb4", DB_USER, DB_PASS);
-//             return $this->conexion;
-//         } catch (PDOException $e) {
-//             // En caso de error, detiene la ejecucion del codigo y devuelve el mensaje
-//             die("Error en la conexión a la base de datos: " . $e->getMessage());
-//         }
-//     }
-
-//     // Metodo publico para cerrar la conexion a la base de datos
-//     public function desconectar() {
-//         $this->conexion = null;
-//     }
-// }

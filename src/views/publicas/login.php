@@ -20,7 +20,7 @@
         <h2>Celeris</h2>
         <p>Banca rápida</p>
       </div>
-
+      <h1><?= (isset($error)) ? $error : ""?></h1>
       <h1>Iniciar Sesión</h1>
       <p class="subtitle">Accede a tu cuenta</p>
 

@@ -8,7 +8,7 @@ class ServicioAutenticacion {
     // Metodo estatico publico que maneja el inicio de sesión. Pide un objeto Empleado y un string. Devuelve un booleano.
     public static function iniciarSesion(Empleado $empleado, string $password): bool {
         if (self::validarCredenciales($empleado, $password)) {
-            session_start();
+            // session_start();
             $_SESSION['id_empleado'] = $empleado->getId();
             $_SESSION['id_rol'] = $empleado->getRol();
             return true;
@@ -18,14 +18,12 @@ class ServicioAutenticacion {
 
     // Metodo estatico publico que maneja el cierre de sesión. No devuelve nada.
     public static function cerrarSesion(): void {
-        session_start();
+        // session_start();
         $_SESSION = array();
         if (isset($_COOKIE[session_name()])) {
             setcookie(session_name(), '', time()-3600, '/');
         }
         session_destroy();
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Expires: 0");
     }
 
     // Metodo estatico publico que para validacion de credenciales. Pide un objeto Empleado y un string. Devuelve un booleano.
@@ -34,7 +32,7 @@ class ServicioAutenticacion {
     }
 
     // Metodo estatico publico que obtiene el empleado de la sesion actual. Devuelve un objeto Empleado o null.
-    public static function getEmpleadoActual(): ?Empleado {
+    public static function obtenerEmpleadoActual(): ?Empleado {
         if (!isset($_SESSION['id_empleado'])) {
             return null;
         }   

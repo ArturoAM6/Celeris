@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de administrador - CELERIS</title>
   <link rel="stylesheet" href="<?= BASE_URL ?>/css/pan_admin_emp.css">
+  <script src="https://kit.fontawesome.com/d4435a1b16.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
     <form action="<?= BASE_URL ?>/logout" method="post">
-        <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
+        <button type="submit" name="logout" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
     <h1>Panel de Administración - CELERIS</h1>
   </header>
@@ -22,8 +23,6 @@
     <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
   </section>
-
-  
   
   <section class="table-section">
     <div class="tab">
@@ -128,12 +127,13 @@
                 </tr>
             </thead>
             <tbody>
+                <?php $cajasPaginadas = array_map(null, $cajasPaginadas["cajas"], $cajasPaginadas["empleados"]); ?>
                 <?php if (empty($cajasPaginadas)): ?>
                     <tr>
                         <td colspan="6" class="texto-centrado">No hay cajas registradas</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($cajasPaginadas as $caja): ?>
+                    <?php foreach ($cajasPaginadas as [$caja, $empleado]): ?>
                         <tr>
                             <td><?= htmlspecialchars($caja->getId()) ?></td>
                             <td><?= htmlspecialchars($caja->getNumero()) ?></td>
@@ -158,11 +158,7 @@
                                 ?>
                             </td>
                             <td>
-                                <?php 
-                                    echo $empleado_id = $cajaController->obtenerCajaEmpleado($caja->getId());
-                                    echo " - ";
-                                    echo $empleado = $empleadoController->obtenerEmpleadoPorId($empleado_id)->getNombreCompleto() 
-                                ?>
+                                <?= $empleado->getNombreCompleto() ?>
                             </td>
                             <td class="acciones-tabla">
                                 <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
@@ -175,30 +171,35 @@
                                         'id_empleado' => $empleado_id ?? null
                                     ])) 
                                     ?>
-                                    )">Asignar Caja</button>
+                                    )"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <?php endif?>
                                 <?php if ($caja->getEstado() == 1): ?>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/cerrar" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Cerrar</button>
+                                        <input type="hidden" name="id_estado" value="2">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
                                     </form>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/pausar" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Pausar</button>
+                                        <input type="hidden" name="id_estado" value="3">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Abrir</button>
+                                        <input type="hidden" name="id_estado" value="1">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                     </form>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/fuera-servicio" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Fuera de servicio</button>
+                                        <input type="hidden" name="id_estado" value="4">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 4): ?>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Abrir</button>
+                                        <input type="hidden" name="id_estado" value="1">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                     </form>
                                 <?php endif ?>
                             </td>
@@ -299,7 +300,7 @@
                         <?php else: ?>
                             <td><?= htmlspecialchars('N/A') ?></td>
                         <?php endif; ?>
-                        <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno['id_caja'])) ?></td>
+                        <td>Aqui iba el departamento</td>
                         <td><?= htmlspecialchars($turno['id_caja']) ?></td>
                         <td>
                             <?php 
@@ -607,18 +608,11 @@
             </div>
             
             <form method="POST" action="<?= BASE_URL ?>/admin/cajas/asignar" id="formAsignar">
-                <input type="hidden" id="asign_id" name="id">
-                <input type="hidden" id="asign_numero" name="numero">
-                <input type="hidden" id="asign_id_estado" name="id_estado">
+                <input type="hidden" id="asign_id" name="id_caja">
                 
                 <div class="campo">
                     <label for="asign_id_departamento">Departamento *</label>
-                    <select id="asign_id_departamento" name="id_departamento" required>
-                        <option value="1">Ventanillas</option>
-                        <option value="2">Asociados</option>
-                        <option value="3">Caja Fuerte</option>
-                        <option value="4">Asesoramiento Financiero</option>
-                    </select>
+                    <input type="text" id="asign_id_departamento" disabled>
                 </div>
 
                 <div class="campo">

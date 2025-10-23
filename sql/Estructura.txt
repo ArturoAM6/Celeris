@@ -1,6 +1,8 @@
 Celeris/
 |---- config/
 |---- |---- config.php
+|---- includes/
+|---- |---- fpdf186/
 |---- public/
 |---- |---- css/
 |---- |---- img/
@@ -13,7 +15,13 @@ Celeris/
 |---- |---- |---- Database.class.php
 |---- |---- services/
 |---- |---- |---- ServicioAutenticacion.class.php
+|---- |---- |---- ServicioTurnos.class.php
 |---- |---- controllers/
+|---- |---- |---- AuthController.class.php
+|---- |---- |---- CajaController.class.php
+|---- |---- |---- ClienteController.class.php
+|---- |---- |---- EmpleadoController.class.php
+|---- |---- |---- TurnoController.class.php
 |---- |---- models/
 |---- |---- |---- Persona.class.php
 |---- |---- |---- Cliente.class.php
@@ -29,13 +37,14 @@ Celeris/
 |---- |---- |---- operador/
 |---- |---- |---- |---- dashboard.php
 |---- |---- |---- publicas/
-|---- |---- |---- |---- consultar-turno.php
 |---- |---- |---- |---- generar-turno.php
 |---- |---- |---- |---- pantalla-turnos.php
 |---- |---- |---- |---- inicio.php
+|---- |---- |---- |---- login.php
+|---- |---- |---- |---- ticket-turno.php
 |---- |---- |---- recepcionista/
 |---- |---- |---- |---- generar-turno.php
-|---- |---- |---- |---- inicio.php
+|---- |---- |---- |---- consultar-turno.php
 |---- |---- |---- error.php
 |---- |---- repositories/
 |---- |---- |---- ClienteRepository.class.php
