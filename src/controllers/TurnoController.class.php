@@ -91,7 +91,7 @@ class TurnoController {
         }
     }
 
-        public function mostrarTurnos(): array {
+    public function mostrarTurnos(): array {
         $turnos = $this->servicioTurnos->mostrarTurnos();
         return $turnos;
     }
