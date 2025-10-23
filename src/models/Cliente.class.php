@@ -24,13 +24,4 @@ class Cliente extends Persona {
     public function getTelefono(): string {
         return $this->telefono;
     }
-
-    // Metodos
-    public function generarTurno(): void {
-        // Falta implementacion
-    }
-
-    public function consultarTurno(): void {
-        // Falta implementacion
-    }
 }

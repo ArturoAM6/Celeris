@@ -10,6 +10,7 @@ spl_autoload_register(function ($class) {
         __DIR__ . '/../src/controllers/',
         __DIR__ . '/../src/repositories/',
         __DIR__ . '/../src/services/',
+        __DIR__ . '/../src/exceptions/',
     ];
 
     foreach ($paths as $path) {
@@ -35,9 +36,7 @@ if ($ruta === '/' || $ruta === '/index.php') {
 if ($ruta === '/turno') {
     header("Refresh:30");
     $controller = new TurnoController();
-    $controller->pantallaTurnos();
-    $controllerp = new pantallaGeneralController();
-    $turnos = $controllerp->mostrarPantalla();
+    $turnos = $controller->mostrarTurnos();
     require_once __DIR__ . '/../src/views/publicas/pantalla-turnos.php';
     exit;
 }
@@ -46,35 +45,34 @@ if ($ruta === '/turno/generar') {
     $controller->generarTurno();
     exit;
 }
-if ($ruta === '/turno/consultar') {
-    $controller = new TurnoController();
-    $controller->consultarTurno();
-    exit;
-}
+// if ($ruta === '/turno/consultar') {
+//     $controller = new TurnoController();
+//     $controller->consultarTurno();
+//     exit;
+// }
 if ($ruta === '/turno/ticket' && isset($_GET['id'])) {
-    $controller = new TurnoController;
-    $controllerCaja = new CajaController;
-    $turno = $controller->obtenerTurnoPorId($_GET['id']);
-    $caja = $controllerCaja -> obtenerCajaPorId($turno->getCaja());
+    $turnoController = new TurnoController;
+    $cajaController = new CajaController;
+    $turno = $turnoController->mostrarPorId($_GET['id']);
+    $caja = $cajaController -> mostrarPorId($turno->getCaja());
     require_once __DIR__ . '/../src/views/publicas/ticket-turno.php';
     exit;
 }
 if ($ruta === '/turno/pdf' && isset($_GET['id'])) {
-    $controllerTurno = new TurnoController();
-    $controllerCliente = new ClienteController();
-    $turno = $controllerTurno->obtenerTurnoPorId($_GET['id']);
+    $turnoController = new TurnoController();
+    $turno = $turnoController->mostrarPorId($_GET['id']);
     if ($turno->getCliente() !== null) {
-        $cliente = $controllerCliente->obtenerClientePorId($turno->getCliente());
+        $cliente = $turnoController->mostrarClientePorId($turno->getCliente());
     } else {
         $cliente = null;
     }
     $caja = $turno->getCaja();
-    $controllerTurno->imprimirTurno($cliente, $caja, $turno);
+    $turnoController->imprimirTurno($cliente, $caja, $turno);
     exit;
 }
 if ($ruta === '/turno/tiempo-espera' && isset($_GET['id'])) {
     $controller = new TurnoController;
-    $controller->obtenerTiempoEspera($_GET['id']);
+    $controller->mostrarTiempoEspera($_GET['id']);
     exit;
 }
 
@@ -88,7 +86,6 @@ if ($ruta === '/login') {
 if ($ruta === '/logout') {
     $controller = new AuthController();
     $controller->logout();
-    header("Location: " . BASE_URL . "/login");
     exit;
 }
 
@@ -98,7 +95,7 @@ if (!isset($_SESSION['id_empleado'])) {
     exit;
 }
 
-$empleado = ServicioAutenticacion::getEmpleadoActual();
+$empleado = ServicioAutenticacion::obtenerEmpleadoActual();
 
 if (!$empleado) {
     header('Location: '. BASE_URL . '/login');
@@ -111,108 +108,86 @@ if ($_SESSION['id_rol'] === 1) {
         header("Location: " . BASE_URL . "/admin");
     }
     if ($ruta === '/admin') {
+        // Pestaña Empleados
         $empleadoController = new EmpleadoController();
-        $empleados = $empleadoController->listarEmpleados();
-        $empleadosAsignados = $empleadoController->listarEmpleadosAsignados();
-        $empleadosActivos = $empleadoController->listarEmpleadosActivos();
+        $empleados = $empleadoController->listarTodos();
+        $empleadosAsignados = $empleadoController->listarAsignados();
+        $empleadosActivos = $empleadoController->listarActivos();
+        $datosPaginacionEmpleados = $empleadoController->gestion();
+        $empleadosPaginados = $datosPaginacionEmpleados['empleados'] ?? [];
+        $paginaActualEmpleados = $datosPaginacionEmpleados['paginaActual'] ?? 1;
+        $totalPaginasEmpleados = $datosPaginacionEmpleados['totalPaginas'] ?? 0;
+
+        // Pestaña Cajas
         $cajaController = new CajaController();
-        $cajas = $cajaController->listarCajas();
-        $HorarioController = new HorarioController();
-        $horarios = $HorarioController->listarEmpleados();
+        $datosPaginacionCajas = $cajaController->gestion();
+        $cajasPaginadas["cajas"] = $datosPaginacionCajas['cajas'] ?? [];
+        $cajasPaginadas["empleados"] = $empleadoController->obtenerEmpleadoPorCaja($cajasPaginadas["cajas"]);
+        $paginaActualCajas = $datosPaginacionCajas['paginaActual'] ?? 1;
+        $totalPaginasCajas = $datosPaginacionCajas['totalPaginas'] ?? 0;
+        
+        // Pestaña Turnos
         $turnoController = new TurnoController();
-        $turnos = $turnoController->listarTurnos();
+        $turnos = $turnoController->listarTodos();
         $turnosActivos = $turnoController->listarTurnosActivos();
         $turnosEspera = $turnoController->listarTurnosEnEspera();
         $turnosAtencion = $turnoController->listarTurnosEnAtencion();
         $turnosCompletados = $turnoController->listarTurnosCompletados();
-        $empleadosPausa = $empleadoController-> empleadosConCajaPausada();
-        $datosPaginacion = $turnoController->gestionDeTurnos();
+        $datosPaginacion = $turnoController->gestion();
         $turnosPaginados = $datosPaginacion['turnos'] ?? [];
         $paginaActual = $datosPaginacion['paginaActual'] ?? 1;
         $totalPaginas = $datosPaginacion['totalPaginas'] ?? 0;
-        $datosPaginacionCajas = $cajaController->gestionDeCajas();
-        $cajasPaginadas = $datosPaginacionCajas['cajas'] ?? [];
-        $paginaActualCajas = $datosPaginacionCajas['paginaActual'] ?? 1;
-        $totalPaginasCajas = $datosPaginacionCajas['totalPaginas'] ?? 0;
-        $datosPaginacionEmpleados = $empleadoController->gestionDeEmpleados();
-        $empleadosPaginados = $datosPaginacionEmpleados['empleados'] ?? [];
-        $paginaActualEmpleados = $datosPaginacionEmpleados['paginaActual'] ?? 1;
-        $totalPaginasEmpleados = $datosPaginacionEmpleados['totalPaginas'] ?? 0;
-        $datosPaginacionHorarios = $HorarioController->gestionDeHorarios();
+
+        // Pestaña Horarios
+        $horarios = $empleadoController->listarHorarios();
+        $datosPaginacionHorarios = $empleadoController->gestionHorarios();
         $horariosPaginados = $datosPaginacionHorarios['horarios'] ?? [];
         $paginaActualHorarios = $datosPaginacionHorarios['paginaActual'] ?? 1;
         $totalPaginasHorarios = $datosPaginacionHorarios['totalPaginas'] ?? 0;
-        $datosPaginacionDescansos = $empleadoController->gestionDeDescansos();
+
+        // Pestaña Descansos
+        $datosPaginacionDescansos = $empleadoController->gestionDescansos();
         $descansosPaginados = $datosPaginacionDescansos['descansos'] ?? [];
         $paginaActualDescansos = $datosPaginacionDescansos['paginaActual'] ?? 1;
         $totalPaginasDescansos = $datosPaginacionDescansos['totalPaginas'] ?? 0;
+
         require_once __DIR__ . '/../src/views/admin/dashboard.php';
     }
     if ($ruta === '/admin/empleados/filtrar') {
-        $empleadoController = new EmpleadoController();
-        $empleadoController->filtrarPorDepartamento();
+        $controller = new EmpleadoController();
+        $controller->filtrarPorDepartamento();
         exit;
     }
     if ($ruta === '/admin/empleados/registrar') {
-        $empleadoController = new EmpleadoController();
-        $empleadoController->crearEmpleado();
+        $controller = new EmpleadoController();
+        $controller->generar();
         exit;
     }
     if ($ruta === '/admin/empleados/editar') {
-        $empleadoController = new EmpleadoController();
-        $empleadoController->editarEmpleado();
+        $controller = new EmpleadoController();
+        $controller->editar();
         exit;
     }
     if ($ruta === '/admin/empleados/borrar') {
-        $empleadoController = new EmpleadoController();
-        $empleadoController->desactivarEmpleado();
+        $controller = new EmpleadoController();
+        $controller->desactivar();
         exit;
     }
-        if ($ruta === '/admin/horario/asignar') {
-        $HorarioController = new HorarioController();
-        $HorarioController->modificarHorario();
+    if ($ruta === '/admin/horario/asignar') {
+        $controller = new EmpleadoController();
+        $controller->editarHorario();
         exit;
     }
-    ///COMO ESTE
     if ($ruta === '/admin/cajas/asignar') {
-        $cajaController = new CajaController();
-        $cajaController->asignarEmpleadoCaja();
+        $controller = new CajaController();
+        $controller->editarAsignacion();
         exit;
     }
-    ///
-    if ($ruta === '/admin/cajas/abrir') {
-        $cajaController = new CajaController();
-        $cajaController->abrirCaja();
+    if ($ruta === '/admin/cajas/cambiar-estado') {
+        $controller = new CajaController();
+        $controller->cambiarEstado("admin");
         exit;
     }
-    if ($ruta === '/admin/cajas/cerrar') {
-        $cajaController = new CajaController();
-        $cajaController->cerrarCaja();
-        exit;
-    }
-    if ($ruta === '/admin/cajas/pausar') {
-        $cajaController = new CajaController();
-        $cajaController->pausarCaja();
-        exit;
-    }
-    if ($ruta === '/admin/cajas/fuera-servicio') {
-        $cajaController = new CajaController();
-        $cajaController->fueraServicioCaja();
-        exit;
-    }
-
-    //Empleados pausados
-    if ($ruta === '/admin/empleados/pausados') {
-        $empleadoController = new EmpleadoController();
-        $empleadosPausados = $empleadoController->MostrarDatosDeEmpleados();
-        exit;
-    }
-
-
-
-
-
-
 } 
 // =============== Rutas internas - Operador ===============
 if ($_SESSION['id_rol'] === 2) {
@@ -220,37 +195,34 @@ if ($_SESSION['id_rol'] === 2) {
         header("Location: " . BASE_URL . "/operador");
     }
     if ($ruta === '/operador') {
-        $controller = new EmpleadoController();
-        $empleado = $controller->obtenerEmpleadoPorId($_SESSION["id_empleado"]);
-        if (!$controller->validarTipoTurno($empleado)) {
-            header("location: " . BASE_URL . "/logout");
-            exit;
-        }
-        $caja = $controller->ObtenerEmpleadoCaja();
+        $empleadoController = new EmpleadoController();
+        $cajaController = new CajaController();
+        $empleado = $empleadoController->mostrarPorId($_SESSION["id_empleado"]);
+        $caja = $cajaController->obtenerCajaPorEmpleado($empleado);
+        
         if (!$caja) {
             header("location: " . BASE_URL . "/logout");
             exit;
         }
-        $turno_controller = new TurnoController();
-        $turno_actual = $turno_controller->obtenerNumeroCajaActiva($caja->getId());
+
+        $turnoController = new TurnoController();
+        $turnos = $turnoController->listarTurnosPorCaja($caja->getId());
+        $turnoLlamado = $turnos["turnoLlamado"] ?? null;
+        $turnoEnAtencion = $turnos["turnoEnAtencion"] ?? null;
+        $turnosEnEspera = $turnos["turnoEnEspera"];
+        
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }
-
-    //Pausar una caja
-    if ($ruta == '/operador/caja/pausar') {
-        $controller = new EmpleadoController();
-        $caja = $controller->CambiarEstadoCaja();
+    if ($ruta == '/operador/caja/cambiar-estado') {
+        $controller = new CajaController();
+        $controller->cambiarEstado("operador");
         exit;
     }
-
-    //Reanudar una caja
-    if ($ruta == '/operador/caja/reanudar') {
-        $controller = new EmpleadoController();
-        $caja = $controller->CambiarEstadoCaja();
+    if ($ruta == '/operador/turno/cambiar-estado') {
+        $turnoController = new TurnoController();
+        $turno = $turnoController->cambiarEstado();
         exit;
     }
-
-
 }
 // =============== Rutas internas - Recepcionista ===============
 if ($_SESSION['id_rol'] === 3) {

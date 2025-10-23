@@ -2,51 +2,18 @@
 
 class EmpleadoRepository {
     private PDO $conexion;
-
-    public function buscarEmpleadosCajaAsignadaPausada(): array{
-        $stmt = $this->conexion->prepare ("
-        SELECT e.*, c.id as id_caja, ec.nombre as estado_caja
-        FROM empleados e
-        JOIN asignacion_cajas ac ON e.id = ac.id_empleado
-        JOIN cajas c ON ac.id_caja = c.id
-        JOIN estado_caja ec ON c.id_estado = ec.id
-        WHERE ec.nombre = 'Pausada'
-        ");
-
-        $stmt->execute();
-        $empleados=[];
-        while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
-        }
-
-        return $empleados;
-    }
-
-    public function buscarEmpleadosConCajaPausada(): array{
-        $stmt = $this->conexion->prepare("
-        SELECT e.* FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
-        JOIN cajas c ON ac.id_caja = c.id
-        WHERE c.id_estado = 3 AND e.activo = 1");
-
-        $stmt->execute();
-        $empleados =[];
-        while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
-        }
-
-        return $empleados;
-    }
-
+    
     public function __construct() {
         $this->conexion = Database::getInstancia()->getConexion();
     }
 
+    // Empleados
     public function todos(): array {
         $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE activo = 1");
         $stmt->execute();
         $empleados = [];
         while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
+            $empleados[] = $this->crearSegunRol($data);
         }
 
         return $empleados;
@@ -97,7 +64,7 @@ class EmpleadoRepository {
         ]);
     }
 
-    public function bajaEmpleado(Empleado $empleado): bool {
+    public function desactivar(Empleado $empleado): bool {
         $stmt = $this->conexion->prepare("UPDATE empleados SET activo = 0 WHERE id = :id");
         return $stmt->execute([':id' => $empleado->getId()]);
     }
@@ -111,7 +78,7 @@ class EmpleadoRepository {
             return null;
         }
 
-        return $this->crearEmpleadoSegunRol($data);
+        return $this->crearSegunRol($data);
     }
 
     public function buscarPorId(int $id): ?Empleado { 
@@ -123,62 +90,171 @@ class EmpleadoRepository {
             return null;
         }
 
-        return $this->crearEmpleadoSegunRol($data);
+        return $this->crearSegunRol($data);
     }
 
-    public function buscarEmpleadosAsignados(): array {
+    public function buscarAsignados(): array {
         $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE id IN (SELECT id_empleado FROM asignacion_cajas) AND id_rol = 2 AND activo = 1");
         $stmt->execute();
         $empleados = [];
 
         while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
+            $empleados[] = $this->crearSegunRol($data);
         }
 
         return $empleados;
     }
 
-    public function buscarEmpleadosAsignadosPorDepartamento(int $id_departamento): array {
+    public function buscarNoAsignadosPorDepartamento(int $id_departamento): array {
         $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE id NOT IN (SELECT id_empleado FROM asignacion_cajas) AND id_rol = 2 AND activo = 1 AND id_departamento = :id_departamento");
         $stmt->execute([':id_departamento' => $id_departamento]);
         $empleados = [];
 
         while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
+            $empleados[] = $this->crearSegunRol($data);
         }
 
         return $empleados;
     }
-
-    public function iniciarSesionEmpleado(int $id): bool {
-        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 1 WHERE id = :id");
-        if ($stmt->execute([':id' => $id])) {
-            return true;
-        }
-        return false;
-    }
-
-    public function desconectarEmpleado(int $id): bool {
-        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 0 WHERE id = :id");
-        if ($stmt->execute([':id' => $id])) {
-            return true;
-        }
-        return false;
-    }
     
-    public function buscarEmpleadosActivos(): ?array {
+    public function buscarActivos(): ?array {
         $stmt = $this->conexion->prepare("SELECT * FROM empleados WHERE status = 1");
         $stmt->execute();
         $empleados = [];
 
         while ($data = $stmt->fetch()) {
-            $empleados[] = $this->crearEmpleadoSegunRol($data);
+            $empleados[] = $this->crearSegunRol($data);
         }
 
         return $empleados;
     }
 
-    private function crearEmpleadoSegunRol(array $data): Empleado {
+    public function iniciarSesion(int $id): bool {
+        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 1 WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    public function desconectar(int $id): bool {
+        $stmt = $this->conexion->prepare("UPDATE empleados SET status = 0 WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    //PAGINACION EMPLEADOS
+    public function obtenerPaginacion(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT * FROM empleados WHERE activo = 1 ORDER BY id ASC LIMIT :inicio, :porPagina";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $empleados = [];
+        while ($empleado = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $empleados[] = $this->crearSegunRol($empleado);
+        }
+
+        return $empleados;
+    }
+
+    public function contar(): int {
+        $query = "SELECT COUNT(*) FROM empleados";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function obtenerPaginacionEnDescanso(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT e.* FROM empleados e 
+            JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+            JOIN cajas c ON ac.id_caja = c.id
+            WHERE c.id_estado = 3 AND e.activo = 1 
+            ORDER BY e.id DESC 
+            LIMIT :inicio, :porPagina";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $descansos = [];
+        while ($descanso = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $descansos[] = $this->crearSegunRol($descanso);
+        }
+
+        return $descansos;
+        
+    }
+
+    public function contarEnDescanso(): int {
+        $query = "SELECT COUNT(*) FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
+        JOIN cajas c ON ac.id_caja = c.id
+        WHERE c.id_estado = 3 AND e.activo = 1";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    // Empleados - Horarios
+    public function buscarHorarios(): array {
+        $stmt = $this->conexion->prepare(
+        "SELECT e.id, e.nombre, e.apellido_paterno, h.hora_entrada, h.hora_salida, t.id as tipo_turno
+        FROM empleados e
+        INNER JOIN horarios h ON e.id_horario = h.id
+        INNER JOIN tipo_turno t ON e.id_tipo_turno = t.id
+        ORDER BY e.id"
+        );
+        $stmt->execute();
+        $horarios = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $horarios[] = $data;
+        }
+        return $horarios;
+    }
+
+    public function actualizarHorario(Empleado $empleado): bool {
+        $stmt = $this->conexion->prepare(
+            "UPDATE empleados SET 
+            id_tipo_turno = :idTipoTurno
+            WHERE id = :id"
+        );
+        
+        return $stmt->execute([
+            ':idTipoTurno' => $empleado->getTipoTurno(),
+            ':id' => $empleado->getId()
+        ]);
+    }
+
+    //PAGINACION HORARIOS
+    public function obtenerPaginacionHorarios(int $pagina, int $porPagina): array {
+        $inicio = ($pagina - 1) * $porPagina;
+        $query = "SELECT e.id, e.nombre, e.apellido_paterno, h.hora_entrada, h.hora_salida, t.id as tipo_turno
+               FROM empleados e
+               INNER JOIN horarios h ON e.id_horario = h.id
+               INNER JOIN tipo_turno t ON e.id_tipo_turno = t.id
+               WHERE e.activo = 1
+               ORDER BY e.id ASC LIMIT :inicio, :porPagina;";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $horarios = [];
+        while ($horario = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $horarios[] = ($horario);
+        }
+
+        return $horarios;
+        
+    }
+
+    public function contarHorarios(): int {
+        $query = "SELECT COUNT(*) FROM empleados";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    private function crearSegunRol(array $data): Empleado {
         switch ($data['id_rol']) {
             case 1:
                 $empleado = new Administrador(
@@ -220,67 +296,4 @@ class EmpleadoRepository {
         $empleado->setId($data['id']);
         return $empleado;
     }
-
-    //PAGINACION
-    public function obtenerEmpleadosPaginados(int $pagina, int $porPagina): array {
-        $inicio = ($pagina - 1) * $porPagina;
-        $query = "SELECT * FROM empleados ORDER BY id ASC LIMIT :inicio, :porPagina";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
-        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $empleados = [];
-        while ($empleado = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $empleados[] = $this->crearEmpleadoSegunRol($empleado);
-        }
-
-        return $empleados;
-        
-    }
-
-    public function contarEmpleados(): int {
-        $query = "SELECT COUNT(*) FROM empleados";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->execute();
-        return (int) $stmt->fetchColumn();
-    }
-
-    public function obtenerDescansosPaginados(int $pagina, int $porPagina): array {
-        $inicio = ($pagina - 1) * $porPagina;
-        $query = "SELECT e.* FROM empleados e 
-            JOIN asignacion_cajas ac ON e.id = ac.id_empleado
-            JOIN cajas c ON ac.id_caja = c.id
-            WHERE c.id_estado = 3 AND e.activo = 1 
-            ORDER BY e.id DESC 
-            LIMIT :inicio, :porPagina";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bindValue(':inicio', $inicio, PDO::PARAM_INT);
-        $stmt->bindValue(':porPagina', $porPagina, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $descansos = [];
-        while ($descanso = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $descansos[] = $this->crearEmpleadoSegunRol($descanso);
-        }
-
-        return $descansos;
-        
-    }
-
-    public function contarDescansos(): int {
-        $query = "SELECT COUNT(*) FROM empleados e JOIN asignacion_cajas ac ON e.id = ac.id_empleado
-        JOIN cajas c ON ac.id_caja = c.id
-        WHERE c.id_estado = 3 AND e.activo = 1";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->execute();
-        return (int) $stmt->fetchColumn();
-    }
-
-
-    private function manejarError(string $mensaje): void {
-        $error = $mensaje;
-        require_once __DIR__ . '/../views/error.php';
-    }
-
 }

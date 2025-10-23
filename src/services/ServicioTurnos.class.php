@@ -1,46 +1,211 @@
 <?php
 
 class ServicioTurnos {
-	private $file;
+    private TurnoRepository $turnoRepository;
+    private ClienteRepository $clienteRepository;
+    private CajaRepository $cajaRepository;
 
-	public function __construct() {
-		$this->file = './turno_' . date('Ymd_His') . '.pdf';
-	}
-
-    public function getFile() {
-        return $this->file;
+    public function __construct() {
+        $this->turnoRepository = new TurnoRepository();
+        $this->clienteRepository = new ClienteRepository();
+        $this->cajaRepository = new CajaRepository();
     }
 
-    // Metodo publico para generar un PDF del Turno
-    public function generarTurnoPdf(?string $nombre="", int $caja, string $departamento, int $turno): void {
-        $pdf = new FPDF('P', 'mm', array(50,55));
-		$pdf->SetMargins(2,2,2);
-		$pdf->SetAutoPageBreak(true, 1);
-        $pdf->AddPage();
-        $pdf->setFont('Arial', 'B', 12);
-		$pdf->Cell(0, 3, 'CELERIS', 0, 1, 'C');
-		$pdf->Ln();
-		$pdf->setFont('Arial', '', 7);
+    public function obtenerTodos(): array {
+        $turnos = $this->turnoRepository->todos();
+        return $turnos;
+    }
 
-        if (!$nombre) {
-            $pdf->Cell(0, 3, 'Nombre: N/A', 0, 1, 'L');
-        } else {
-            $pdf->Cell(0, 3, 'Nombre: ' . $nombre, 0, 1, 'L');
+    public function obtenerTurnosPorCaja(int $idCaja): array {
+        $data = [];
+        $turnos = $this->turnoRepository->buscarTurnosPorCaja($idCaja, true, true);
+        foreach($turnos as $turno) {
+            if ($turno->getEstadoId() === 1) {
+                $data["turnoLlamado"][] = $turno;
+            } elseif ($turno->getEstadoId() === 3) {
+                $data["turnoEnAtencion"][] = $turno;
+            } elseif ($turno->getEstadoId() === 2) {
+                $data["turnoEnEspera"][] = $turno;
+            }
         }
-        
-        $pdf->Cell(0, 3, 'Departamento: ' . $departamento, 0, 1, 'L');
-        $pdf->Cell(0, 3, 'Caja: ' . $caja, 0, 1, 'L');
-		$pdf->Ln();
-		$pdf->setFont('Arial', 'B', 8);
-        $pdf->Cell(0, 5, 'Numero de Turno: ' . $turno, 1, 1, 'C');
-		$pdf->Ln();
-		$pdf->setFont('Arial', '', 7);
-        $pdf->Cell(0, 3, 'Torreón, Coahuila', 0, 1, 'L');
-        $pdf->Cell(0, 3, date('d-m-Y'), 0, 1, 'L');
-        $pdf->Cell(0, 3, date('H:i:s'), 0, 1, 'L');
-        $pdf->Cell(0, 3, 'Servicios Celeris', 0, 1, 'L');
-		
-		$pdf->Output('I', 'ticket.pdf');
+        return $data;
     }
-   
+
+    public function generarTurno(array $data, ?Cliente $cliente): ?Turno {
+        // Asignar caja disponible
+        $caja = $this->cajaRepository->buscarDisponible($data["id_departamento"]);
+        // Obtener siguiente número de turno
+        $numeroTurno = $this->turnoRepository->obtenerSiguienteNumero($data["id_departamento"]);
+        if (!$caja) {
+            throw new Exception("No hay cajas disponibles");
+        }
+        // Crear turno
+        $turno = new Turno(
+            $numeroTurno,
+            date('Y-m-d H:i:s'),
+            (!$cliente) ? null : $cliente->getId(),
+            $caja->getId()
+        );
+        // Guardar turno
+        $this->turnoRepository->guardar($turno);
+        $this->turnoRepository->guardarEnLog($turno->getId(), 2, date('Y-m-d H:i:s'));
+        // Mostrar ticket
+        return $turno;
+    }
+
+    public function iniciarSesionCliente(Cliente $cliente): void {
+        $_SESSION["numeroCuenta"] = $cliente->getNumeroCuenta();
+        $_SESSION["idCliente"] = $cliente->getId();
+    }
+
+    public function cerrarSesionCliente(): void {
+        session_unset();
+        session_destroy();
+    }
+
+    public function imprimirTurno(?Cliente $cliente, int $idCaja, Turno $turno): void {
+        $caja = $this->cajaRepository->buscarPorId($idCaja);
+        switch ($caja->getDepartamento()) {
+            case 1:
+                $departamento = 'Cajas';
+                break;
+            case 2:
+                $departamento = 'Asociados';
+                break;
+            case 3:
+                $departamento = 'Caja Fuerte';
+                break;
+            case 4:
+                $departamento = 'Asesoramiento Financiero';
+                break;
+            default:
+                throw new Exception("No existe el departamento.");
+                break;
+        }
+        ServicioPDF::generarTurnoPdf(
+            $caja->getNumero(),
+            $departamento,
+            $turno->getNumero(),
+            (!$cliente) ? "N/A" : $cliente->getNombreCompleto()
+        );
+    }
+
+    public function obtenerClientePorNumeroCuenta(string $numeroCuenta): ?Cliente {
+        $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
+        if (!$cliente) {
+            return null;
+        }
+        return $cliente;
+    }
+
+    public function obtenerClientePorId(int $idCliente): ?Cliente {
+        $cliente = $this->clienteRepository->buscarPorid($idCliente);
+        if (!$cliente) {
+            return null;
+        }
+        return $cliente;
+    }
+
+    public function obtenerPorId(int $id): ?Turno {
+        $turno = $this->turnoRepository->buscarPorId($id);
+        if (!$turno) {
+            return null;
+        }
+        return $turno;
+    }
+
+    public function mostrarTurnos(): array {
+        $departamentos = array(1, 2, 3, 4);
+        $turnos = [];
+
+        foreach ($departamentos as $dep) {
+            $turnos[$dep] = [
+                'siguiente' => $this->turnoRepository->buscarSiguienteNumero($dep),
+                'espera'    => $this->turnoRepository->buscarTurnosEnEspera($dep, $limite=4)
+            ];
+        }
+
+        return $turnos;
+    }
+
+    public function obtenerTiempoEspera(int $idTurno): array {
+        $resultado = $this->turnoRepository->obtenerTiempoEspera($idTurno);
+        if (isset($resultado['error'])) {
+                throw new Exception("Tiempo de espera no disponible");
+        }
+        $resultado['timestamp_servidor'] = time();
+        return $resultado;
+    }
+
+    public function obtenerTurnosEnEspera(): array {
+        $turnos =$this->turnoRepository->buscarTurnosEnEspera();
+        return $turnos;
+    }
+
+    public function obtenerTurnosEnAtencion(): array {
+        $turnos =$this->turnoRepository->buscarTurnosEnAtencion();
+        return $turnos;
+    }
+
+    public function obtenerTurnosActivos(): ?array {
+        $turnos =$this->turnoRepository->buscarTurnosActivos();
+        return $turnos;
+    }
+
+    public function obtenerTurnosCompletados(): ?array {
+        $turnos =$this->turnoRepository->buscarTurnosCompletados();
+        return $turnos;
+    }
+
+    public function cambiarEstado(array $data): bool {
+        $turno = $this->turnoRepository->buscarPorId($data["id_turno"]);
+
+        if (!$turno) {
+            return false;
+        }
+        $turno->setEstado($data["id_estado"]);
+        switch ($turno->getEstadoId()) {
+            case 1:
+                $turno->setTimestampLlamado(date("Y-m-d H:i:s"));
+                $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampLlamado());
+                $this->turnoRepository->actualizarTimestampLlamado($turno->getId());
+                return true;
+            case 3:
+                $turno->setTimestampInicioAtencion(date("Y-m-d H:i:s"));
+                $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampInicioAtencion());
+                $this->turnoRepository->actualizarTimestampInicioAtencion($turno->getId());
+                return true;
+            case 5;
+                $turno->setTimestampFinAtencion(date("Y-m-d H:i:s"));
+                $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampFinAtencion());
+                $this->turnoRepository->actualizarTimestampFinAtencion($turno->getId());
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public function gestion(int $pagina, int $porPagina, array $filtros): array {
+        try {
+            $turnos = $this->turnoRepository->obtenerPaginacionConFiltros($pagina, $porPagina, $filtros);
+            $totalTurnos = $this->turnoRepository->contarConFiltros($filtros);
+            $totalPaginas = ceil($totalTurnos / $porPagina);
+    
+            return [
+                'turnos' => $turnos,
+                'paginaActual' => $pagina,
+                'totalPaginas' => $totalPaginas,
+                'totalTurnos' => $totalTurnos,
+                'filtros' => $filtros
+            ];
+        } catch (\Throwable $th) {
+            return [
+            'turnos' => [],
+            'paginaActual' => 1,
+            'totalPaginas' => 0,
+            'totalTurnos' => 0,
+            'filtros' => []
+            ];
+        }
+    }
 }

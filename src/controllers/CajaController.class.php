@@ -1,197 +1,100 @@
 <?php
 
 class CajaController {
-    private CajaRepository $cajaRepository;
+    private ServicioCajas $servicioCajas;
 
     public function __construct() {
-        $this->cajaRepository = new CajaRepository();
+        $this->servicioCajas = new ServicioCajas();
     }
 
     // ============ VISTAS ADMINISTRADOR ============
 
-    public function listarCajas(): ?array {
+    public function listarTodo(): ?array {
         try {
-            $cajas = $this->cajaRepository->todos();
+            $cajas = $this->servicioCajas->obtenerTodos();
             return $cajas;
         } catch (Exception $th) {
             $this->manejarError($e->getMessage());
         }
     }
-    
-    public function obtenerCajaEmpleado(int $id_caja): ?int {
+
+    public function cambiarEstado(string $view): void {
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            try {
+                $id = $_POST["id"];
+                $idEstado = $_POST["id_estado"];
+
+                if (empty($id) || empty($idEstado)) {
+                    throw new Exception("Datos insuficientes");
+                }
+
+                if (!$this->servicioCajas->cambiarEstado($_POST)) {
+                    throw new Exception("Algo salió mal durante el cambio de estado");
+                }
+
+                header("Location: " . BASE_URL . "/$view" . "?mensaje=actualizado");
+                exit;
+            } catch (Exception $e) {
+                header("Location: " . BASE_URL . "/$view" . "?error=" . urlencode($e->getMessage()));
+                exit;
+            }
+        }
+    }
+
+    public function mostrarPorId(int $id): ?Caja{
         try {
-            $empleado = $this->cajaRepository->getCajaEmpleado($id_caja);
-            return $empleado;
-        } catch (Exception $th) {
+            $caja = $this->servicioCajas->obtenerPorId($id);
+            return $caja;
+        } catch (Exception $e) {
             $this->manejarError($e->getMessage());
         }
     }
 
-    public function asignarEmpleadoCaja(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    public function editarAsignacion(): void {
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
             try {
-                $id = $_POST['id'];
-                $numero = $_POST['numero'];
-                $id_departamento = $_POST['id_departamento'];
-                $id_empleado = $_POST['id_empleado'];
-                $id_estado = $_POST['id_estado'];
-    
-                if (empty($id_departamento) || empty($id_empleado) || empty($id_estado)) {
-                    throw new Exception("Los campos con * son obligatorios");
-                }
-    
-                $caja = $this->cajaRepository->obtenerCajaPorId($id);
-    
-                if (!$caja) {
-                    throw new Exception("Caja no encontrada.");
-                }
-    
-                $cajaActualizada = $this->instanciarCaja($_POST);
-                $cajaActualizada->setId($id);
+                $idCaja = $_POST["id_caja"];
+                $idEmpleado = $_POST["id_empleado"];
                 
-                $this->cajaRepository->actualizar($cajaActualizada);
-                    
-                header('Location: ' . BASE_URL . '/admin?mensaje=asignado');
-                exit;
-            } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
-                exit;
-            }
-        }
-    }
-
-    public function obtenerCajaPorId(int $id_caja): ?Caja{
-        $caja = $this->cajaRepository->obtenerCajaPorId($id_caja);
-        return $caja;
-    }
-
-    public function abrirCaja(): void {
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            try {
-                $id = $_POST['id'];
-
-                $caja = $this->cajaRepository->obtenerCajaPorId($id);
-
-                if (!$caja) {
-                    throw new Exception("La caja no existe.");
+                if (empty($idCaja) || empty($idEmpleado)) {
+                    throw new Exception("Datos insuficientes");
                 }
 
-                $this->cajaRepository->cambiarEstado($id, 1);
-                header('Location: ' . BASE_URL . '/admin?mensaje=cambio_exitoso');
-                exit;
-            } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
-                exit;
-            }
-        }
-    }
-
-    public function cerrarCaja(): void {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            try {
-                $id = $_POST['id'];
-
-                $caja = $this->cajaRepository->obtenerCajaPorId($id);
-
-                if (!$caja) {
-                    throw new Exception("La caja no existe.");
+                if (!$this->servicioCajas->editarAsignacion($_POST)) {
+                    throw new Exception("Algo salió mal durante la asignacion");
                 }
 
-                $this->cajaRepository->cambiarEstado($id, 2);
-                header('Location: ' . BASE_URL . '/admin?mensaje=cambio_exitoso');
+                header("Location: " . BASE_URL . "/admin?mensaje=actualizado");
                 exit;
             } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
+                header("Location: " . BASE_URL . "/admin?error=" . urlencode($e->getMessage()));
                 exit;
             }
         }
     }
 
-    public function pausarCaja(): void {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            try {
-                $id = $_POST['id'];
-
-                $caja = $this->cajaRepository->obtenerCajaPorId($id);
-
-                if (!$caja) {
-                    throw new Exception("La caja no existe.");
-                }
-
-                $this->cajaRepository->cambiarEstado($id, 3);
-                header('Location: ' . BASE_URL . '/admin?mensaje=cambio_exitoso');
-                exit;
-            } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
-                exit;
-            }
+    public function obtenerCajaPorEmpleado(Empleado $empleado): ?Caja {
+        try {
+            $caja = $this->servicioCajas->obtenerCajaPorEmpleado($empleado);
+            return $caja;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
         }
     }
 
-    public function fueraServicioCaja(): void {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            try {
-                $id = $_POST['id'];
+    public function gestion(): array {
+        try {
+            $pagina = isset($_GET['pagina_Caja']) ? (int)$_GET['pagina_Caja'] : 1;
+            $porPagina = 10;
 
-                $caja = $this->cajaRepository->obtenerCajaPorId($id);
-
-                if (!$caja) {
-                    throw new Exception("La caja no existe.");
-                }
-
-                $this->cajaRepository->cambiarEstado($id, 4);
-                header('Location: ' . BASE_URL . '/admin?mensaje=cambio_exitoso');
-                exit;
-            } catch (Exception $e) {
-                header('Location: ' . BASE_URL . '/admin?error=' . urlencode($e->getMessage()));
-                exit;
-            }
+            return $this->servicioCajas->gestion($pagina, $porPagina);
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
         }
     }
-
-    private function instanciarCaja(array $data): Caja {
-        $this->cajaRepository->asignarCaja($data['id'], $data['id_empleado']);
-
-        return new Caja(
-            $data['numero'],
-            $data['id_departamento'],
-            $data['id_estado']
-        );
-    }
-
 
     private function manejarError(string $mensaje): void {
         $error = $mensaje;
         require_once __DIR__ . '/../views/error.php';
     }
-
-
-
-    public function gestionDeCajas(): array {
-        try {
-            $pagina = isset($_GET['pagina_Caja']) ? (int)$_GET['pagina_Caja'] : 1;
-            $porPagina = 10;
-
-            $cajas = $this->cajaRepository->obtenerCajasPaginadas($pagina, $porPagina);
-            $totalCajas = $this->cajaRepository->contarCajas();
-            $totalPaginasCajas = ceil($totalCajas / $porPagina);
-
-            return [
-                'cajas' => $cajas,
-                'paginaActual' => $pagina,
-                'totalPaginas' => $totalPaginasCajas,
-                'totalCajas' => $totalCajas
-            ];
-        } catch (Exception $e) {
-            error_log("Error en gestionDeCajas: " . $e->getMessage());
-            return [
-                'cajas' => [],
-                'paginaActual' => 1,
-                'totalPaginas' => 0,
-                'totalCajas' => 0
-            ];
-        }
-    }
-
 }
