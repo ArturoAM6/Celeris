@@ -2,9 +2,11 @@
 
 class AuthController {
     private EmpleadoRepository $empleadoRepository;
+    private ServicioEmpleados $servicioEmpleados;
 
     public function __construct() {
         $this->empleadoRepository = new EmpleadoRepository();
+        $this->servicioEmpleados = new ServicioEmpleados();
     }
 
     public function login(): void {
@@ -14,22 +16,25 @@ class AuthController {
                 $password = $_POST['password'] ?? '';
 
                 if (empty($email) || empty($password)) {
-                    throw new Exception("Email y contraseña son obligatorios");
+                    throw new Exception("Correo y contraseña son obligatorios");
                 }
 
                 $empleado = $this->empleadoRepository->buscarPorEmail($email);
 
                 if (!$empleado) {
-                    throw new Exception("Credenciales incorrectas");
+                    http_response_code(404);
+                    throw new Exception("Correo no registrado");
                 }
 
                 if (!ServicioAutenticacion::iniciarSesion($empleado, $password)) {
+                    http_response_code(400);
                     throw new Exception("Credenciales incorrectas");
                 }
 
                 // Establecer status de empleado a activo
-                if (!$this->empleadoRepository->iniciarSesionEmpleado($empleado->getId())) {
-                    throw new Exception("Ocurrio un error");
+                if (!$this->servicioEmpleados->iniciarSesion($empleado->getId())) {
+                    http_response_code(500);
+                    throw new DatabaseException("Ocurrió un error");
                 }
 
                 // Redirigir según rol
@@ -56,10 +61,16 @@ class AuthController {
     }
 
     public function logout(): void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['logout'];
-            $this->empleadoRepository->desconectarEmpleado($id);
+            $empleado = ServicioAutenticacion::obtenerEmpleadoActual();
+            
+            if (!$empleado) {
+                header("location: " . BASE_URL . "/login");
+            }
+
+            $this->servicioEmpleados->desconectar($empleado);
             ServicioAutenticacion::cerrarSesion();
-        }
+            header("Cache-Control: no-store, no-cache, must-revalidate");
+            header("Expires: 0");
+            header("Location: " . BASE_URL . "/login");
     }
 }

@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de administrador - CELERIS</title>
   <link rel="stylesheet" href="<?= BASE_URL ?>/css/pan_admin_emp.css">
+  <script src="https://kit.fontawesome.com/d4435a1b16.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
     <form action="<?= BASE_URL ?>/logout" method="post">
-        <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
+        <button type="submit" name="logout" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
     <h1>Panel de Administración - CELERIS</h1>
   </header>
@@ -21,55 +22,6 @@
     <div class="card">Completados: <span><?= htmlspecialchars(count($turnosCompletados)); ?></span></div>
     <div class="card">Empleados Activos: <span><?= htmlspecialchars(count($empleadosActivos)); ?></span></div>
     <div class="card">Total Empleados: <span><?= htmlspecialchars(count($empleados)); ?></span></div>
-  </section>
-
-  <section class="filtros-simple">
-    <form method="GET" action="<?= BASE_URL ?>/admin" class="form-filtros-inline">
-      <span class="filtro-label">Filtrar:</span>
-      
-      <select name="departamento" class="filtro-input">
-        <option value="">Departamento</option>
-        <option value="1" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '1' ? 'selected' : '' ?>>Ventanillas</option>
-        <option value="2" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '2' ? 'selected' : '' ?>>Asociados</option>
-        <option value="3" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '3' ? 'selected' : '' ?>>Caja Fuerte</option>
-        <option value="4" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '4' ? 'selected' : '' ?>>Asesoramiento Financiero</option>
-      </select>
-
-      <select name="estado" class="filtro-input">
-        <option value="">Estado</option>
-        <option value="1" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '1' ? 'selected' : '' ?>>Llamado</option>
-        <option value="2" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '2' ? 'selected' : '' ?>>En espera</option>
-        <option value="3" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '3' ? 'selected' : '' ?>>En atencion</option>
-        <option value="4" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '4' ? 'selected' : '' ?>>Cancelado</option>
-        <option value="5" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '5' ? 'selected' : '' ?>>Finalizado</option>
-      </select>
-
-      <input 
-        type="number" 
-        name="caja" 
-        placeholder="Número de Caja" 
-        class="filtro-input"
-        value="<?= htmlspecialchars($datosPaginacion['filtros']['id_caja'] ?? '') ?>"
-      >
-
-      <input 
-        type="date" 
-        name="fecha" 
-        class="filtro-input"
-        value="<?= htmlspecialchars($datosPaginacion['filtros']['fecha'] ?? '') ?>"
-      >
-
-      <input 
-        type="number" 
-        name="numero" 
-        placeholder="Número de Turno" 
-        class="filtro-input"
-        value="<?= htmlspecialchars($datosPaginacion['filtros']['numero_turno'] ?? '') ?>"
-      >
-
-      <button type="submit" class="btn-filtrar-simple">Buscar</button>
-      <a style = "color : black;" href="<?= BASE_URL ?>/admin" class="btn-limpiar-simple">Limpiar</a>
-    </form>
   </section>
   
   <section class="table-section">
@@ -94,12 +46,12 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($empleados)): ?>
+                <?php if (empty($empleadosPaginados)): ?>
                     <tr>
                         <td colspan="6" class="texto-centrado">No hay empleados registrados</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($empleados as $empleado): ?>
+                    <?php foreach ($empleadosPaginados as $empleado): ?>
                         <tr>
                             <td><?= htmlspecialchars($empleado->getId()) ?></td>
                             <td><?= htmlspecialchars($empleado->getNombreCompleto()) ?></td>
@@ -148,6 +100,19 @@
                 <?php endif; ?>
             </tbody>
         </table>
+        <?php if ($totalPaginasEmpleados > 1): ?>
+    <div>
+        <?php if ($paginaActualEmpleados > 1): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Empleados=<?= $paginaActualEmpleados - 1 ?>">Anterior</a>
+        <?php endif; ?>
+        
+        Página <?= $paginaActualEmpleados ?> de <?= $totalPaginasEmpleados ?>
+        
+        <?php if ($paginaActualEmpleados < $totalPaginasEmpleados): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Empleados=<?= $paginaActualEmpleados + 1 ?>">Siguiente</a>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
     </div>
     <div class="tab-content" id="cajas">
         <table>
@@ -162,12 +127,13 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($cajas)): ?>
+                <?php $cajasPaginadas = array_map(null, $cajasPaginadas["cajas"], $cajasPaginadas["empleados"]); ?>
+                <?php if (empty($cajasPaginadas)): ?>
                     <tr>
                         <td colspan="6" class="texto-centrado">No hay cajas registradas</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($cajas as $caja): ?>
+                    <?php foreach ($cajasPaginadas as [$caja, $empleado]): ?>
                         <tr>
                             <td><?= htmlspecialchars($caja->getId()) ?></td>
                             <td><?= htmlspecialchars($caja->getNumero()) ?></td>
@@ -192,11 +158,7 @@
                                 ?>
                             </td>
                             <td>
-                                <?php 
-                                    echo $empleado_id = $cajaController->obtenerCajaEmpleado($caja->getId());
-                                    echo " - ";
-                                    echo $empleado = $empleadoController->obtenerEmpleadoPorId($empleado_id)->getNombreCompleto() 
-                                ?>
+                                <?= $empleado->getNombreCompleto() ?>
                             </td>
                             <td class="acciones-tabla">
                                 <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
@@ -209,30 +171,35 @@
                                         'id_empleado' => $empleado_id ?? null
                                     ])) 
                                     ?>
-                                    )">Asignar Caja</button>
+                                    )"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <?php endif?>
                                 <?php if ($caja->getEstado() == 1): ?>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/cerrar" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Cerrar</button>
+                                        <input type="hidden" name="id_estado" value="2">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
                                     </form>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/pausar" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Pausar</button>
+                                        <input type="hidden" name="id_estado" value="3">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Abrir</button>
+                                        <input type="hidden" name="id_estado" value="1">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                     </form>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/fuera-servicio" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Fuera de servicio</button>
+                                        <input type="hidden" name="id_estado" value="4">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 4): ?>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/abrir" method="post">
+                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <button type="submit" class="btn">Abrir</button>
+                                        <input type="hidden" name="id_estado" value="1">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                     </form>
                                 <?php endif ?>
                             </td>
@@ -241,8 +208,70 @@
                 <?php endif; ?>
             </tbody>
         </table>
+        <?php if ($totalPaginasCajas > 1): ?>
+    <div>
+        <?php if ($paginaActualCajas > 1): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Caja=<?= $paginaActualCajas - 1 ?>">Anterior</a>
+        <?php endif; ?>
+        
+        Página <?= $paginaActualCajas ?> de <?= $totalPaginasCajas ?>
+        
+        <?php if ($paginaActualCajas < $totalPaginasCajas): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Caja=<?= $paginaActualCajas + 1 ?>">Siguiente</a>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+</div>
     </div>
     <div class="tab-content" id="turnos">
+        <section class="filtros-simple">
+    <form method="GET" action="<?= BASE_URL ?>/admin" class="form-filtros-inline">
+      <span class="filtro-label">Filtrar:</span>
+      
+      <select name="departamento" class="filtro-input">
+        <option value="">Departamento</option>
+        <option value="1" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '1' ? 'selected' : '' ?>>Ventanillas</option>
+        <option value="2" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '2' ? 'selected' : '' ?>>Asociados</option>
+        <option value="3" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '3' ? 'selected' : '' ?>>Caja Fuerte</option>
+        <option value="4" <?= ($datosPaginacion['filtros']['id_departamento'] ?? '') == '4' ? 'selected' : '' ?>>Asesoramiento Financiero</option>
+      </select>
+
+      <select name="estado" class="filtro-input">
+        <option value="">Estado</option>
+        <option value="1" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '1' ? 'selected' : '' ?>>Llamado</option>
+        <option value="2" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '2' ? 'selected' : '' ?>>En espera</option>
+        <option value="3" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '3' ? 'selected' : '' ?>>En atencion</option>
+        <option value="4" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '4' ? 'selected' : '' ?>>Cancelado</option>
+        <option value="5" <?= ($datosPaginacion['filtros']['id_estado'] ?? '') == '5' ? 'selected' : '' ?>>Finalizado</option>
+      </select>
+
+      <input 
+        type="number" 
+        name="caja" 
+        placeholder="Número de Caja" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['id_caja'] ?? '') ?>"
+      >
+
+      <input 
+        type="date" 
+        name="fecha" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['fecha'] ?? '') ?>"
+      >
+
+      <input 
+        type="number" 
+        name="numero" 
+        placeholder="Número de Turno" 
+        class="filtro-input"
+        value="<?= htmlspecialchars($datosPaginacion['filtros']['numero_turno'] ?? '') ?>"
+      >
+
+      <button type="submit" class="btn-filtrar-simple">Buscar</button>
+      <a style = "color : black;" href="<?= BASE_URL ?>/admin" class="btn-limpiar-simple">Limpiar</a>
+    </form>
+  </section>
     <table>
         <thead>
             <tr>
@@ -271,7 +300,7 @@
                         <?php else: ?>
                             <td><?= htmlspecialchars('N/A') ?></td>
                         <?php endif; ?>
-                        <td><?= htmlspecialchars($turnoController->obtenerDepartamentoTurno($turno['id_caja'])) ?></td>
+                        <td>Aqui iba el departamento</td>
                         <td><?= htmlspecialchars($turno['id_caja']) ?></td>
                         <td>
                             <?php 
@@ -296,13 +325,13 @@
     <?php if ($totalPaginas > 1): ?>
     <div>
         <?php if ($paginaActual > 1): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina=<?= $paginaActual - 1 ?>">Anterior</a>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual - 1 ?>">Anterior</a>
         <?php endif; ?>
         
         Página <?= $paginaActual ?> de <?= $totalPaginas ?>
         
         <?php if ($paginaActual < $totalPaginas): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina=<?= $paginaActual + 1 ?>">Siguiente</a>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual + 1 ?>">Siguiente</a>
         <?php endif; ?>
     </div>
     <?php endif; ?>
@@ -326,12 +355,12 @@
                 </thead>
                 <tbody>
                     <?php $tiposTurno = [1 => 'Terciado', 2 => 'Semanal'];?>
-                    <?php if (empty($horarios)): ?>
+                    <?php if (empty($horariosPaginados)): ?>
                         <tr>
                             <td colspan="10" class="texto-centrado">No hay horarios registrados</td>
                         </tr>
                     <?php else: ?>
-                        <?php foreach ($horarios as $horario): ?>
+                        <?php foreach ($horariosPaginados as $horario): ?>
                             <tr>
                                 <td><?= htmlspecialchars($horario['id'] ." - ". $horario['nombre']. " ". $horario['apellido_paterno']) ?></td>
                                 <td><?= htmlspecialchars($horario['hora_entrada']) ?></td>
@@ -369,37 +398,65 @@
                 <button type='submit' class="btn" style="margin-top: 10px;">Guardar Cambios</button>
             </div>
         </form>
+        <?php if ($totalPaginasHorarios > 1): ?>
+    <div>
+        <?php if ($paginaActualHorarios > 1): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Horario=<?= $paginaActualHorarios - 1 ?>">Anterior</a>
+        <?php endif; ?>
+        
+        Página <?= $paginaActualHorarios ?> de <?= $totalPaginasHorarios ?>
+        
+        <?php if ($paginaActualHorarios < $totalPaginasHorarios): ?>
+            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Horario=<?= $paginaActualHorarios + 1 ?>">Siguiente</a>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
     </div>
     <div class="tab-content" id="descansos">
-        <table>
-            <thead>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($descansosPaginados)): ?>
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Rol</th>
+                    <td colspan="4" class="texto-centrado">No hay descansos registrados</td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php if (!$empleadosPausa): ?>
+            <?php else: ?>
+                <?php foreach ($descansosPaginados as $descanso): ?>
                     <tr>
-                        <td colspan="6" class="texto-centrado">No hay empleados en descanso actualmente</td>
+                        <td><?= $descanso->getId() ?></td>
+                        <td><?= $descanso->getNombreCompleto() ?></td>
+                        <td><?= $descanso->getEmail() ?></td>
+                        <td><?= $descanso->getRol() ?></td>
                     </tr>
-                <?php else: ?>
-                    <?php foreach ($empleadosPausa as $empleado): ?>
-                    <tr>
-                        <td><?= $empleado->getId() ?></td>
-                        <td><?= $empleado->getNombreCompleto() ?></td>
-                        <td><?= $empleado->getEmail() ?></td>
-                        <td><?= $empleado->getRol() ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
             </tbody>
         </table>
         
-    </div>
-  </section>
+    
+    <?php if ($totalPaginasDescansos > 1): ?>
+        <div>
+            <?php if ($paginaActualDescansos > 1): ?>
+                <a style="color: black;" href="<?= BASE_URL ?>/admin?pagina_Descanso=<?= $paginaActualDescansos - 1 ?>">Anterior</a>
+            <?php endif; ?>
+            
+            Página <?= $paginaActualDescansos ?> de <?= $totalPaginasDescansos ?>
+            
+            <?php if ($paginaActualDescansos < $totalPaginasDescansos): ?>
+                <a style="color: black;" href="<?= BASE_URL ?>/admin?pagina_Descanso=<?= $paginaActualDescansos + 1 ?>">Siguiente</a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</div> 
+
+</section> 
 
     <!-- Modal Editar -->
     <div id="modalEditar" class="modal">
@@ -551,18 +608,11 @@
             </div>
             
             <form method="POST" action="<?= BASE_URL ?>/admin/cajas/asignar" id="formAsignar">
-                <input type="hidden" id="asign_id" name="id">
-                <input type="hidden" id="asign_numero" name="numero">
-                <input type="hidden" id="asign_id_estado" name="id_estado">
+                <input type="hidden" id="asign_id" name="id_caja">
                 
                 <div class="campo">
                     <label for="asign_id_departamento">Departamento *</label>
-                    <select id="asign_id_departamento" name="id_departamento" required>
-                        <option value="1">Ventanillas</option>
-                        <option value="2">Asociados</option>
-                        <option value="3">Caja Fuerte</option>
-                        <option value="4">Asesoramiento Financiero</option>
-                    </select>
+                    <input type="text" id="asign_id_departamento" disabled>
                 </div>
 
                 <div class="campo">

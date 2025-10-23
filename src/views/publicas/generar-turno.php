@@ -20,10 +20,13 @@
                 <?php if (isset($numeroCuenta)): ?>
                     <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars($numeroCuenta) ?>">
                 <?php endif; ?>
+
                 <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
                 <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
+                <?php if(isset($_SESSION["numeroCuenta"])): ?>
                 <button type="submit" class="btn" name="id_departamento" value="3">Caja Fuerte</button>
                 <button type="submit" class="btn" name="id_departamento" value="4">Asesoramiento Financiero</button>
+                <?php endif; ?>
             </form>
         </div>
     </div>

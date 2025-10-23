@@ -13,7 +13,7 @@ class Turno {
     private int $id_estado;
 
     // Constructor
-    public function __construct(int $numero, string $timestamp_solicitud, ?int $id_cliente = null, int $id_caja) {
+    public function __construct(int $numero, string $timestamp_solicitud, ?int $id_cliente = null, int $id_caja = null) {
         $this->numero = $numero;
         $this->timestamp_solicitud = $timestamp_solicitud;
         $this->id_caja = $id_caja;
@@ -108,5 +108,9 @@ class Turno {
             default:
                 return 'Desconocido';
         }
+    }
+
+    public function setEstado(int $id_estado): void {
+        $this->id_estado = $id_estado;
     }
 }
