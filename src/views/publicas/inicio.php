@@ -21,7 +21,11 @@
       <h1>Tu banca rápida y segura</h1>
       <p>Accede a tu dinero en cualquier momento con la confianza de una conexión protegida.</p>
       <button id="btn-cuentahabiente" class="btn-cta">Cuentahabiente</button>
-      <a href="<?= BASE_URL ?>/turno/generar" id="btn-no-cuentahabiente" class="btn-cta">No cuentahabiente</a>
+
+      <form action="<?= BASE_URL ?>/turno/generar" method="post" id="form-no-cuentahabiente">
+        <input type="hidden" name="tipo" value="no_cuentahabiente">
+        <button type="submit" id="btn-no-cuentahabiente" class="btn-cta">No cuentahabiente</button>
+      </form>
 
       <div>
         <form action="<?= BASE_URL ?>/turno/generar" method="post" class="cuenta-input" id="cuenta-input">

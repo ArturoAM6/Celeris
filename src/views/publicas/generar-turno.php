@@ -17,13 +17,24 @@
         <h1>Bienvenido, ¿a qué departamento deseas acceder?</h1>
         <div>
             <form action="<?= BASE_URL ?>/turno/generar" method="post" class="button-grid">
-                <?php if (isset($numeroCuenta)): ?>
-                    <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars($numeroCuenta) ?>">
+
+                <?php 
+                $esCuentahabiente = isset($tipo) && $tipo === 'cuentahabiente';
+                ?>
+                
+
+                <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo ?? 'no_cuentahabiente') ?>">
+
+                <?php if (isset($_SESSION['cuentahabiente']) && $_SESSION['cuentahabiente'] === 'cuentahabiente'): ?>
+                    <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
+                    <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
+                    <button type="submit" class="btn" name="id_departamento" value="3">Caja Fuerte</button>
+                    <button type="submit" class="btn" name="id_departamento" value="4">Asesoramiento Financiero</button>
+                <?php else: ?>
+                    <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
+                    <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
                 <?php endif; ?>
-                <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
-                <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
-                <button type="submit" class="btn" name="id_departamento" value="3">Caja Fuerte</button>
-                <button type="submit" class="btn" name="id_departamento" value="4">Asesoramiento Financiero</button>
+
             </form>
         </div>
     </div>
