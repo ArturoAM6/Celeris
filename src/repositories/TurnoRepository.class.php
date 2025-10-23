@@ -373,7 +373,7 @@ class TurnoRepository {
     public function buscarSiguienteNumero(int $idDepartamento): ?array {
         $stmt = $this->conexion->prepare("SELECT 
                 t.*,
-                c.numero, 
+                c.numero as numero_caja, 
                 tl.id_estado
                 FROM turnos t
                 INNER JOIN turnos_log tl ON tl.id_turno = t.id

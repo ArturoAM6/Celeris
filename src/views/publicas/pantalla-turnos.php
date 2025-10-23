@@ -46,7 +46,7 @@
                     <h3>Turno Siguiente</h3>
                     <?php if ($datos['siguiente']): ?>
                         <div class="numero-turno"><?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
-                        <div class="ventanilla-info">Caja <?= htmlspecialchars($datos['siguiente']['numero']) ?></div>
+                        <div class="ventanilla-info">Caja <?= htmlspecialchars($datos['siguiente']['numero_caja']) ?></div>
                     <?php else: ?>
                         <div class="sin-turnos">Sin turnos llamados</div>
                     <?php endif; ?>
