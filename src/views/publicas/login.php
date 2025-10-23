@@ -10,14 +10,14 @@
 <body>
     <header class="navbar">
     <a href="<?= BASE_URL ?>/" class="nav-logo" style="text-decoration: none;">
-      <img src="<?= BASE_URL ?>/img/celeris-logo.png" class="rayo "alt="Logo">
+      <img src="<?= BASE_URL ?>/img/logo_celeris.png" class="rayo "alt="Logo">
       <h2 class="navbar-title">CELERIS</h2>
     </a>
   </header>
   <div class="login-container">
     <div class="login-box">
       <div class="logo">
-        <img src="<?= BASE_URL ?>/img/flash-on.png" alt="Logo">
+        <img src="<?= BASE_URL ?>/img/logo_celeris.png" alt="Logo">
         <h2>Celeris</h2>
         <p>Banca rápida</p>
       </div>
@@ -47,8 +47,8 @@
               toggleIcon.classList.toggle('fa-eye-slash');
             });
           </script>
+            <button type="submit">Iniciar Sesión</button>
         </div>
-        <button type="submit">Iniciar Sesión</button>
       </form>
 
     </div>

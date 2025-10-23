@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +13,7 @@
     <form action="<?= BASE_URL ?>/logout" method="post">
         <button type="submit" name="logout" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
-    <h1>Panel de Administración - CELERIS</h1>
+    <h1>Panel de Administración <img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"></h1>
   </header>
   
   <section class="summary">

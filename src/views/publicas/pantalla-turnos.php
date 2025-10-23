@@ -10,7 +10,7 @@
 <header class="navbar">
     <div class="nav-logo">
         <a href="<?= BASE_URL ?>" class="navbar-brand">
-            <img src="<?= BASE_URL ?>/img/flash-on.png" class="rayo" alt="Logo">
+            <img src="<?= BASE_URL ?>/img/logo_celeris.png" class="rayo" alt="Logo">
             <h2 class="navbar-title">CELERIS</h2>
         </a>
     </div>
