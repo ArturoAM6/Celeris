@@ -64,7 +64,7 @@
                               <input type="hidden" name="id_estado" value="5">
                               <button type="submit" class="btn">Finalizar</button>
                           </form>
-                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1): ?>
+                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1 ): ?>
                           <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
                               <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado[0]->getId(); ?>">
                               <input type="hidden" name="id_estado" value="3">

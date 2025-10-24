@@ -345,20 +345,29 @@
             <?php endif; ?>
         </tbody>
     </table>
-    
     <?php if ($totalPaginas > 1): ?>
-    <div>
-        <?php if ($paginaActual > 1): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual - 1 ?>">Anterior</a>
-        <?php endif; ?>
-        
-        Página <?= $paginaActual ?> de <?= $totalPaginas ?>
-        
-        <?php if ($paginaActual < $totalPaginas): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual + 1 ?>">Siguiente</a>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
+        <div>
+            <?php 
+            $urlBase = BASE_URL . '/admin?pagina_Turno=';
+            $filtrosUrl = '';
+            if (!empty($datosPaginacion['filtros']['id_departamento'])) $filtrosUrl .= '&departamento=' . urlencode($datosPaginacion['filtros']['id_departamento']);
+            if (!empty($datosPaginacion['filtros']['id_estado'])) $filtrosUrl .= '&estado=' . urlencode($datosPaginacion['filtros']['id_estado']);
+            if (!empty($datosPaginacion['filtros']['id_caja'])) $filtrosUrl .= '&caja=' . urlencode($datosPaginacion['filtros']['id_caja']);
+            if (!empty($datosPaginacion['filtros']['fecha'])) $filtrosUrl .= '&fecha=' . urlencode($datosPaginacion['filtros']['fecha']);
+            if (!empty($datosPaginacion['filtros']['numero_turno'])) $filtrosUrl .= '&numero=' . urlencode($datosPaginacion['filtros']['numero_turno']);
+            ?>
+            
+            <?php if ($paginaActual > 1): ?>
+                <a style="color: black;" href="<?= $urlBase . ($paginaActual - 1) . $filtrosUrl ?>">Anterior</a>
+            <?php endif; ?>
+            
+            Página <?= $paginaActual ?> de <?= $totalPaginas ?>
+            
+            <?php if ($paginaActual < $totalPaginas): ?>
+                <a style="color: black;" href="<?= $urlBase . ($paginaActual + 1) . $filtrosUrl ?>">Siguiente</a>
+            <?php endif; ?>
+        </div>
+<?php endif; ?>
 </div>
     <div class="tab-content" id="horarios">
         <form action="<?= BASE_URL ?>/admin/horario/asignar" method="post">

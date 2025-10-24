@@ -20,7 +20,7 @@
                 <?php if (isset($numeroCuenta)): ?>
                     <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars($numeroCuenta) ?>">
                 <?php endif; ?>
-
+                
                 <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
                 <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
                 <?php if(isset($_SESSION["numeroCuenta"])): ?>
