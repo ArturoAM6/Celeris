@@ -70,6 +70,11 @@
                               <input type="hidden" name="id_estado" value="3">
                               <button type="submit" class="btn">Atender Turno</button>
                           </form>
+                          <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
+                              <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado[0]->getId(); ?>">
+                              <input type="hidden" name="id_estado" value="4">
+                              <button type="submit" class="btn">Cancelar Turno</button>
+                          </form>
                       <?php endif; ?>
                   <?php else: ?>
                       <div class="sin-accion">Caja en descanso - acciones deshabilitadas</div>
@@ -92,7 +97,7 @@
                           <?php foreach ($turnosEnEspera as $turno): ?>
                               <li>
                                   <p>Turno N° <?= $turno->getNumero(); ?></p>
-                                  <?php if ($caja->getEstado() == 1 && empty($turnoLlamado) && empty($turnoEnAtencion)): ?>
+                                  <?php if ($caja->getEstado() == 1 && empty($turnoLlamado)): ?>
                                       <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado' class="form-llamar">
                                           <input type="hidden" name="id_turno" value="<?= $turno->getId(); ?>">
                                           <input type="hidden" name="id_estado" value="1">
