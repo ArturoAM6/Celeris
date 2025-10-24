@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Monomakh&display=swap');
 
-
-/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -38,8 +36,8 @@ a {
 }
 
 .navbar-logo {
-    height: 48px;
-    width: auto;
+    height: 50px;
+    width: 50px;
 }
 
 .navbar-brand {
@@ -50,9 +48,10 @@ a {
 
 .navbar-title {
   font-size: 48px;
-  font-family: 'Monomakh';
   color: #1a73e8;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  font-family: 'Monomakh';
 }
 
 /* Footer */
@@ -72,7 +71,7 @@ a {
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 .nav-logo h2 {
   color: #1a73e8;
