@@ -114,6 +114,14 @@ class ServicioTurnos {
         return $turno;
     }
 
+    public function obtenerIdDepartamentoPorTurno(array $turnos): ?array {
+        $departamentos = [];
+        foreach($turnos as $turno) {
+            $departamentos[] = $this->turnoRepository->obtenerIdDepartamentoPorTurno($turno["id"]);
+        }
+        return $departamentos;
+    }
+
     public function mostrarTurnos(): array {
         $departamentos = array(1, 2, 3, 4);
         $turnos = [];
