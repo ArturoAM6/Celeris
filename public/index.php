@@ -33,7 +33,6 @@ if ($ruta === '/' || $ruta === '/index.php') {
     require_once __DIR__ . '/../src/views/publicas/inicio.php';
     exit;
 }
-
 if ($ruta === '/turno') {
     header("Refresh:30");
     $controller = new TurnoController();
@@ -135,7 +134,8 @@ if ($_SESSION['id_rol'] === 1) {
         $turnosAtencion = $turnoController->listarTurnosEnAtencion();
         $turnosCompletados = $turnoController->listarTurnosCompletados();
         $datosPaginacion = $turnoController->gestion();
-        $turnosPaginados = $datosPaginacion['turnos'] ?? [];
+        $turnosPaginados["turnos"] = $datosPaginacion['turnos'] ?? [];
+        $turnosPaginados["departamentos"] = $turnoController->obtenerIdDepartamentoPorTurno($turnosPaginados["turnos"]);
         $paginaActual = $datosPaginacion['paginaActual'] ?? 1;
         $totalPaginas = $datosPaginacion['totalPaginas'] ?? 0;
 
