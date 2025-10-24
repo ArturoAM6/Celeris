@@ -91,6 +91,15 @@ class TurnoController {
         }
     }
 
+    public function obtenerIdDepartamentoPorTurno(array $turnos): ?array {
+        try {
+            $departamentos = $this->servicioTurnos->obtenerIdDepartamentoPorTurno($turnos);
+            return $departamentos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
     public function mostrarTurnos(): array {
         $turnos = $this->servicioTurnos->mostrarTurnos();
         return $turnos;
