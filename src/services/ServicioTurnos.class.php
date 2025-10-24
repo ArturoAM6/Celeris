@@ -183,6 +183,12 @@ class ServicioTurnos {
                 $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampInicioAtencion());
                 $this->turnoRepository->actualizarTimestampInicioAtencion($turno->getId());
                 return true;
+            case 4:
+                // Cancelado
+                $turno->setTimestampFinAtencion(date("Y-m-d H:i:s"));
+                $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampFinAtencion());
+                $this->turnoRepository->actualizarTimestampFinAtencion($turno->getId());
+                return true;
             case 5;
                 $turno->setTimestampFinAtencion(date("Y-m-d H:i:s"));
                 $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampFinAtencion());
