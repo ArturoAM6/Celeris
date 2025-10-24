@@ -26,11 +26,10 @@ class TurnoController {
                 
                 try {
                     $cliente = $this->servicioTurnos->obtenerClientePorNumeroCuenta($numeroCuenta);
-                    $this->servicioTurnos->iniciarSesionCliente($cliente);
                     if (!$cliente) {
                         throw new Exception("Cliente no encontrado");
                     }
-                        
+                    $this->servicioTurnos->iniciarSesionCliente($cliente);
                     require_once __DIR__ . '/../views/publicas/generar-turno.php';
                     return;
                 } catch (Exception $e) {
@@ -92,7 +91,7 @@ class TurnoController {
         }
     }
 
-        public function mostrarTurnos(): array {
+    public function mostrarTurnos(): array {
         $turnos = $this->servicioTurnos->mostrarTurnos();
         return $turnos;
     }

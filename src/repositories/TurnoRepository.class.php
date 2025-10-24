@@ -373,7 +373,7 @@ class TurnoRepository {
     public function buscarSiguienteNumero(int $idDepartamento): ?array {
         $stmt = $this->conexion->prepare("SELECT 
                 t.*,
-                c.numero, 
+                c.numero as numero_caja, 
                 tl.id_estado
                 FROM turnos t
                 INNER JOIN turnos_log tl ON tl.id_turno = t.id
@@ -556,6 +556,11 @@ class TurnoRepository {
             $condiciones[] = "t.id_caja = :id_caja";
             $params[':id_caja'] = $filtros['id_caja'];
         }
+
+        if (!empty($filtros['id_estado'])) {
+        $condiciones[] = "estado_actual.id_estado = :id_estado";
+        $params[':id_estado'] = $filtros['id_estado'];
+        }
         
         if (!empty($filtros['fecha'])) {
             $condiciones[] = "DATE(t.timestamp_solicitud) = :fecha";
@@ -573,6 +578,17 @@ class TurnoRepository {
             SELECT COUNT(*) as total
             FROM turnos t
             INNER JOIN cajas c ON t.id_caja = c.id
+            INNER JOIN (
+                SELECT 
+                    tl.id_turno,
+                    tl.id_estado
+                FROM turnos_log tl
+                INNER JOIN (
+                    SELECT id_turno, MAX(id) as max_id
+                    FROM turnos_log
+                    GROUP BY id_turno
+                ) latest ON tl.id_turno = latest.id_turno AND tl.id = latest.max_id
+            ) estado_actual ON t.id = estado_actual.id_turno
             WHERE $where
         ";
         
