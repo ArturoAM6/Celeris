@@ -57,12 +57,6 @@ h1 {
   background-color: #0f5bb5;
 }
 
-@media (max-width: 480px) {
-  .button-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .navbar {
     width: 100%;
     height: 80px;
@@ -91,9 +85,11 @@ h1 {
 .navbar-title {
   font-size: 48px;
   color: #1a73e8;
-  display: flex;
-  align-items: center;
   font-family: 'Monomakh';
+   margin: 0;
+  padding: 0;
+  line-height: 1;
+  transform: translateY(2px); /* Ajusta este valor según necesites */
 }
 
 .footer {
@@ -107,4 +103,217 @@ h1 {
   padding: 12px 0;
   font-size: 14px;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+/* Pantallas de escritorio grandes (1440px+) */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 700px;
+    padding: 50px;
+  }
+  
+  h1 {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+  
+  .button-grid {
+    gap: 25px;
+  }
+  
+  .btn {
+    padding: 18px;
+    font-size: 18px;
+  }
+  
+  .navbar-title {
+    font-size: 52px;
+  }
+  
+  .navbar-logo {
+    height: 55px;
+    width: 55px;
+  }
+}
+
+/* Laptops estándar (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .container {
+    max-width: 650px;
+    padding: 45px;
+  }
+  
+  h1 {
+    font-size: 30px;
+  }
+  
+  .button-grid {
+    gap: 22px;
+  }
+  
+  .btn {
+    padding: 16px;
+    font-size: 17px;
+  }
+  
+  .navbar-title {
+    font-size: 46px;
+  }
+  
+  .navbar-logo {
+    height: 48px;
+    width: 48px;
+  }
+  
+  .navbar {
+    height: 75px;
+  }
+}
+
+/* Tablets (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  body {
+    padding: 90px 15px 70px;
+  }
+  
+  .container {
+    max-width: 600px;
+    padding: 35px;
+  }
+  
+  h1 {
+    font-size: 26px;
+    margin-bottom: 25px;
+  }
+  
+  .button-grid {
+    gap: 18px;
+  }
+  
+  .btn {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .navbar {
+    height: 70px;
+    padding: 0 20px;
+  }
+  
+  .navbar-title {
+    font-size: 40px;
+  }
+  
+  .navbar-logo {
+    height: 45px;
+    width: 45px;
+  }
+  
+  .navbar-brand {
+    gap: 10px;
+  }
+  
+  .footer {
+    font-size: 13px;
+    padding: 10px 0;
+  }
+}
+
+/* Móviles grandes (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  body {
+    padding: 80px 10px 65px;
+  }
+  
+  .container {
+    width: 95%;
+    max-width: 500px;
+    padding: 30px 25px;
+  }
+  
+  h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  
+  .button-grid {
+    gap: 15px;
+  }
+  
+  .btn {
+    padding: 13px;
+    font-size: 15px;
+  }
+  
+  .navbar {
+    height: 65px;
+    padding: 0 15px;
+  }
+  
+  .navbar-title {
+    font-size: 34px;
+  }
+  
+  .navbar-logo {
+    height: 40px;
+    width: 40px;
+  }
+  
+  .navbar-brand {
+    gap: 9px;
+  }
+  
+  .footer {
+    font-size: 12px;
+    padding: 9px 0;
+  }
+}
+
+/* Móviles medianos (480px - 575px) */
+@media (min-width: 480px) and (max-width: 575px) {
+  body {
+    padding: 75px 10px 60px;
+  }
+  
+  .container {
+    width: 95%;
+    padding: 25px 20px;
+  }
+  
+  h1 {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
+  
+  .button-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+  
+  .navbar {
+    height: 60px;
+    padding: 0 12px;
+  }
+  
+  .navbar-title {
+    font-size: 28px;
+  }
+  
+  .navbar-logo {
+    height: 36px;
+    width: 36px;
+  }
+  
+  .navbar-brand {
+    gap: 8px;
+  }
+  
+  .footer {
+    font-size: 12px;
+  }
 }

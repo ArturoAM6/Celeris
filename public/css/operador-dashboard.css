@@ -170,3 +170,87 @@ ul {
   justify-content: space-between;
   align-items: center;
 }
+
+/* ==== MEDIA QUERIES - PANEL DE OPERADOR ==== */
+
+/* Pantallas grandes (Desktops grandes) */
+@media (min-width: 1400px) {
+  .container {
+    width: 75%;
+  }
+  
+  .hero-pair {
+    gap: 20px;
+  }
+  
+  .container-header h2 {
+    font-size: 32px;
+  }
+}
+
+/* Laptops estándar */
+@media (max-width: 1200px) {
+  .container {
+    width: 85%;
+  }
+  
+  .container-header h2 {
+    font-size: 28px;
+  }
+  
+  .hero-header h2 {
+    font-size: 22px;
+  }
+}
+
+/* Tablets horizontales y laptops pequeñas */
+@media (max-width: 1024px) {
+  .container {
+    width: 90%;
+  }
+  
+  header {
+    padding: 18px;
+  }
+  
+  header h1 {
+    font-size: 26px;
+  }
+  
+  .rayo {
+    max-width: 45px;
+    max-height: 45px;
+  }
+  
+  header form .btn {
+    top: 38px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .container-header h2 {
+    font-size: 26px;
+  }
+  
+  .container-header .container-acciones {
+    right: 30px;
+  }
+  
+  .container-acciones .btn {
+    font-size: 14px;
+    padding: 9px;
+  }
+  
+  .hero {
+    padding: 18px;
+  }
+  
+  .hero-header h2 {
+    font-size: 20px;
+  }
+  
+  .btn {
+    padding: 9px 18px;
+    font-size: 15px;
+  }
+}
