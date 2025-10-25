@@ -210,47 +210,362 @@ a {
 }
 
 /* ==== Responsividad ==== */
-
-/* Tablets (pantallas medianas) */
-@media (max-width: 992px) {
+/* Pantallas grandes (Laptops y desktops grandes) */
+@media (min-width: 1200px) {
   .hero-box {
-    max-width: 90%;
-    padding: 40px;
+    max-width: 700px;
   }
-  .hero-box.right img.hero-icon {
-    max-width: 350px;
+  
+  .navbar-title {
+    font-size: 48px;
   }
 }
 
-/* Celulares grandes */
+/* Tablets y laptops pequeñas */
+@media (max-width: 1024px) {
+  .navbar-title {
+    font-size: 36px;
+  }
+  
+  .hero-pair {
+    gap: 30px;
+    margin-top: 100px;
+  }
+  
+  .hero-box {
+    max-width: 85%;
+    padding: 45px;
+    min-height: 450px;
+  }
+  
+  .hero-box.right img.hero-icon {
+    max-width: 350px;
+  }
+  
+  .navbar nav a {
+    font-size: 13px;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
+/* Tablets (pantallas medianas) */
+@media (max-width: 992px) {
+  .navbar {
+    height: 70px;
+    padding: 0 20px;
+  }
+  
+  .navbar-logo {
+    height: 45px;
+    width: 45px;
+  }
+  
+  .navbar-title {
+    font-size: 32px;
+  }
+  
+  .hero-box {
+    max-width: 90%;
+    padding: 40px;
+    min-height: 400px;
+  }
+  
+  .hero-box.right img.hero-icon {
+    max-width: 320px;
+  }
+  
+  .hero-box h1 {
+    font-size: 28px;
+  }
+  
+  .hero-box h2 {
+    font-size: 26px;
+  }
+  
+  .btn-cta {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+  
+  .footer {
+    font-size: 13px;
+    padding: 10px 0;
+  }
+}
+
+/* Tablets pequeñas y móviles grandes (horizontal) */
 @media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .navbar {
+    height: 65px;
+    padding: 0 15px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .navbar-logo {
+    height: 40px;
+    width: 40px;
+  }
+  
+  .navbar-title {
+    font-size: 28px;
+  }
+  
+  .navbar nav {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .navbar nav a {
+    font-size: 12px;
+    padding: 6px 10px;
+    margin: 0;
+  }
+  
   .hero-pair {
     flex-direction: column;
-    gap: 30px;
+    gap: 25px;
+    margin-top: 90px;
+    margin-bottom: 70px;
+    padding: 0 15px;
   }
+
   .hero-box {
-    padding: 30px;
+    max-width: 100%;
+    padding: 30px 25px;
+    min-height: auto;
   }
+  
   .hero-box.right img.hero-icon {
+    max-width: 280px;
+  }
+  
+  .hero-box h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .hero-box h2 {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  
+  .hero-box p {
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+  
+  .btn-cta {
+    padding: 10px 18px;
+    font-size: 14px;
+    width: 100%;
     max-width: 300px;
   }
-  .hero-box h1, .hero-box h2 {
+  
+  .cuenta-input {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .cuenta-input input {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .footer {
+    font-size: 12px;
+    padding: 10px 15px;
+  }
+}
+
+/* Móviles medianos */
+@media (max-width: 576px) {
+  .navbar {
+    height: 60px;
+  }
+  
+  .navbar-logo {
+    height: 35px;
+    width: 35px;
+  }
+  
+  .navbar-title {
     font-size: 24px;
+  }
+  
+  .navbar nav a {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  
+  .hero-pair {
+    margin-top: 80px;
+    margin-bottom: 60px;
+  }
+  
+  .hero-box {
+    padding: 25px 20px;
+    border-radius: 16px;
+  }
+  
+  .hero-box.right img.hero-icon {
+    max-width: 240px;
+  }
+  
+  .hero-box h1 {
+    font-size: 22px;
+  }
+  
+  .hero-box h2 {
+    font-size: 20px;
+  }
+  
+  .hero-box p {
+    font-size: 14px;
+  }
+  
+  .btn-cta {
+    font-size: 13px;
+    padding: 9px 16px;
   }
 }
 
 /* Celulares pequeños */
 @media (max-width: 480px) {
-  .hero-box {
-    padding: 20px;
+  .navbar {
+    height: 55px;
+    padding: 0 10px;
   }
-  .hero-box.right img.hero-icon {
-    max-width: 250px;
+  
+  .navbar-logo {
+    height: 32px;
+    width: 32px;
   }
-  .hero-box h1, .hero-box h2 {
+  
+  .rayo {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .navbar-title {
     font-size: 20px;
   }
+  
+  .navbar nav a {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+  
+  .hero-pair {
+    margin-top: 70px;
+    margin-bottom: 50px;
+    padding: 0 10px;
+  }
+  
+  .hero-box {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
+  
+  .hero-box.right img.hero-icon {
+    max-width: 200px;
+  }
+  
+  .hero-box h1 {
+    font-size: 20px;
+  }
+  
+  .hero-box h2 {
+    font-size: 18px;
+  }
+  
   .hero-box p {
-    font-size: 14px;
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+  
+  .btn-cta {
+    font-size: 12px;
+    padding: 8px 14px;
+    margin-bottom: 15px;
+  }
+  
+  .cuenta-input label {
+    font-size: 13px;
+  }
+  
+  .cuenta-input input {
+    padding: 8px;
+    font-size: 13px;
+  }
+  
+  .footer {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}
+
+/* Celulares muy pequeños (menos de 360px) */
+@media (max-width: 360px) {
+  .navbar-title {
+    font-size: 18px;
+  }
+  
+  .hero-box {
+    padding: 15px 12px;
+  }
+  
+  .hero-box.right img.hero-icon {
+    max-width: 180px;
+  }
+  
+  .hero-box h1 {
+    font-size: 18px;
+  }
+  
+  .hero-box h2 {
+    font-size: 16px;
+  }
+  
+  .hero-box p {
+    font-size: 12px;
+  }
+  
+  .btn-cta {
+    font-size: 11px;
+    padding: 7px 12px;
+  }
+}
+
+/* Orientación horizontal en móviles */
+@media (max-height: 600px) and (orientation: landscape) {
+  .hero-pair {
+    margin-top: 80px;
+    margin-bottom: 40px;
+  }
+  
+  .hero-box {
+    min-height: auto;
+    padding: 20px;
+  }
+  
+  .hero-box.right img.hero-icon {
+    max-width: 200px;
+  }
+  
+  .navbar {
+    height: 50px;
+  }
+  
+  .footer {
+    padding: 6px 0;
   }
 }

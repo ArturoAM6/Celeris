@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="navbar">
-    <a href="<?= BASE_URL ?>/" class="nav-logo" style="text-decoration: none;">
+    <a class="nav-logo" style="text-decoration: none;">
       <img src="<?= BASE_URL ?>/img/logo_celeris.png" class="rayo "alt="Logo">
       <h2 class="navbar-title">CELERIS</h2>
     </a>
