@@ -26,11 +26,10 @@ class TurnoController {
                 
                 try {
                     $cliente = $this->servicioTurnos->obtenerClientePorNumeroCuenta($numeroCuenta);
-                    $this->servicioTurnos->iniciarSesionCliente($cliente);
                     if (!$cliente) {
                         throw new Exception("Cliente no encontrado");
                     }
-                        
+                    $this->servicioTurnos->iniciarSesionCliente($cliente);
                     require_once __DIR__ . '/../views/publicas/generar-turno.php';
                     return;
                 } catch (Exception $e) {
@@ -92,7 +91,16 @@ class TurnoController {
         }
     }
 
-        public function mostrarTurnos(): array {
+    public function obtenerIdDepartamentoPorTurno(array $turnos): ?array {
+        try {
+            $departamentos = $this->servicioTurnos->obtenerIdDepartamentoPorTurno($turnos);
+            return $departamentos;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
+    public function mostrarTurnos(): array {
         $turnos = $this->servicioTurnos->mostrarTurnos();
         return $turnos;
     }
@@ -182,8 +190,26 @@ class TurnoController {
                     throw new Exception("Datos insuficientes");
                 }
 
+                // Ejecuta la lógica que ya existe y persiste timestamps/logs
                 if (!$this->servicioTurnos->cambiarEstado($_POST)) {
                     throw new Exception("Algo salió mal durante el cambio de estado");
+                }
+
+                // --- NUEVO: mantener en sesión el turno llamado hasta que se finalice ---
+                // Guardamos solo el ID del turno en sesión (más seguro que guardar el objeto).
+                if (session_status() == PHP_SESSION_NONE) {
+                    @session_start();
+                }
+
+                $idEstadoInt = (int)$idEstado;
+                if ($idEstadoInt === 1) {
+                    // Estado 1 = Llamado -> guardar id en sesión para que la vista lo muestre hasta finalizar
+                    $_SESSION['turno_llamado_actual_id'] = (int)$idTurno;
+                } elseif ($idEstadoInt === 5) {
+                    // Estado 5 = Finalizado -> quitar de sesión (se oculta de la vista)
+                    if (isset($_SESSION['turno_llamado_actual_id']) && $_SESSION['turno_llamado_actual_id'] == (int)$idTurno) {
+                        unset($_SESSION['turno_llamado_actual_id']);
+                    }
                 }
 
                 header("Location: ". BASE_URL . "/operador?mensaje=actualizado");
@@ -194,6 +220,7 @@ class TurnoController {
             }
         }
     }
+
 
     public function listarTurnosPorCaja(int $id_caja): ?array {
         try {

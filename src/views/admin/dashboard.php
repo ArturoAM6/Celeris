@@ -77,23 +77,29 @@
                                 ?>
                             </td>
                             <td class="acciones-tabla">
-                                <button class="btn" onclick="abrirModalEditar(
-                                    <?= htmlspecialchars(json_encode([
-                                        'id' => $empleado->getId(),
-                                        'nombre' => $empleado->getNombre(),
-                                        'apellido_paterno' => $empleado->getApellidoPaterno(),
-                                        'apellido_materno' => $empleado->getApellidoMaterno(),
-                                        'password_hash' => $empleado->getPasswordHash(),
-                                        'email' => $empleado->getEmail(),
-                                        'id_rol' => $empleado->getRol(),
-                                        'id_departamento' => $empleado->getDepartamento(),
-                                        'id_tipo_turno' => $empleado->getTipoTurno()
-                                    ])) 
-                                    ?>
-                                )">Editar</button>
+                                <div class="tooltip">
+                                    <button class="btn" onclick="abrirModalEditar(
+                                        <?= htmlspecialchars(json_encode([
+                                            'id' => $empleado->getId(),
+                                            'nombre' => $empleado->getNombre(),
+                                            'apellido_paterno' => $empleado->getApellidoPaterno(),
+                                            'apellido_materno' => $empleado->getApellidoMaterno(),
+                                            'password_hash' => $empleado->getPasswordHash(),
+                                            'email' => $empleado->getEmail(),
+                                            'id_rol' => $empleado->getRol(),
+                                            'id_departamento' => $empleado->getDepartamento(),
+                                            'id_tipo_turno' => $empleado->getTipoTurno()
+                                        ])) 
+                                        ?>
+                                    )"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <span class="tooltiptext">Editar Empleado</span>
+                                </div>
                                 <form action="<?= BASE_URL ?>/admin/empleados/borrar" method="post">
                                     <input type="hidden" name="id" value="<?= $empleado->getId() ?>">
-                                    <button class="btn" type="submit" onclick="return confirm('¿Estás seguro de eliminar este empleado?')">Dar de baja</button>
+                                    <div class="tooltip">
+                                        <button class="btn" type="submit" onclick="return confirm('¿Estás seguro de eliminar este empleado?')"><i class="fa-solid fa-user-minus"></i></button>
+                                        <span class="tooltiptext">Dar de baja empleado</span>
+                                    </div>
                                 </form>
                             </td>
                         </tr>
@@ -163,6 +169,7 @@
                             </td>
                             <td class="acciones-tabla">
                                 <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
+                                <div class="tooltip">
                                 <button class="btn" onclick="abrirModalAsignar(
                                     <?= htmlspecialchars(json_encode([
                                         'id' => $caja->getId(),
@@ -173,34 +180,51 @@
                                     ])) 
                                     ?>
                                     )"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <span class="tooltiptext">Asignar Caja</span>
+                                </div>
                                 <?php endif?>
                                 <?php if ($caja->getEstado() == 1): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="2">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-power-off"></i></button>
+                                            <span class="tooltiptext">Cerrar Caja</span>
+                                        </div>
                                     </form>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="3">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-circle-pause"></i></button>
+                                            <span class="tooltiptext">Pausar Caja</span>
+                                        </div>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 2 || $caja->getEstado() == 3): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="1">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                            <span class="tooltiptext">Abrir Caja</span>
+                                        </div>
                                     </form>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="4">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                                            <span class="tooltiptext">Caja Fuera de Servicio</span>
+                                        </div>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 4): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
                                         <input type="hidden" name="id" value="<?= $caja->getId() ?>">
                                         <input type="hidden" name="id_estado" value="1">
-                                        <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
+                                            <span class="tooltiptext">Abrir Caja</span>
+                                        </div>
                                     </form>
                                 <?php endif ?>
                             </td>
@@ -287,6 +311,7 @@
             </tr>
         </thead>
         <tbody>
+            <?php $turnosPaginados = array_map(null, $turnosPaginados["turnos"], $turnosPaginados["departamentos"]); ?>
             <?php if (empty($turnosPaginados)): ?>
                 <tr>
                     <td colspan="8" class="texto-centrado">No hay turnos registrados</td>
@@ -294,18 +319,32 @@
             <?php else: ?>
                 <?php foreach ($turnosPaginados as $turno): ?>
                     <tr>
-                        <td><?= htmlspecialchars($turno['id']) ?></td>
-                        <td><?= htmlspecialchars($turno['numero']) ?></td>
-                        <?php if ($turno['id_cliente']): ?>
-                            <td><?= htmlspecialchars($turno['id_cliente'] . " - " . $turno['cliente_nombre'] . " " . $turno['cliente_apellido_paterno']) ?></td>
+                        <td><?= htmlspecialchars($turno[0]['id']) ?></td>
+                        <td><?= htmlspecialchars($turno[0]['numero']) ?></td>
+                        <?php if (!empty($turno[0]['id_cliente'])): ?>
+                            <td><?= htmlspecialchars($turno[0]['id_cliente'] . " - " . $turno[0]['cliente_nombre'] . " " . $turno[0]['cliente_apellido_paterno']) ?></td>
                         <?php else: ?>
                             <td><?= htmlspecialchars('N/A') ?></td>
                         <?php endif; ?>
-                        <td>Aqui iba el departamento</td>
-                        <td><?= htmlspecialchars($turno['id_caja']) ?></td>
+                        <td><?php switch ($turno[1]) {
+                            case 1:
+                                echo "Ventanillas";
+                                break;
+                            case 2:
+                                echo "Asociados";
+                                break;
+                            case 3:
+                                echo "Caja Fuerte";
+                                break;
+                            case 4:
+                                echo "Asesoramiento Financiero";
+                                break;
+                        }
+                        ?></td>
+                        <td><?= htmlspecialchars($turno[0]['numero_caja']) ?></td>
                         <td>
                             <?php 
-                            switch ($turno['id_estado']) {
+                            switch ($turno[0]['id_estado']) {
                                 case 1: echo 'Llamado'; break;
                                 case 2: echo 'En Espera'; break;
                                 case 3: echo 'En Atención'; break;
@@ -315,27 +354,34 @@
                             }
                             ?>
                         </td>
-                        <td><?= htmlspecialchars($turno['timestamp_solicitud']) ?></td>
-                        <td><?= htmlspecialchars($turno['timestamp_fin_atencion'] ?? "N/A") ?></td>
+                        <td><?= htmlspecialchars($turno[0]['timestamp_solicitud']) ?></td>
+                        <td><?= htmlspecialchars($turno[0]['timestamp_fin_atencion'] ?? "N/A") ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
     </table>
-    
-    <?php if ($totalPaginas > 1): ?>
-    <div>
-        <?php if ($paginaActual > 1): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual - 1 ?>">Anterior</a>
-        <?php endif; ?>
-        
-        Página <?= $paginaActual ?> de <?= $totalPaginas ?>
-        
-        <?php if ($paginaActual < $totalPaginas): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual + 1 ?>">Siguiente</a>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
+        <div>
+            <?php 
+            $urlBase = BASE_URL . '/admin?pagina_Turno=';
+            $filtrosUrl = '';
+            if (!empty($datosPaginacion['filtros']['id_departamento'])) $filtrosUrl .= '&departamento=' . urlencode($datosPaginacion['filtros']['id_departamento']);
+            if (!empty($datosPaginacion['filtros']['id_estado'])) $filtrosUrl .= '&estado=' . urlencode($datosPaginacion['filtros']['id_estado']);
+            if (!empty($datosPaginacion['filtros']['id_caja'])) $filtrosUrl .= '&caja=' . urlencode($datosPaginacion['filtros']['id_caja']);
+            if (!empty($datosPaginacion['filtros']['fecha'])) $filtrosUrl .= '&fecha=' . urlencode($datosPaginacion['filtros']['fecha']);
+            if (!empty($datosPaginacion['filtros']['numero_turno'])) $filtrosUrl .= '&numero=' . urlencode($datosPaginacion['filtros']['numero_turno']);
+            ?>
+            
+            <?php if ($paginaActual > 1): ?>
+                <a style="color: black;" href="<?= $urlBase . ($paginaActual - 1) . $filtrosUrl ?>">Anterior</a>
+            <?php endif; ?>
+            
+            Página <?= $paginaActual ?> de <?= $totalPaginas ?>
+            
+            <?php if ($paginaActual < $totalPaginas): ?>
+                <a style="color: black;" href="<?= $urlBase . ($paginaActual + 1) . $filtrosUrl ?>">Siguiente</a>
+            <?php endif; ?>
+        </div>
 </div>
     <div class="tab-content" id="horarios">
         <form action="<?= BASE_URL ?>/admin/horario/asignar" method="post">
@@ -634,7 +680,6 @@
                         <button type="submit" class="boton boton-primario">Actualizar</button>
                     <?php endif ?>
                     <button type="button" onclick="cerrarModal('modalAsignar')" class="boton boton-secundario">Cancelar</button>
-                </div>
             </form>
         </div>
     </div>

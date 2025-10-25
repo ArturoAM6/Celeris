@@ -49,16 +49,6 @@ class CajaRepository {
             JOIN turnos t ON t.id_caja = c.id
             WHERE c.id_departamento = :idDepartamento
             AND c.id_estado = 1
-            AND t.id NOT IN (
-                SELECT tl.id_turno
-                FROM turnos_log tl
-                WHERE tl.id_estado IN (4,5)
-                    AND tl.timestamp_actualizacion = (
-                        SELECT MAX(tl2.timestamp_actualizacion)
-                        FROM turnos_log tl2
-                        WHERE tl2.id_turno = tl.id_turno
-                    )
-            )
             GROUP BY c.id
             UNION
             SELECT c.id, c.numero, c.id_departamento, c.id_estado, 0 AS ocurrencias

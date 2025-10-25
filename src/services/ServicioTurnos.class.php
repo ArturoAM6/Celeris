@@ -114,6 +114,14 @@ class ServicioTurnos {
         return $turno;
     }
 
+    public function obtenerIdDepartamentoPorTurno(array $turnos): ?array {
+        $departamentos = [];
+        foreach($turnos as $turno) {
+            $departamentos[] = $this->turnoRepository->obtenerIdDepartamentoPorTurno($turno["id"]);
+        }
+        return $departamentos;
+    }
+
     public function mostrarTurnos(): array {
         $departamentos = array(1, 2, 3, 4);
         $turnos = [];
@@ -174,6 +182,12 @@ class ServicioTurnos {
                 $turno->setTimestampInicioAtencion(date("Y-m-d H:i:s"));
                 $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampInicioAtencion());
                 $this->turnoRepository->actualizarTimestampInicioAtencion($turno->getId());
+                return true;
+            case 4:
+                // Cancelado
+                $turno->setTimestampFinAtencion(date("Y-m-d H:i:s"));
+                $this->turnoRepository->guardarEnLog($turno->getId(), $turno->getEstadoId(), $turno->getTimestampFinAtencion());
+                $this->turnoRepository->actualizarTimestampFinAtencion($turno->getId());
                 return true;
             case 5;
                 $turno->setTimestampFinAtencion(date("Y-m-d H:i:s"));

@@ -64,11 +64,16 @@
                               <input type="hidden" name="id_estado" value="5">
                               <button type="submit" class="btn">Finalizar</button>
                           </form>
-                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1): ?>
+                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1 ): ?>
                           <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
                               <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado[0]->getId(); ?>">
                               <input type="hidden" name="id_estado" value="3">
                               <button type="submit" class="btn">Atender Turno</button>
+                          </form>
+                          <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
+                              <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado[0]->getId(); ?>">
+                              <input type="hidden" name="id_estado" value="4">
+                              <button type="submit" class="btn">Cancelar Turno</button>
                           </form>
                       <?php endif; ?>
                   <?php else: ?>
@@ -77,6 +82,7 @@
               </div>
               <div class="hero-content">
                   <h3>INFORMACION DEL TURNO</h3>
+                  
               </div>
           </div>
           <div class="hero der">
