@@ -10,7 +10,7 @@
     <div class="container">
         <nav class="navbar">
             <a href="<?= BASE_URL ?>/" class="navbar-brand" style="text-decoration: none; color: inherit;">
-            <img src="<?= BASE_URL ?>/img/flash-on.png" alt="logo" class="navbar-logo">
+            <img src="<?= BASE_URL ?>/img/logo_celeris.png" alt="logo" class="navbar-logo">
             <h1 class="navbar-title">CELERIS</h1>
             </a>
         </nav>
@@ -20,7 +20,7 @@
                 <?php if (isset($numeroCuenta)): ?>
                     <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars($numeroCuenta) ?>">
                 <?php endif; ?>
-
+                
                 <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
                 <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
                 <?php if(isset($_SESSION["numeroCuenta"])): ?>

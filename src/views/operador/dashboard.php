@@ -11,7 +11,7 @@
     <form action="<?= BASE_URL ?>/logout" method="post">
         <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
-    <h1>Panel de Operador - CELERIS</h1>
+    <h1>Panel de Operador <img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"></h1>
   </header>
   
   <section class="container">
@@ -64,7 +64,7 @@
                               <input type="hidden" name="id_estado" value="5">
                               <button type="submit" class="btn">Finalizar</button>
                           </form>
-                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1): ?>
+                      <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1 ): ?>
                           <form method="post" action='<?= BASE_URL ?>/operador/turno/cambiar-estado'>
                               <input type="hidden" name="id_turno" value="<?php echo $turnoLlamado[0]->getId(); ?>">
                               <input type="hidden" name="id_estado" value="3">

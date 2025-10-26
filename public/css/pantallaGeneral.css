@@ -41,14 +41,15 @@ body {
 
 .rayo {
     width: 50px;
-    height: 50px;
+    height: 52px;
 }
 
 .navbar-title {
-    font-size: 48px;
-    font-family: 'Monomakh';
-    color: #1a73e8;
-    margin-bottom: 8px;
+  font-size: 48px;
+  color: #1a73e8;
+  display: flex;
+  align-items: center;
+  font-family: 'Monomakh';
 }
 
 /* Contenedor principal */
@@ -173,35 +174,360 @@ body {
   box-shadow: 0 -2px 8px #0000001a;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .departamentos-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .numero-turno {
-        font-size: 60px;
-    }
-
-    .navbar-title {
-        font-size: 24px;
-    }
-
-    .main-container {
-        padding: 20px 10px;
-    }
-
-    .departamento-card {
-        padding: 20px;
-    }
+/* Pantallas ultra grandes (2K y 4K - 1920px+) */
+@media (min-width: 1920px) {
+  .main-container {
+    max-width: 1800px;
+    padding: 50px 30px;
+  }
+  
+  .departamentos-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 50px;
+  }
+  
+  .departamento-card {
+    padding: 40px;
+    border-radius: 24px;
+  }
+  
+  .card-header h2 {
+    font-size: 32px;
+    padding-bottom: 12px;
+    border-bottom: 4px solid #2b99f3;
+  }
+  
+  .turno-siguiente h3,
+  .turnos-espera h3 {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
+  
+  .numero-turno {
+    font-size: 84px;
+    margin-bottom: 12px;
+  }
+  
+  .ventanilla-info {
+    font-size: 22px;
+  }
+  
+  .turno-item {
+    padding: 18px;
+    font-size: 18px;
+    border-left: 5px solid #2b99f3;
+    border-radius: 12px;
+  }
+  
+  .lista-turnos {
+    gap: 14px;
+  }
+  
+  .navbar {
+    padding: 20px 40px;
+  }
+  
+  .navbar-title {
+    font-size: 52px;
+  }
+  
+  .rayo {
+    width: 55px;
+    height: 57px;
+  }
+  
+  .footer {
+    font-size: 16px;
+    padding: 15px 0;
+  }
 }
 
-@media (max-width: 480px) {
-    .numero-turno {
-        font-size: 48px;
-    }
+/* Pantallas grandes (Desktops grandes 1600px - 1919px) */
+@media (min-width: 1600px) and (max-width: 1919px) {
+  .main-container {
+    max-width: 1600px;
+    padding: 45px 25px;
+  }
+  
+  .departamentos-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 35px;
+    margin-bottom: 45px;
+  }
+  
+  .departamento-card {
+    padding: 35px;
+    border-radius: 22px;
+  }
+  
+  .card-header h2 {
+    font-size: 30px;
+  }
+  
+  .numero-turno {
+    font-size: 78px;
+  }
+  
+  .ventanilla-info {
+    font-size: 21px;
+  }
+  
+  .turno-item {
+    padding: 16px;
+    font-size: 17px;
+  }
+  
+  .navbar-title {
+    font-size: 50px;
+  }
+  
+  .rayo {
+    width: 53px;
+    height: 55px;
+  }
+}
 
-    .card-header h2 {
-        font-size: 24px;
-    }
+/* Laptops estándar (1366px - 1599px) */
+@media (min-width: 1366px) and (max-width: 1599px) {
+  .main-container {
+    max-width: 1400px;
+    padding: 40px 20px;
+  }
+  
+  .departamentos-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+  
+  .departamento-card {
+    padding: 30px;
+    border-radius: 20px;
+  }
+  
+  .card-header h2 {
+    font-size: 28px;
+    padding-bottom: 10px;
+  }
+  
+  .turno-siguiente h3,
+  .turnos-espera h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .numero-turno {
+    font-size: 72px;
+    margin-bottom: 10px;
+  }
+  
+  .ventanilla-info {
+    font-size: 20px;
+  }
+  
+  .turno-item {
+    padding: 15px;
+    font-size: 16px;
+    border-left: 4px solid #2b99f3;
+  }
+  
+  .lista-turnos {
+    gap: 12px;
+  }
+  
+  .navbar {
+    padding: 15px 30px;
+  }
+  
+  .navbar-title {
+    font-size: 48px;
+  }
+  
+  .rayo {
+    width: 50px;
+    height: 52px;
+  }
+  
+  .footer {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+}
+
+/* Laptops medianas (1280px - 1365px) */
+@media (min-width: 1280px) and (max-width: 1365px) {
+  .main-container {
+    max-width: 1280px;
+    padding: 35px 20px;
+  }
+  
+  .departamentos-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-bottom: 38px;
+  }
+  
+  .departamento-card {
+    padding: 28px;
+    border-radius: 18px;
+  }
+  
+  .card-header h2 {
+    font-size: 26px;
+    padding-bottom: 9px;
+  }
+  
+  .turno-siguiente {
+    margin: 22px 0;
+  }
+  
+  .turno-siguiente h3,
+  .turnos-espera h3 {
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+  
+  .numero-turno {
+    font-size: 68px;
+    margin-bottom: 9px;
+  }
+  
+  .ventanilla-info {
+    font-size: 19px;
+  }
+  
+  .turno-item {
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 9px;
+  }
+  
+  .lista-turnos {
+    gap: 11px;
+  }
+  
+  .turnos-espera {
+    margin-top: 28px;
+  }
+  
+  .navbar {
+    padding: 14px 28px;
+  }
+  
+  .navbar-title {
+    font-size: 44px;
+  }
+  
+  .rayo {
+    width: 48px;
+    height: 50px;
+  }
+  
+  .navbar-brand {
+    gap: 11px;
+  }
+  
+  .footer {
+    font-size: 13px;
+    padding: 11px 0;
+  }
+}
+
+/* Laptops pequeñas y tablets horizontales (1024px - 1279px) */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .main-container {
+    max-width: 1200px;
+    padding: 32px 18px;
+  }
+  
+  .departamentos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 35px;
+  }
+  
+  .departamento-card {
+    padding: 25px;
+    border-radius: 16px;
+  }
+  
+  .departamento-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+  }
+  
+  .card-header {
+    margin-bottom: 22px;
+  }
+  
+  .card-header h2 {
+    font-size: 24px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #2b99f3;
+  }
+  
+  .turno-siguiente {
+    margin: 20px 0;
+  }
+  
+  .turno-siguiente h3,
+  .turnos-espera h3 {
+    font-size: 16px;
+    margin-bottom: 13px;
+  }
+  
+  .numero-turno {
+    font-size: 64px;
+    margin-bottom: 8px;
+  }
+  
+  .ventanilla-info {
+    font-size: 18px;
+  }
+  
+  .turno-item {
+    padding: 13px;
+    font-size: 15px;
+    border-left: 4px solid #2b99f3;
+    border-radius: 9px;
+  }
+  
+  .lista-turnos {
+    gap: 10px;
+  }
+  
+  .turnos-espera {
+    margin-top: 25px;
+  }
+  
+  .sin-turnos {
+    padding: 18px;
+    font-size: 15px;
+  }
+  
+  .navbar {
+    padding: 13px 25px;
+  }
+  
+  .navbar-title {
+    font-size: 40px;
+  }
+  
+  .rayo {
+    width: 45px;
+    height: 47px;
+  }
+  
+  .navbar-brand {
+    gap: 10px;
+  }
+  
+  .nav-logo {
+    gap: 7px;
+  }
+  
+  .footer {
+    font-size: 13px;
+    padding: 11px 0;
+  }
 }

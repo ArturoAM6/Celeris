@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +13,7 @@
     <form action="<?= BASE_URL ?>/logout" method="post">
         <button type="submit" name="logout" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
-    <h1>Panel de Administración - CELERIS</h1>
+    <h1>Panel de Administración <img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"></h1>
   </header>
   
   <section class="summary">
@@ -310,6 +311,7 @@
             </tr>
         </thead>
         <tbody>
+            <?php $turnosPaginados = array_map(null, $turnosPaginados["turnos"], $turnosPaginados["departamentos"]); ?>
             <?php if (empty($turnosPaginados)): ?>
                 <tr>
                     <td colspan="8" class="texto-centrado">No hay turnos registrados</td>
@@ -317,18 +319,32 @@
             <?php else: ?>
                 <?php foreach ($turnosPaginados as $turno): ?>
                     <tr>
-                        <td><?= htmlspecialchars($turno['id']) ?></td>
-                        <td><?= htmlspecialchars($turno['numero']) ?></td>
-                        <?php if ($turno['id_cliente']): ?>
-                            <td><?= htmlspecialchars($turno['id_cliente'] . " - " . $turno['cliente_nombre'] . " " . $turno['cliente_apellido_paterno']) ?></td>
+                        <td><?= htmlspecialchars($turno[0]['id']) ?></td>
+                        <td><?= htmlspecialchars($turno[0]['numero']) ?></td>
+                        <?php if (!empty($turno[0]['id_cliente'])): ?>
+                            <td><?= htmlspecialchars($turno[0]['id_cliente'] . " - " . $turno[0]['cliente_nombre'] . " " . $turno[0]['cliente_apellido_paterno']) ?></td>
                         <?php else: ?>
                             <td><?= htmlspecialchars('N/A') ?></td>
                         <?php endif; ?>
-                        <td>Aqui iba el departamento</td>
-                        <td><?= htmlspecialchars($turno['id_caja']) ?></td>
+                        <td><?php switch ($turno[1]) {
+                            case 1:
+                                echo "Ventanillas";
+                                break;
+                            case 2:
+                                echo "Asociados";
+                                break;
+                            case 3:
+                                echo "Caja Fuerte";
+                                break;
+                            case 4:
+                                echo "Asesoramiento Financiero";
+                                break;
+                        }
+                        ?></td>
+                        <td><?= htmlspecialchars($turno[0]['numero_caja']) ?></td>
                         <td>
                             <?php 
-                            switch ($turno['id_estado']) {
+                            switch ($turno[0]['id_estado']) {
                                 case 1: echo 'Llamado'; break;
                                 case 2: echo 'En Espera'; break;
                                 case 3: echo 'En Atención'; break;
@@ -338,27 +354,34 @@
                             }
                             ?>
                         </td>
-                        <td><?= htmlspecialchars($turno['timestamp_solicitud']) ?></td>
-                        <td><?= htmlspecialchars($turno['timestamp_fin_atencion'] ?? "N/A") ?></td>
+                        <td><?= htmlspecialchars($turno[0]['timestamp_solicitud']) ?></td>
+                        <td><?= htmlspecialchars($turno[0]['timestamp_fin_atencion'] ?? "N/A") ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
     </table>
-    
-    <?php if ($totalPaginas > 1): ?>
-    <div>
-        <?php if ($paginaActual > 1): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual - 1 ?>">Anterior</a>
-        <?php endif; ?>
-        
-        Página <?= $paginaActual ?> de <?= $totalPaginas ?>
-        
-        <?php if ($paginaActual < $totalPaginas): ?>
-            <a style = "color : black;" href="<?= BASE_URL ?>/admin?pagina_Turno=<?= $paginaActual + 1 ?>">Siguiente</a>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
+        <div>
+            <?php 
+            $urlBase = BASE_URL . '/admin?pagina_Turno=';
+            $filtrosUrl = '';
+            if (!empty($datosPaginacion['filtros']['id_departamento'])) $filtrosUrl .= '&departamento=' . urlencode($datosPaginacion['filtros']['id_departamento']);
+            if (!empty($datosPaginacion['filtros']['id_estado'])) $filtrosUrl .= '&estado=' . urlencode($datosPaginacion['filtros']['id_estado']);
+            if (!empty($datosPaginacion['filtros']['id_caja'])) $filtrosUrl .= '&caja=' . urlencode($datosPaginacion['filtros']['id_caja']);
+            if (!empty($datosPaginacion['filtros']['fecha'])) $filtrosUrl .= '&fecha=' . urlencode($datosPaginacion['filtros']['fecha']);
+            if (!empty($datosPaginacion['filtros']['numero_turno'])) $filtrosUrl .= '&numero=' . urlencode($datosPaginacion['filtros']['numero_turno']);
+            ?>
+            
+            <?php if ($paginaActual > 1): ?>
+                <a style="color: black;" href="<?= $urlBase . ($paginaActual - 1) . $filtrosUrl ?>">Anterior</a>
+            <?php endif; ?>
+            
+            Página <?= $paginaActual ?> de <?= $totalPaginas ?>
+            
+            <?php if ($paginaActual < $totalPaginas): ?>
+                <a style="color: black;" href="<?= $urlBase . ($paginaActual + 1) . $filtrosUrl ?>">Siguiente</a>
+            <?php endif; ?>
+        </div>
 </div>
     <div class="tab-content" id="horarios">
         <form action="<?= BASE_URL ?>/admin/horario/asignar" method="post">
@@ -657,7 +680,6 @@
                         <button type="submit" class="boton boton-primario">Actualizar</button>
                     <?php endif ?>
                     <button type="button" onclick="cerrarModal('modalAsignar')" class="boton boton-secundario">Cancelar</button>
-                </div>
             </form>
         </div>
     </div>
