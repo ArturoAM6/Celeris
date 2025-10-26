@@ -206,8 +206,6 @@ INSERT INTO clientes (nombre, apellido_paterno, apellido_materno, email, telefon
 ('Roberto', 'Díaz', 'Castro', 'roberto.diaz@email.com', '8719012345', '890123456789012345678901', 0),
 ('Sofía', 'Vargas', 'Ortega', 'sofia.vargas@email.com', '8710123456', '901234567890123456789012', 1);
 
--- Hasta AQUI
-
 -- Turnos con diferentes estados
 INSERT INTO turnos (numero, timestamp_solicitud, timestamp_llamado, timestamp_inicio_atencion, timestamp_fin_atencion, id_caja, id_cliente) VALUES
 (1, '2025-10-18 08:15:00', '2025-10-18 08:16:00', '2025-10-18 08:17:00', '2025-10-18 08:25:00', 1, 1),
