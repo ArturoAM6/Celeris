@@ -84,7 +84,6 @@
                   <h3>INFORMACION DEL TURNO</h3>
                   <?php if (!empty($turnoEnAtencion) && $turnoEnAtencion[0]->getEstadoId() == 3): ?>
                     <?php if ($cliente): ?>
-                        <p><strong>Hora del llamado:</strong>&nbsp; &nbsp;<?php echo $turnoEnAtencion[0]->getTimestampLlamado(); ?></p>
                         <p><strong>Nombre del cliente:</strong>&nbsp; &nbsp;<?php echo $cliente->getNombreCompleto(); ?></p>
                         <p><strong>Numero de cuenta:</strong>&nbsp; &nbsp;<?php echo $cliente->getNumeroCuenta(); ?></p>
                         <P><strong>Telefono:</strong>&nbsp; &nbsp;<?php echo $cliente->getTelefono(); ?></p>
@@ -95,7 +94,6 @@
 
                   <?php elseif (!empty($turnoLlamado) && $turnoLlamado[0]->getEstadoId() == 1): ?>
                     <?php if ($cliente): ?>
-                        <p><strong>Hora del llamado:</strong>&nbsp; &nbsp;<?php echo $turnoEnAtencion[0]->getTimestampLlamado(); ?></p>
                         <p><strong>Nombre del cliente:</strong>&nbsp; &nbsp;<?php echo $cliente->getNombreCompleto(); ?></p>
                         <p><strong>Numero de cuenta:</strong>&nbsp; &nbsp;<?php echo $cliente->getNumeroCuenta(); ?></p>
                         <P><strong>Telefono:</strong>&nbsp; &nbsp;<?php echo $cliente->getTelefono(); ?></p>

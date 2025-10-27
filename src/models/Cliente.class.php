@@ -20,15 +20,6 @@ class Cliente extends Persona {
         return $this->numero_cuenta;
     }
 
-    // Metodo publico que devuelve el nombre completo del cliente. Devuelve un string.
-    public function getNombreCompleto(): string {
-        $apellidoCompleto = $this->getApellidoPaterno();
-        if ($this->getApellidoMaterno()) {
-            $apellidoCompleto .= ' ' . $this->getApellidoMaterno();
-        }
-        return $this->getNombre() . ' ' . $apellidoCompleto;
-    } 
-
     // Metodo publico que devuelve el numero de telefono. Devuelve un string.
     public function getTelefono(): string {
         return $this->telefono;
