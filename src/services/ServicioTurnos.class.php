@@ -98,6 +98,14 @@ class ServicioTurnos {
         return $cliente;
     }
 
+    public function obtenerClientePorTurno(int $idTurno): ?Cliente {
+        $cliente = $this->clienteRepository->buscarPorTurno($idTurno);
+        if (!$cliente) {
+            return null;
+        }
+        return $cliente;
+    }
+
     public function obtenerClientePorId(int $idCliente): ?Cliente {
         $cliente = $this->clienteRepository->buscarPorid($idCliente);
         if (!$cliente) {

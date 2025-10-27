@@ -180,6 +180,15 @@ class TurnoController {
         }
     }
 
+    public function mostrarClientePorTurno(int $idTurno): ?Cliente {
+        try {
+            $cliente = $this->servicioTurnos->obtenerClientePorTurno($idTurno);
+            return $cliente;
+        } catch (Exception $e) {
+            $this->manejarError($e->getMessage());
+        }
+    }
+
     public function cambiarEstado(): void {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             try {

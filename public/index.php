@@ -211,6 +211,15 @@ if ($_SESSION['id_rol'] === 2) {
         $turnoLlamado = $turnos["turnoLlamado"] ?? null;
         $turnoEnAtencion = $turnos["turnoEnAtencion"] ?? null;
         $turnosEnEspera = $turnos["turnoEnEspera"] ?? null;
+
+        $servicioTurnos = new ServicioTurnos();
+        $cliente = null;
+        if ($turnoLlamado !== null) {
+            $cliente = $servicioTurnos->obtenerClientePorTurno($turnoLlamado[0]->getId());
+        }
+        elseif ($turnoEnAtencion !== null) {
+            $cliente = $servicioTurnos->obtenerClientePorTurno($turnoEnAtencion[0]->getId());
+        }
         
         require_once __DIR__ . '/../src/views/operador/dashboard.php';
     }

@@ -23,6 +23,19 @@ class ClienteRepository {
         return $data ? $this->crearClienteDesdeArray($data) : null;
     }
 
+    public function buscarPorTurno(int $id): ?Cliente { 
+        $stmt = $this->conexion->prepare("
+            SELECT c.* 
+            FROM clientes c
+            JOIN turnos t ON c.id = t.id_cliente
+            WHERE t.id = :id
+        ");
+        $stmt->execute([':id' => $id]);
+        $data = $stmt->fetch();
+
+        return $data ? $this->crearClienteDesdeArray($data) : null;
+    }
+
     private function crearClienteDesdeArray(array $data): Cliente {
             $cliente = new Cliente(
             $data['nombre'], 
