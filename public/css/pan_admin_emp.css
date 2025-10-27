@@ -111,14 +111,41 @@ tr:nth-child(even) {
   background-color: #005fa3;
 }
 
-.estado-activo {
-  color: green;
+.estado-espera {
+  background-color: rgb(224, 224, 129);
+  color: rgb(55, 38, 7);
 }
+.estado-llamado {
+  background-color: #ff946d;
+  color: rgb(68, 8, 8);
+}
+.estado-inicio-atencion {
+  background-color: rgb(141, 212, 141);
+  color: rgb(7, 65, 7);
+}
+
+.estado-cancelado {
+  background-color: rgb(234, 130, 130);
+  color: rgb(45, 4, 4);
+}
+
+.estado-abierto {
+  background-color: rgb(141, 212, 141);
+  color: rgb(7, 65, 7);
+}
+
+.estado-cerrado {
+  background-color: rgb(187, 184, 184);
+}
+
 .estado-pausado {
-  color: orange;
+  background-color: rgb(224, 224, 129);
+  color: rgb(55, 38, 7);
 }
-.estado-desconectado {
-  color: red;
+
+.estado-fuera-servicio {
+  background-color: rgb(255, 136, 93);
+  color: rgb(68, 8, 8);
 }
 
 /* Style the tab */
@@ -898,3 +925,4 @@ select.filtro-input {
     padding: 6px 12px;
     margin: 0 5px;
   }
+}

@@ -11,7 +11,7 @@
     <form action="<?= BASE_URL ?>/logout" method="post">
         <button type="submit" name="logout" value="<?= $_SESSION['id_empleado'] ?>" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
-    <h1>Panel de Operador <img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"></h1>
+    <h1><img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"> Panel de Operador</h1>
   </header>
   
   <section class="container">

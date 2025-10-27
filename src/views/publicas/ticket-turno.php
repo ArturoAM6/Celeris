@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/turnos.css">
     <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2/qz-tray.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsrsasign@11.0/lib/jsrsasign-all-min.js"></script>
+    <script src="https://kit.fontawesome.com/d4435a1b16.js" crossorigin="anonymous"></script>
     <script src="<?= BASE_URL ?>/js/qz-config.js"></script>
 </head>
 <body>
@@ -17,6 +18,9 @@
                 <img src="<?= BASE_URL ?>/img/logo_celeris.png" class="rayo " alt="Logo">
                 <h2 class="navbar-title">CELERIS</h2>
             </a>
+        </div>
+        <div class="nav-icon">
+            <a href="<?= BASE_URL ?>" style="text-decoration: none; color: inherit;"><i class="fa-solid fa-house"></i></a>
         </div>
     </header>
 

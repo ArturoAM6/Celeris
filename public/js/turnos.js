@@ -85,6 +85,15 @@ function actualizarTiempo(turnoId) {
     });
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function goBackAfter($path, $ms) {
+  await sleep($ms);
+  window.location.href = $path;
+}
+
 // Ejecutar cuando la página termine de cargar
 document.addEventListener("DOMContentLoaded", () => {
   const imprimirDiv = document.getElementById("imprimir-turno");
@@ -98,5 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     intervaloCuentaRegresiva = setInterval(actualizarDisplay, 1000);
 
     imprimirTurno(turnoId);
+
+    goBackAfter(BASE_URL, 10000);
   }
 });
