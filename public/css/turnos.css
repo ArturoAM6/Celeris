@@ -44,6 +44,18 @@ a {
     width: 50px;
 }
 
+.nav-icon {
+  height: fit-content;
+  margin-right: 30px;
+}
+
+.nav-icon i {
+  height: 50px;
+  width: 50px;
+  font-size: 50px;
+  color: #007bff;
+}
+
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -289,7 +301,15 @@ a {
   }
   
   .navbar {
+    display: flex;
+    justify-content: space-between;
     height: 75px;
+    width: 100%;
+  }
+
+  .navbar .nav-logo {
+    min-height: 100%;
+    background-color: #007bff;
   }
   
   .navbar-title {

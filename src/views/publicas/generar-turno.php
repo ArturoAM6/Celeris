@@ -14,14 +14,14 @@
             <h1 class="navbar-title">CELERIS</h1>
             </a>
         </nav>
-        <h1>Bienvenido, ¿a qué departamento deseas acceder?</h1>
+        <h1>Bienvenido, ¿a qué departamento vienes?</h1>
         <div>
             <form action="<?= BASE_URL ?>/turno/generar" method="post" class="button-grid">
                 <?php if (isset($numeroCuenta)): ?>
                     <input type="hidden" name="numero_cuenta" value="<?= htmlspecialchars($numeroCuenta) ?>">
                 <?php endif; ?>
                 
-                <button type="submit" class="btn" name="id_departamento" value="1">Caja</button>
+                <button type="submit" class="btn" name="id_departamento" value="1">Ventanillas</button>
                 <button type="submit" class="btn" name="id_departamento" value="2">Asociados</button>
                 <?php if(isset($_SESSION["numeroCuenta"])): ?>
                 <button type="submit" class="btn" name="id_departamento" value="3">Caja Fuerte</button>

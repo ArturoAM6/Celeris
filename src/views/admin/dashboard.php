@@ -13,7 +13,7 @@
     <form action="<?= BASE_URL ?>/logout" method="post">
         <button type="submit" name="logout" style="background-color: #f4f3f2; color: black;" class="btn">Salir</button>
     </form>
-    <h1>Panel de Administración <img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"></h1>
+    <h1><img src="<?= BASE_URL ?>/img/logo_celeris_blanco.png" class="rayo "alt="Logo"> Panel de Control</h1>
   </header>
   
   <section class="summary">
@@ -154,7 +154,12 @@
                                 }
                                 ?>
                             </td>
-                            <td>
+                            <td class="<?php switch ($caja->getEstado()) {
+                                    case 1: echo 'estado-abierto'; break;
+                                    case 2: echo 'estado-cerrado'; break;
+                                    case 3: echo 'estado-pausado'; break;
+                                    case 4: echo 'estado-fuera-servicio'; break;
+                                } ?>">
                                 <?php 
                                 switch ($caja->getEstado()) {
                                     case 1: echo 'Abierta'; break;
@@ -342,7 +347,12 @@
                         }
                         ?></td>
                         <td><?= htmlspecialchars($turno[0]['numero_caja']) ?></td>
-                        <td>
+                        <td class="<?php switch ($turno[0]['id_estado']) {
+                                    case 1: echo 'estado-llamado'; break;
+                                    case 2: echo 'estado-espera'; break;
+                                    case 3: echo 'estado-inicio-atencion'; break;
+                                    case 4: echo 'estado-cancelado'; break;
+                                } ?>">
                             <?php 
                             switch ($turno[0]['id_estado']) {
                                 case 1: echo 'Llamado'; break;
@@ -354,8 +364,12 @@
                             }
                             ?>
                         </td>
-                        <td><?= htmlspecialchars($turno[0]['timestamp_solicitud']) ?></td>
-                        <td><?= htmlspecialchars($turno[0]['timestamp_fin_atencion'] ?? "N/A") ?></td>
+                        <td><?= htmlspecialchars(date("d-m-Y H:i:s", strtotime($turno[0]["timestamp_solicitud"]))) ?></td>
+                        <?php if ($turno[0]["timestamp_fin_atencion"]): ?>
+                            <td><?= htmlspecialchars(date("d-m-Y H:i:s", strtotime($turno[0]["timestamp_fin_atencion"]))) ?></td>
+                        <?php else: ?>
+                            <td><?= "N/A" ?></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
