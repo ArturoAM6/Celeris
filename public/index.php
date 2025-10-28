@@ -2,7 +2,8 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../src/database/Database.class.php';
-require_once __DIR__ . '/../includes/fpdf186/fpdf.php';
+require_once __DIR__ . '/../includes/tfpdf/tfpdf.php';
+require_once __DIR__ . '/../config/googleConfig.php';
 
 spl_autoload_register(function ($class) {
     $paths = [
@@ -25,7 +26,7 @@ spl_autoload_register(function ($class) {
 session_start();
 
 $ruta = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$ruta = str_replace('/Celeris/public', '', $ruta);
+$ruta = str_replace('/equipo-4/Celeris', '', $ruta);
 
 // =============== Rutas publicas ===============
 if ($ruta === '/' || $ruta === '/index.php') {
@@ -68,6 +69,19 @@ if ($ruta === '/turno/pdf' && isset($_GET['id'])) {
     }
     $caja = $turno->getCaja();
     $turnoController->imprimirTurno($cliente, $caja, $turno);
+    exit;
+}
+if ($ruta === '/turno/subir-drive' && isset($_GET['id'])) {
+    $turnoController = new TurnoController();
+    $turno = $turnoController->mostrarPorId($_GET['id']);
+    if ($turno->getCliente() !== null) {
+        $cliente = $turnoController->mostrarClientePorId($turno->getCliente());
+    } else {
+        $cliente = null;
+    }
+    $caja = $turno->getCaja();
+    $fileId = $turnoController->subirTurnoADrive($cliente, $caja, $turno);
+    echo json_encode(['success' => true, 'fileId' => $fileId]);
     exit;
 }
 if ($ruta === '/turno/tiempo-espera' && isset($_GET['id'])) {

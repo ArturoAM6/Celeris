@@ -18,6 +18,6 @@ define('DB_USER', 'celeris_user');
 define('DB_PASS', '123456');
 define('DB_NAME', 'celeris');
 
-define('BASE_URL', '/Celeris/public');
+define('BASE_URL', '/equipo-4/Celeris');
 
 date_default_timezone_set('America/Mexico_City');

@@ -26,6 +26,11 @@ class AuthController {
                     throw new Exception("Correo no registrado");
                 }
 
+                if (!$this->servicioEmpleados->validarHorario($empleado->getId())) {
+                    http_response_code(403);
+                    throw new Exception("No es posible acceder fuera de horario");
+                }
+
                 if (!ServicioAutenticacion::iniciarSesion($empleado, $password)) {
                     http_response_code(400);
                     throw new Exception("Credenciales incorrectas");

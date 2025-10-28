@@ -1,0 +1,14 @@
+{
+    "name": "celeris/celeris",
+    "description": "Sistema de gestión de turnos",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Arturo Ávila Martínez",
+            "email": "arturoavilamartinez9@gmail.com"
+        }
+    ],
+    "require": {
+        "google/apiclient": "*"
+    }
+}
