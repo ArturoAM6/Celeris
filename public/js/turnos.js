@@ -147,6 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
     imprimirTurno(turnoId);
     subirADrive(turnoId);
 
-    // goBackAfter(BASE_URL, 10000);
+    goBackAfter(BASE_URL, 10000);
   }
 });
