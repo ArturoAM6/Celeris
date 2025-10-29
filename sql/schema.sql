@@ -61,7 +61,7 @@ CREATE TABLE tipo_turno_horarios (
 CREATE TABLE cajas (
     id INT PRIMARY KEY AUTO_INCREMENT,
     numero INT NOT NULL,
-    id_departamento INT NOT NULL,
+    id_departamento INT(1) NOT NULL,
     id_estado INT(1) NOT NULL,
     FOREIGN KEY (id_departamento) REFERENCES departamentos(id),
     FOREIGN KEY (id_estado) REFERENCES estado_caja(id)
@@ -157,8 +157,8 @@ VALUES (1, 4, 1), (2, 4, 1);
 -- EMPLEADOS
 -- ADMINISTRADORES
 INSERT INTO empleados (nombre, apellido_paterno, apellido_materno, email, password_hash, activo, id_departamento, id_rol, id_tipo_turno, id_horario)
-VALUES ("Arturo", "Avila", "Martinez", "arturoam@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1),
-("Hector", "Sanchez", "Tamayo", "hectorsan@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 1, 1);
+VALUES ("Arturo", "Avila", "Martinez", "arturoam@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 2, 1),
+("Admin", "Super", "", "admin@celeris.com", "$2y$10$zz9T9rzxbp1cf5hrsLWi5OFe9wNnQKaqfov0iluL0IeAJMXyiFsAa", 1, 1, 1, 2, 1);
 
 -- OPERADORES
 -- OPERADORES VENTANILLAS
