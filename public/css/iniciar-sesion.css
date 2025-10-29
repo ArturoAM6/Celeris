@@ -120,7 +120,7 @@ input {
 }
 .password-box input {
   width: 100%;
-  padding-right: 40px;
+  padding-right: 20px;
 }
 .toggle-icon {
   position: absolute;

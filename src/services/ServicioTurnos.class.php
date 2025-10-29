@@ -90,6 +90,39 @@ class ServicioTurnos {
         );
     }
 
+    public function subirTurnoADrive(?Cliente $cliente, int $idCaja, Turno $turno): string {
+        $caja = $this->cajaRepository->buscarPorId($idCaja);
+        switch ($caja->getDepartamento()) {
+            case 1: $departamento = 'Cajas'; break;
+            case 2: $departamento = 'Asociados'; break;
+            case 3: $departamento = 'Caja Fuerte'; break;
+            case 4: $departamento = 'Asesoramiento Financiero'; break;
+            default: throw new Exception("No existe el departamento.");
+        }
+        
+        $pdfContent = ServicioPDF::generarTurnoPdfString(
+            $caja->getNumero(),
+            $departamento,
+            $turno->getNumero(),
+            (!$cliente) ? "N/A" : $cliente->getNombreCompleto()
+        );
+        
+        $client = getClient();
+        $service = new Google\Service\Drive($client);
+        
+        $fileName = 'turno_' . $turno->getNumero() . '_' . date('YmdHis') . '.pdf';
+        
+        $fileMetadata = new Google\Service\Drive\DriveFile(['name' => $fileName]);
+        
+        $file = $service->files->create($fileMetadata, [
+            'data' => $pdfContent,
+            'mimeType' => 'application/pdf',
+            'uploadType' => 'multipart'
+        ]);
+        
+        return $file->id;
+    }
+
     public function obtenerClientePorNumeroCuenta(string $numeroCuenta): ?Cliente {
         $cliente = $this->clienteRepository->buscarPorNumeroCuenta($numeroCuenta);
         if (!$cliente) {

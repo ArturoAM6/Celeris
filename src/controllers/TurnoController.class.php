@@ -248,6 +248,15 @@ class TurnoController {
         }
     }
 
+    public function subirTurnoADrive(?Cliente $cliente, int $idCaja, Turno $turno): string {
+        try {
+            return $this->servicioTurnos->subirTurnoADrive($cliente, $idCaja, $turno);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
     // public function consultarTurno(): void {
     //     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //         try {

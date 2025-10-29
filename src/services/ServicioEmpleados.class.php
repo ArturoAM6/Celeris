@@ -192,7 +192,7 @@ class ServicioEmpleados {
         return $empleados;
     }
 
-    private function validarHorario(int $id): bool {
+    public function validarHorario(int $id): bool {
         $empleado = $this->empleadoRepository->buscarPorId($id);
         if ($empleado->getTipoTurno() == 1) {
             $diasPermitidos = array(1,3,5);

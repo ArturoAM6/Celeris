@@ -31,6 +31,19 @@ async function imprimirTurno(turnoId) {
   }
 }
 
+async function subirADrive(turnoId) {
+  try {
+    const response = await fetch(BASE_URL + `/turno/subir-drive?id=${turnoId}`);
+    const result = await response.json();
+    if (result.success) {
+      console.log("Subido a Drive:", result.fileId);
+    }
+  } catch (err) {
+    console.error("Error al subir a Drive:", err);
+    await fetch(BASE_URL + `/auth.php`)
+  }
+}
+
 let tiempoRestanteSegundos = 0;
 let turnosPendientes = 0;
 let intervaloCuentaRegresiva = null;
@@ -56,6 +69,16 @@ function actualizarDisplay() {
   `;
 }
 
+function obtenerEstadoGuardado() {
+  const guardado = localStorage.getItem("tiempoEspera");
+  if (guardado) {
+    const estado = JSON.parse(guardado);
+    tiempoRestanteSegundos = estado.tiempoRestante;
+    ultimaActualizacionServidor = estado.ultimaActualizacion;
+    turnosPendientes = estado.pendientes;
+  }
+}
+
 function actualizarTiempo(turnoId) {
   fetch(BASE_URL + `/turno/tiempo-espera?id=${turnoId}`)
     .then((res) => res.json())
@@ -68,14 +91,27 @@ function actualizarTiempo(turnoId) {
       }
 
       const ahora = Math.floor(Date.now() / 1000);
-      const segundosTranscurridos = ahora - ultimaActualizacionServidor;
 
-      if (ultimaActualizacionServidor === 0 || Math.abs(data.tiempo_estimado_segundos - (tiempoRestanteSegundos + segundosTranscurridos)) > 10) {
+      if (ultimaActualizacionServidor === 0) {
         tiempoRestanteSegundos = data.tiempo_estimado_segundos;
+      } else {
+        const segundosTranscurridos = ahora - ultimaActualizacionServidor;
+        const tiempoEsperadoLocal = Math.max(0, tiempoRestanteSegundos - segundosTranscurridos);
+      
+        tiempoRestanteSegundos = tiempoEsperadoLocal;
       }
 
       turnosPendientes = data.pendientes;
       ultimaActualizacionServidor = ahora;
+
+      localStorage.setItem(
+        "tiempoEspera",
+        JSON.stringify({
+          tiempoRestante: tiempoRestanteSegundos,
+          ultimaActualizacion: ultimaActualizacionServidor,
+          pendientes: turnosPendientes,
+        })
+      );
 
       actualizarDisplay();
     })
@@ -101,13 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (imprimirDiv && imprimirDiv.dataset.turnoId) {
     const turnoId = imprimirDiv.dataset.turnoId;
 
+    obtenerEstadoGuardado();
+
     actualizarTiempo(turnoId);
     setInterval(() => actualizarTiempo(turnoId), 30000);
 
     intervaloCuentaRegresiva = setInterval(actualizarDisplay, 1000);
 
     imprimirTurno(turnoId);
+    subirADrive(turnoId);
 
-    goBackAfter(BASE_URL, 10000);
+    // goBackAfter(BASE_URL, 10000);
   }
 });

@@ -173,7 +173,7 @@
                                 <?= $empleado->getNombreCompleto() ?>
                             </td>
                             <td class="acciones-tabla">
-                                <?php if ($caja->getEstado() != 1 && $caja->getEstado() != 4): ?>
+                                <?php if ($caja->getEstado() == 2): ?>
                                 <div class="tooltip">
                                 <button class="btn" onclick="abrirModalAsignar(
                                     <?= htmlspecialchars(json_encode([
@@ -187,6 +187,14 @@
                                     )"><i class="fa-solid fa-pen-to-square"></i></button>
                                     <span class="tooltiptext">Asignar Caja</span>
                                 </div>
+                                <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
+                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
+                                        <input type="hidden" name="id_estado" value="4">
+                                        <div class="tooltip">
+                                            <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
+                                            <span class="tooltiptext">Caja Fuera de Servicio</span>
+                                        </div>
+                                </form>
                                 <?php endif?>
                                 <?php if ($caja->getEstado() == 1): ?>
                                     <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
@@ -212,14 +220,6 @@
                                         <div class="tooltip">
                                             <button type="submit" class="btn"><i class="fa-solid fa-circle-play"></i></button>
                                             <span class="tooltiptext">Abrir Caja</span>
-                                        </div>
-                                    </form>
-                                    <form action="<?= BASE_URL ?>/admin/cajas/cambiar-estado" method="post">
-                                        <input type="hidden" name="id" value="<?= $caja->getId() ?>">
-                                        <input type="hidden" name="id_estado" value="4">
-                                        <div class="tooltip">
-                                            <button type="submit" class="btn"><i class="fa-solid fa-triangle-exclamation"></i></button>
-                                            <span class="tooltiptext">Caja Fuera de Servicio</span>
                                         </div>
                                     </form>
                                 <?php elseif ($caja->getEstado() == 4): ?>
