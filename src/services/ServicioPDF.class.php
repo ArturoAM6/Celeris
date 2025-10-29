@@ -37,7 +37,7 @@ class ServicioPDF {
     }
 
     public static function generarTurnoPdfString(int $caja, string $departamento, int $turno, ?string $nombre=""): string {
-        $pdf = new FPDF('P', 'mm', array(50,55));
+        $pdf = new tFPDF('P', 'mm', array(50,55));
         $pdf->SetMargins(2,2,2);
         $pdf->SetAutoPageBreak(true, 1);
         $pdf->AddPage();

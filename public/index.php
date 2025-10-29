@@ -102,6 +102,12 @@ if ($ruta === '/logout') {
     $controller->logout();
     exit;
 }
+if ($ruta === '/auth') {
+    require __DIR__ . '/../config/auth.php';
+}
+if ($ruta === '/google_callback.php') {
+    require __DIR__ . '/../google_callback.php';
+}
 
 // =============== Verificacion para rutas internas ===============
 if (!isset($_SESSION['id_empleado'])) {

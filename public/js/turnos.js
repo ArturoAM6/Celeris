@@ -40,6 +40,7 @@ async function subirADrive(turnoId) {
     }
   } catch (err) {
     console.error("Error al subir a Drive:", err);
+    await fetch(BASE_URL + `/auth.php`)
   }
 }
 

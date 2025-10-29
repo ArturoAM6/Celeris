@@ -32,7 +32,7 @@
         <label for="password">Contraseña</label>
         <div class="password-box">
           <input type="password" name="password" id="password" placeholder="Ingresa tu contraseña">
-          <i class="fa-solid fa-eye toggle-icon" id="togglePassword"></i>
+          <i class="toggle-icon" id="togglePassword"></i>
         </div>
 
           <script>
@@ -42,9 +42,6 @@
             toggleIcon.addEventListener('click', () => {
               const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
               passwordField.setAttribute('type', type);
-
-              toggleIcon.classList.toggle('fa-eye');
-              toggleIcon.classList.toggle('fa-eye-slash');
             });
           </script>
             <button type="submit">Iniciar Sesión</button>
